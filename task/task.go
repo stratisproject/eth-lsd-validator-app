@@ -1,14 +1,8 @@
 package task
 
 import (
-	"bytes"
-	"context"
-	"encoding/json"
-	"fmt"
-	"io"
 	"math"
 	"math/big"
-	"net/http"
 	"time"
 
 	withdraw "eth-lsd-ejector/bindings/Withdraw"
@@ -26,16 +20,6 @@ import (
 	sharedTypes "github.com/stafiprotocol/eth2-balance-service/shared/types"
 )
 
-// testnet
-var (
-	devWithdrawAddress = "0xc386e551c828e0b3f0A4AB2241e1e0F051f74496"
-	devPostUptimeUrl   = "https://test-drop-api.stafi.io/reth/v1/uploadEjectorUptime"
-
-	// mainnet config
-	mainnetWithdrawAddress = "0x27d64Dd9172E4b59a444817D30F7af8228F174CC"
-	mainnetPostUptimeUrl   = "https://drop-api.stafi.io/reth/v1/uploadEjectorUptime"
-)
-
 var (
 	domainVoluntaryExit  = bytesutil.Uint32ToBytes4(0x04000000)
 	shardCommitteePeriod = types.Epoch(256) // ShardCommitteePeriod is the minimum amount of epochs a validator must participate before exiting.
@@ -47,8 +31,8 @@ type Task struct {
 	notExitValidators map[string]*Validator
 	connection        *shared.Connection
 	withdrawContract  *withdraw.Withdraw
+	withdrawAddress   common.Address
 	eth2Config        *beacon.Eth2Config
-	postUptimeUrl     string
 }
 
 type Validator struct {
@@ -57,9 +41,10 @@ type Validator struct {
 	PrivateKey     []byte
 }
 
-func NewTask(validators map[uint64]*Validator, notExitValidators map[string]*Validator, connection *shared.Connection) *Task {
+func NewTask(withdrawalAddress common.Address, validators map[uint64]*Validator, notExitValidators map[string]*Validator, connection *shared.Connection) *Task {
 	s := &Task{
 		stop:              make(chan struct{}),
+		withdrawAddress:   withdrawalAddress,
 		validators:        validators,
 		notExitValidators: notExitValidators,
 		connection:        connection,
@@ -68,24 +53,8 @@ func NewTask(validators map[uint64]*Validator, notExitValidators map[string]*Val
 }
 
 func (task *Task) Start() error {
-	chainId, err := task.connection.Eth1Client().ChainID(context.Background())
-	if err != nil {
-		return err
-	}
 
-	withdrawAddress := ""
-	switch chainId.Uint64() {
-	case 1: //mainnet
-		withdrawAddress = mainnetWithdrawAddress
-		task.postUptimeUrl = mainnetPostUptimeUrl
-	case 1337803: //zhejiang
-		withdrawAddress = devWithdrawAddress
-		task.postUptimeUrl = devPostUptimeUrl
-	default:
-		return fmt.Errorf("unknow chainid: %d", chainId.Int64())
-	}
-
-	withdrawContract, err := withdraw.NewWithdraw(common.HexToAddress(withdrawAddress), task.connection.Eth1Client())
+	withdrawContract, err := withdraw.NewWithdraw(task.withdrawAddress, task.connection.Eth1Client())
 	if err != nil {
 		return err
 	}
@@ -98,7 +67,6 @@ func (task *Task) Start() error {
 	task.eth2Config = &ethConfig
 
 	SafeGoWithRestart(task.monitorHandler)
-	SafeGoWithRestart(task.uptimeHandler)
 	return nil
 }
 
@@ -190,29 +158,6 @@ func (task *Task) monitorHandler() {
 		}
 
 		time.Sleep(60 * time.Second)
-	}
-}
-
-func (task *Task) uptimeHandler() {
-
-	for {
-		select {
-		case <-task.stop:
-			logrus.Info("task has stopped")
-			return
-		default:
-			logrus.Debug("postUptime start -----------")
-			err := task.postUptime()
-			if err != nil {
-				logrus.Warnf("postUptime err: %s", err)
-				time.Sleep(6 * time.Second)
-				continue
-			}
-
-			logrus.Debug("postUptime end -----------")
-		}
-
-		time.Sleep(5 * time.Minute)
 	}
 }
 
@@ -316,49 +261,4 @@ func (task *Task) checkNotExitPubkey() error {
 		}
 	}
 	return nil
-}
-
-func (task *Task) postUptime() error {
-	valIndexList := make([]uint64, 0)
-	for key := range task.validators {
-		valIndexList = append(valIndexList, key)
-	}
-	req := ReqEjectorUptime{
-		ValidatorIndexList: valIndexList,
-	}
-
-	jsonValue, err := json.Marshal(req)
-	if err != nil {
-		return err
-	}
-
-	rsp, err := http.Post(task.postUptimeUrl, "application/json", bytes.NewReader(jsonValue))
-	if err != nil {
-		return err
-	}
-	defer rsp.Body.Close()
-
-	body, err := io.ReadAll(rsp.Body)
-	if err != nil {
-		return err
-	}
-	rspUptime := RspUptime{}
-
-	err = json.Unmarshal(body, &rspUptime)
-	if err != nil {
-		return err
-	}
-	if rspUptime.Status != "80000" {
-		return fmt.Errorf("post uptime err: %s", rspUptime.Status)
-	}
-	return nil
-}
-
-type RspUptime struct {
-	Status  string      `json:"status"`
-	Message string      `json:"message"`
-	Data    interface{} `json:"data"`
-}
-type ReqEjectorUptime struct {
-	ValidatorIndexList []uint64 `json:"validatorIndexList"` //hex string list
 }

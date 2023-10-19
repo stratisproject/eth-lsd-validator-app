@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/pkg/errors"
 	"github.com/prysmaticlabs/prysm/v3/io/prompt"
 	"github.com/sirupsen/logrus"
@@ -20,6 +21,7 @@ const (
 	flagExecutionEndpoint = "execution_endpoint"
 	flagConsensusEndpoint = "consensus_endpoint"
 	flagLogLevel          = "log_level"
+	flagWithdrawAddress   = "withdraw_address"
 )
 
 // Keystore json file representation as a Go struct.
@@ -60,7 +62,13 @@ func startCmd() *cobra.Command {
 			if len(consensusEndpoint) == 0 {
 				return fmt.Errorf("%s empty", flagConsensusEndpoint)
 			}
-
+			withdrawAddress, err := cmd.Flags().GetString(flagWithdrawAddress)
+			if err != nil {
+				return err
+			}
+			if !common.IsHexAddress(withdrawAddress) {
+				return fmt.Errorf("parse withdraw address failed, address :%d", withdrawAddress)
+			}
 			logLevelStr, err := cmd.Flags().GetString(flagLogLevel)
 			if err != nil {
 				return err
@@ -164,7 +172,7 @@ func startCmd() *cobra.Command {
 
 			logrus.Infof("find %d active validators", len(validators))
 
-			t := task.NewTask(validators, notExitValidators, connection)
+			t := task.NewTask(common.HexToAddress(withdrawAddress), validators, notExitValidators, connection)
 			err = t.Start()
 			if err != nil {
 				return err
@@ -183,6 +191,7 @@ func startCmd() *cobra.Command {
 	cmd.Flags().String(flagKeysDir, "", "Path to a directory where keystores to be imported are stored (must provide)")
 	cmd.Flags().String(flagExecutionEndpoint, "", "Execution node RPC provider endpoint (must provide)")
 	cmd.Flags().String(flagConsensusEndpoint, "", "Consensue node RPC provider endpoint (must provide)")
+	cmd.Flags().String(flagWithdrawAddress, "", "Network withdraw address")
 	cmd.Flags().String(flagLogLevel, logrus.InfoLevel.String(), "The logging level (trace|debug|info|warn|error|fatal|panic)")
 	return cmd
 }
