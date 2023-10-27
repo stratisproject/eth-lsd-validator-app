@@ -96,7 +96,29 @@ export const TokenStakeList = () => {
 
         {showGroupStakeButton && (
           <div className="mr-[.24rem]">
-            <CustomButton type="stroke" className="px-[.16rem]" height=".42rem">
+            <CustomButton
+              type="stroke"
+              className="px-[.16rem]"
+              height=".42rem"
+              onClick={() => {
+                const stakeablePubkeyInfos = displayPubkeyInfos.filter((item) =>
+                  isPubkeyStakeable(item._status)
+                );
+                const pubkeyAddressList = stakeablePubkeyInfos.map(
+                  (item) => item.pubkeyAddress
+                );
+
+                router.push(
+                  {
+                    pathname: "/tokenStake/stake",
+                    query: {
+                      pubkeyAddressList: pubkeyAddressList,
+                    },
+                  },
+                  "/tokenStake/stake"
+                );
+              }}
+            >
               <div className="flex items-center">
                 <div>Group Stake Avaliable Nodes</div>
 
