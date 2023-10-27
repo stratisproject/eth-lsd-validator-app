@@ -1,1 +1,1 @@
-# eth-lsd-ejector
+# eth-lsd-validator-app
