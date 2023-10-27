@@ -3,6 +3,11 @@ export interface NavigationItem {
   path?: string;
 }
 
+export enum ValidatorNodeType {
+  Solo = "1",
+  Trusted = "2",
+}
+
 export interface IpfsRewardItem {
   index: number;
   address: string;

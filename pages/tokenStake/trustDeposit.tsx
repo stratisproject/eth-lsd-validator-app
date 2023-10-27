@@ -65,7 +65,7 @@ const TrustDepositPage = () => {
       />
 
       <div className="flex mt-[.24rem] items-start">
-        <CardContainer width="6.2rem" title="Trust Validator Deposit">
+        <CardContainer width="6.2rem" title="Trusted Validator Deposit">
           <div className="flex flex-col items-center">
             <div className="mt-[.32rem] flex items-center text-[.14rem]">
               <div

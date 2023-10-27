@@ -3,45 +3,13 @@
   "token": {
     "tokenName": "ETH",
     "lsdTokenName": "rETH",
-    "supportChains": ["Ethereum", "Arbitrum", "Optimism", "Polygon"],
     "lsdTokenIconUri": "https://cdn.stafi.io/rtoken/logo/rETH.png",
     "ETHImg": "/images/token/ETH_green.svg",
     "lsdETHImg": "/images/token/lsdETH.svg"
   },
   "supportRestApi": true,
-  "unstake": {
-    "lockTipLink": "https://docs.stafi.io/stakingeth/unstake/",
-    "duration": "1-5 days"
-  },
   "apr": 3.1,
-  "detailedInfo": {
-    "audit": {
-      "nameList": ["Peckshield", "Blocksec"],
-      "link": "https://github.com/stafiprotocol/security/blob/main/audits/202304_BlockSec_StaFi-ETHWithdraw/blocksec_stafi_v1.0-signed.pdf"
-    },
-    "listedIns": [
-      {
-        "name": "Coingecko",
-        "link": "https://www.coingecko.com/en/coins/stafi-staked-eth"
-      },
-      {
-        "name": "Defilama",
-        "link": "https://defillama.com/yields/pool/b2fe5b13-eca4-47cc-b3fd-1de24a296018"
-      }
-    ]
-  },
-  "auditList": [
-    {
-      "name": "PeckShield",
-      "icon": "/images/audit/peck_shield.svg",
-      "iconDark": "/images/audit/peck_shield_dark.svg"
-    },
-    {
-      "name": "BlockSec",
-      "icon": "/images/audit/block_sec.svg",
-      "iconDark": "/images/audit/block_sec_dark.svg"
-    }
-  ],
+  "detailedInfo": {},
   "faqList": [
     {
       "title": "What are the factors that affect the staking rewards?",

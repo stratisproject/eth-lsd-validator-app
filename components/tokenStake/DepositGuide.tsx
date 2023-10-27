@@ -2,11 +2,15 @@ import classNames from "classnames";
 import { Icomoon } from "components/icon/Icomoon";
 import { robotoBold } from "config/font";
 import { useAppSlice } from "hooks/selector";
+import { useSoloNodeDepositAmount } from "hooks/useSoloNodeDepositAmount";
 import { useRouter } from "next/router";
+import { getTokenName } from "utils/configUtils";
 
 export const DepositGuide = () => {
   const { darkMode } = useAppSlice();
   const router = useRouter();
+
+  const { soloNodeDepositAmount } = useSoloNodeDepositAmount();
 
   return (
     <div className="">
@@ -50,17 +54,26 @@ export const DepositGuide = () => {
           className="text-color-text2 text-[.14rem] px-[.2rem] py-[.1rem] mt-[.06rem] ml-[.1rem] leading-normal border-dashed border-l-[1px] border-l-text1 dark:border-l-text1Dark"
           style={{}}
         >
-          Deposit <span className={robotoBold.className}>4 ETH</span> to
-          register as a delegated validator on StaFi;
-          <div className="mt-[.1rem]" />
-          StaFi will match <span className={robotoBold.className}>
-            28 ETH
-          </span>{" "}
-          to your node so that it can meet the validator conditions of ETH2.0.
-          <div className="mt-[.1rem]" />
+          {soloNodeDepositAmount && Number(soloNodeDepositAmount) > 0 && (
+            <>
+              Deposit{" "}
+              <span className={robotoBold.className}>
+                {soloNodeDepositAmount} ETH
+              </span>{" "}
+              to register as a delegated validator on StaFi;
+              <div className="mt-[.1rem]" />
+              StaFi will match{" "}
+              <span className={robotoBold.className}>
+                {32 - Number(soloNodeDepositAmount)} ETH
+              </span>{" "}
+              to your node so that it can meet the validator conditions of ETH
+              2.0.
+              <div className="mt-[.1rem]" />
+            </>
+          )}
           If you are a{" "}
-          <span className={robotoBold.className}>trust validator</span>, you
-          don't need to deposit.
+          <span className={robotoBold.className}>trusted validator</span>, you
+          don't need to deposit {getTokenName()} yourself.
         </div>
 
         <div className="ml-[.05rem] mt-[-0.04rem]">
@@ -96,8 +109,7 @@ export const DepositGuide = () => {
           style={{}}
         >
           Once your node reaches{" "}
-          <span className={robotoBold.className}>32 ETH</span>, you can deploy a
-          pool contract to deposit{" "}
+          <span className={robotoBold.className}>32 ETH</span>, you can deposit{" "}
           <span className={robotoBold.className}>32 ETH</span> to the deposit
           contract of <span className={robotoBold.className}>ETH 1.0</span>.
           <div className="mt-[.1rem]" />

@@ -4,6 +4,7 @@ import { CustomButton } from "components/common/CustomButton";
 import { ChooseTypeGuide } from "components/tokenStake/ChooseTypeGuide";
 import { robotoBold } from "config/font";
 import { useAppDispatch, useAppSelector } from "hooks/common";
+import { useIsTrustedValidator } from "hooks/useIsTrustedValidator";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { RootState } from "redux/store";
@@ -14,6 +15,8 @@ const ChooseTypePage = () => {
   const dispatch = useAppDispatch();
   const [validatorKeys, setValidatorKeys] = useState<any[]>([]);
   const [fileName, setFileName] = useState<string>("");
+
+  const { isTrust } = useIsTrustedValidator();
 
   const { validatorWithdrawalCredentials } = useAppSelector(
     (state: RootState) => {
@@ -50,14 +53,26 @@ const ChooseTypePage = () => {
               </div>
 
               <div className="self-stretch mb-[.24rem] mx-[.16rem]">
-                <CustomButton
-                  height=".48rem"
-                  onClick={() => {
-                    router.push("/tokenStake/trustDeposit");
-                  }}
-                >
-                  Next
-                </CustomButton>
+                {!isTrust ? (
+                  <CustomButton
+                    height=".48rem"
+                    type="stroke"
+                    onClick={() => {
+                      openLink("https://www.google.com");
+                    }}
+                  >
+                    Apply
+                  </CustomButton>
+                ) : (
+                  <CustomButton
+                    height=".48rem"
+                    onClick={() => {
+                      router.push("/tokenStake/trustDeposit");
+                    }}
+                  >
+                    Next
+                  </CustomButton>
+                )}
               </div>
             </div>
 
