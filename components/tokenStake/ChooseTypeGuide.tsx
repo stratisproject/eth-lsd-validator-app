@@ -36,7 +36,7 @@ export const ChooseTypeGuide = () => {
             robotoBold.className
           )}
         >
-          Nodes Comparision
+          Nodes Comparison
         </div>
 
         <div className="text-color-text2 text-[.14rem] py-[.1rem] mt-[.16rem] leading-normal">
