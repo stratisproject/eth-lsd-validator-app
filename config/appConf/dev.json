@@ -1,0 +1,28 @@
+{
+  "chain": {
+    "id": 5,
+    "name": "Goerli",
+    "networkName": "goerli"
+  },
+  "rpc": "https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
+  "contracts": {
+    "lsdTokenContract": {
+      "address": "0x37a7BF277f9b1F32296aB595600eA30c55F6eE4B"
+    },
+    "depositContract": {
+      "address": "0xE226B1dC51B7d2c996A46107f79C00e1CCe692eB"
+    },
+    "withdrawContract": {
+      "address": "0x524611Ca2e5A0bE5bca87bf4A6e6468Ed9311572"
+    },
+    "networkBalanceContract": {
+      "address": "0x6fa81E949b7c88198cEe32326659133e09dCE725"
+    },
+    "networkWithdrawContract": {
+      "address": "0xbFC4235f2788E46c60872fd125415d32C08a1175"
+    },
+    "nodeDepositContract": {
+      "address": "0x179386303fC2B51c306Ae9D961C73Ea9a9EA0C8d"
+    }
+  }
+}
