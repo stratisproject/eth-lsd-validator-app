@@ -2,6 +2,7 @@ import classNames from "classnames";
 import { CustomButton } from "components/common/CustomButton";
 import { DataLoading } from "components/common/DataLoading";
 import { Icomoon } from "components/icon/Icomoon";
+import { getLsdAppUrl } from "config/env";
 import { robotoSemiBold } from "config/font";
 import { useAppSlice } from "hooks/selector";
 import { usePoolData } from "hooks/usePoolData";
@@ -9,13 +10,24 @@ import Image from "next/image";
 import lsdTokenLogo from "public/images/token/lsdETH.svg";
 import { useMemo } from "react";
 import { openLink } from "utils/commonUtils";
-import { getLsdTokenName, getTokenName } from "utils/configUtils";
+import {
+  getLsdTokenName,
+  getTokenName,
+  isSupportTokenPrice,
+} from "utils/configUtils";
 import { formatNumber } from "utils/numberUtils";
 
 export const PoolAssets = () => {
   const { darkMode } = useAppSlice();
-  const { poolEth, mintedREth, unmatchedEth, matchedValidators } =
-    usePoolData();
+  const {
+    poolEth,
+    mintedLsdToken,
+    unmatchedEth,
+    matchedValidators,
+    mintedLsdTokenValue,
+    stakedToken,
+    stakedTokenValue,
+  } = usePoolData();
 
   return (
     <div className="mt-[.24rem] bg-color-bg2 border-[0.01rem] border-color-border1 rounded-[.3rem]">
@@ -55,7 +67,9 @@ export const PoolAssets = () => {
         <div className="flex items-center justify-center text-[.16rem] text-color-text1">
           <div
             className="cursor-pointer mx-[.24rem] flex-1 h-[.42rem] flex items-center justify-between bg-color-bgPage rounded-[.6rem] border-[0.01rem] border-color-border1"
-            onClick={() => {}}
+            onClick={() => {
+              openLink(getLsdAppUrl());
+            }}
           >
             <div className="flex items-center">
               <div className="w-[.34rem] h-[.34rem] min-w-[.34rem] relative ml-[.04rem]">
@@ -82,27 +96,66 @@ export const PoolAssets = () => {
                 formatNumber(poolEth, { hideDecimalsForZero: true })
               )}
             </div>
-            <div className="text-color-text2 mt-[.16rem]">-- Contracts</div>
+
+            <div className="text-color-text2 mt-[.16rem] hidden">
+              -- Contracts
+            </div>
           </div>
         </div>
 
         <div className="flex items-center justify-center text-[.16rem] text-color-text1">
           <div className="flex flex-col items-center">
             <div className={robotoSemiBold.className}>
-              {mintedREth === undefined ? (
+              {mintedLsdToken === undefined ? (
                 <DataLoading height=".16rem" />
               ) : (
-                formatNumber(mintedREth, { hideDecimalsForZero: true })
+                formatNumber(mintedLsdToken, { hideDecimalsForZero: true })
               )}
             </div>
-            <div className="text-color-text2 mt-[.16rem]">$ --</div>
+
+            <div
+              className={classNames(
+                "text-color-text2 mt-[.16rem]",
+                isSupportTokenPrice() ? "" : "hidden"
+              )}
+            >
+              {mintedLsdTokenValue === undefined ? (
+                <DataLoading height=".16rem" />
+              ) : (
+                `$ ${formatNumber(mintedLsdTokenValue, {
+                  hideDecimalsForZero: true,
+                  decimals: 2,
+                })}`
+              )}
+            </div>
           </div>
         </div>
 
         <div className="flex items-center justify-center text-[.16rem] text-color-text1">
           <div className="flex flex-col items-center">
-            <div className={robotoSemiBold.className}>--</div>
-            <div className="text-color-text2 mt-[.16rem]">$ --</div>
+            <div className={robotoSemiBold.className}>
+              {stakedToken === undefined ? (
+                <DataLoading height=".16rem" />
+              ) : (
+                formatNumber(stakedToken, { hideDecimalsForZero: true })
+              )}
+            </div>
+
+            <div
+              className={classNames(
+                "text-color-text2 mt-[.16rem]",
+                isSupportTokenPrice() ? "" : "hidden"
+              )}
+            >
+              {stakedTokenValue === undefined ? (
+                <DataLoading height=".16rem" />
+              ) : (
+                `$ ${formatNumber(stakedTokenValue, {
+                  hideDecimalsForZero: true,
+                  decimals: 2,
+                })}`
+              )}
+            </div>
           </div>
         </div>
 

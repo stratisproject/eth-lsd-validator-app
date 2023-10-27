@@ -6,7 +6,7 @@ export function usePrice() {
   const { updateFlag } = useAppSlice();
 
   const [gasPrice, setGasPrice] = useState(0);
-  const [ethPrice, setEthPrice] = useState(0);
+  const [tokenPrice, setTokenPrice] = useState(0);
 
   const fetchGasPrice = useCallback(async () => {
     try {
@@ -20,7 +20,7 @@ export function usePrice() {
       if (resJson && resJson.code === 200) {
         const { standard, priceUSD } = resJson.data;
         setGasPrice(standard);
-        setEthPrice(priceUSD);
+        setTokenPrice(priceUSD);
       }
     } catch (err: any) {}
   }, []);
@@ -31,7 +31,6 @@ export function usePrice() {
 
   return {
     gasPrice,
-    ethPrice,
-    lsdEthPrice: 0,
+    tokenPrice,
   };
 }

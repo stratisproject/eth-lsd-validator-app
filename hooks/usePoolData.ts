@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { RootState } from "redux/store";
 import Web3 from "web3";
 import { useAppSelector } from "./common";
@@ -13,14 +13,13 @@ import {
   getNodeDepositContract,
   getNodeDepositContractAbi,
 } from "config/contract";
+import { usePrice } from "./usePrice";
 
 export function usePoolData() {
   const [depositedEth, setDepositedEth] = useState<string>();
   const [depositedEthValue, setDepositedEthValue] = useState<string>();
-  const [mintedREth, setMintedREth] = useState<string>();
-  const [mintedREthValue, setMintedREthValue] = useState<string>();
-  const [stakedEth, setStakedEth] = useState<string>();
-  const [stakedEthValue, setStakedEthValue] = useState<string>();
+  const [mintedLsdToken, setMintedLsdToken] = useState<string>();
+  const [stakedToken, setStakedToken] = useState<string>();
   const [allEth, setAllEth] = useState<string>();
   const [allEthValue, setAllEthValue] = useState<string>();
   const [poolEth, setPoolEth] = useState<string>();
@@ -30,35 +29,39 @@ export function usePoolData() {
   const [stakeApr, setStakeApr] = useState<string>();
   const [validatorApr, setValidatorApr] = useState<string>();
 
+  const [lsdTotalSupply, setLsdTotalSupply] = useState<string>();
+  const [lsdRate, setLsdRate] = useState<string>();
+
+  const { tokenPrice } = usePrice();
+
+  const mintedLsdTokenValue = useMemo(() => {
+    if (
+      !tokenPrice ||
+      isNaN(Number(tokenPrice)) ||
+      !lsdTotalSupply ||
+      isNaN(Number(lsdTotalSupply)) ||
+      !lsdRate ||
+      isNaN(Number(lsdRate))
+    ) {
+      return undefined;
+    }
+    return Number(lsdTotalSupply) * Number(lsdRate) * Number(tokenPrice);
+  }, [lsdTotalSupply, lsdRate, tokenPrice]);
+
+  const stakedTokenValue = useMemo(() => {
+    if (
+      !tokenPrice ||
+      isNaN(Number(tokenPrice)) ||
+      !stakedToken ||
+      isNaN(Number(stakedToken))
+    ) {
+      return undefined;
+    }
+    return Number(stakedToken) * Number(tokenPrice);
+  }, [stakedToken, tokenPrice]);
+
   const udpatePoolData = useCallback(async () => {
     try {
-      // const depositedEth = Web3.utils.fromWei(ethPoolData.depositedEth);
-      // const mintedREth = Web3.utils.fromWei(ethPoolData.mintedREth);
-      // const stakedEth = Web3.utils.fromWei(ethPoolData.stakedEth);
-      // const allEth = Web3.utils.fromWei(ethPoolData.allEth);
-      // const poolEth = Web3.utils.fromWei(ethPoolData.poolEth);
-
-      // setDepositedEth(depositedEth);
-      // setDepositedEthValue(
-      //   Number(depositedEth) * Number(ethPoolData.ethPrice) + ""
-      // );
-      // setMintedREth(mintedREth);
-      // setMintedREthValue(
-      //   Number(mintedREth) * Number(ethPoolData.ethPrice) + ""
-      // );
-      // setStakedEth(stakedEth);
-      // setStakedEthValue(Number(stakedEth) * Number(ethPoolData.ethPrice) + "");
-      // setAllEth(allEth);
-      // setAllEthValue(Number(allEth) * Number(ethPoolData.ethPrice) + "");
-
-      // setPoolEth(poolEth);
-      // setPoolEthValue(Number(poolEth) * Number(ethPoolData.ethPrice) + "");
-      // setUnmatchedEth(Web3.utils.fromWei(ethPoolData.unmatchedEth));
-      // setMatchedValidators(ethPoolData.matchedValidators);
-
-      // setStakeApr(ethPoolData.stakeApr);
-      // setValidatorApr(ethPoolData.validatorApr);
-
       const web3 = getEthWeb3();
 
       const networkWithdrawContract = new web3.eth.Contract(
@@ -87,8 +90,11 @@ export function usePoolData() {
           console.log({ err });
         });
 
-      console.log({ lsdTotalSupply });
-      console.log({ lsdRate });
+      // console.log({ lsdTotalSupply });
+      // console.log({ lsdRate });
+
+      setLsdTotalSupply(Web3.utils.fromWei(lsdTotalSupply));
+      setLsdRate(Web3.utils.fromWei(lsdRate));
 
       const userDepositBalance = await web3.eth.getBalance(
         getEthDepositContract()
@@ -113,7 +119,7 @@ export function usePoolData() {
 
       setPoolEth(poolEth + "");
       setUnmatchedEth(unmatchedEth);
-      setMintedREth(Web3.utils.fromWei(lsdTotalSupply));
+      setMintedLsdToken(Web3.utils.fromWei(lsdTotalSupply));
     } catch {}
   }, []);
 
@@ -162,6 +168,8 @@ export function usePoolData() {
 
       console.log({ matchedValidators });
       setMatchedValidators(matchedValidators + "");
+
+      setStakedToken(matchedValidators * 32 + "");
     } catch (err: any) {
       console.log({ err });
     }
@@ -178,10 +186,10 @@ export function usePoolData() {
   return {
     depositedEth,
     depositedEthValue,
-    mintedREth,
-    mintedREthValue,
-    stakedEth,
-    stakedEthValue,
+    mintedLsdToken,
+    mintedLsdTokenValue,
+    stakedToken,
+    stakedTokenValue,
     allEth,
     allEthValue,
     poolEth,

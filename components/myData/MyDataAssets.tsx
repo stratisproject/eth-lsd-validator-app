@@ -3,6 +3,7 @@ import { CustomButton } from "components/common/CustomButton";
 import { DataLoading } from "components/common/DataLoading";
 import { Icomoon } from "components/icon/Icomoon";
 import { ClaimRewardModal } from "components/modal/ClaimRewardModal";
+import { getLsdAppUrl } from "config/env";
 import { useMyData } from "hooks/useMyData";
 import Image from "next/image";
 import lsdTokenLogo from "public/images/token/lsdETH.svg";
@@ -60,7 +61,9 @@ export const MyDataAssets = () => {
         <div className="flex items-center justify-center text-[.16rem] text-color-text1">
           <div
             className="cursor-pointer mx-[.24rem] flex-1 h-[.42rem] flex items-center justify-between bg-color-bgPage rounded-[.6rem] border-[0.01rem] border-color-border1"
-            onClick={() => {}}
+            onClick={() => {
+              openLink(getLsdAppUrl());
+            }}
           >
             <div className="flex items-center">
               <div className="w-[.34rem] h-[.34rem] min-w-[.34rem] relative ml-[.04rem]">

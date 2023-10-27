@@ -43,3 +43,10 @@ export function getLsdEthMetamaskParam() {
     tokenImage: appConfig.token.lsdTokenIconUri,
   };
 }
+
+export function getLsdAppUrl() {
+  if (isDev()) {
+    return appDevConfig.lsdAppUrl;
+  }
+  return appProdConfig.lsdAppUrl;
+}

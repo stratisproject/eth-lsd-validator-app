@@ -34,6 +34,10 @@ export function getGasPriceUrl() {
   return appConfig.gasPriceUrl;
 }
 
+export function isSupportTokenPrice() {
+  return !!appConfig.gasPriceUrl;
+}
+
 export function getDefaultApr() {
   return appConfig.apr;
 }
@@ -44,4 +48,8 @@ export function getContactList() {
 
 export function getExternalLinkList() {
   return appConfig.externalLinkList;
+}
+
+export function getDocLinks() {
+  return appConfig.docLinks;
 }

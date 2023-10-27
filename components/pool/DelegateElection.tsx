@@ -6,7 +6,7 @@ import { useAppSlice } from "hooks/selector";
 import { useWalletAccount } from "hooks/useWalletAccount";
 import { useState } from "react";
 import { openLink } from "utils/commonUtils";
-import { getTokenName } from "utils/configUtils";
+import { getDocLinks, getTokenName } from "utils/configUtils";
 
 export const DelegateElection = () => {
   const { darkMode } = useAppSlice();
@@ -26,9 +26,12 @@ export const DelegateElection = () => {
         </div>
 
         <div
-          className="ml-[.16rem] flex items-center cursor-pointer"
+          className={classNames(
+            "ml-[.16rem] items-center cursor-pointer",
+            getDocLinks().delegationMechanism ? "flex" : "hidden"
+          )}
           onClick={() => {
-            openLink("https://www.google.com");
+            openLink(getDocLinks().delegationMechanism);
           }}
         >
           <div className="text-color-text2 text-[.16rem]">
@@ -53,7 +56,7 @@ export const DelegateElection = () => {
           }}
         >
           <div className="flex items-center justify-center text-[.16rem] text-color-text2">
-            Block
+            Address
           </div>
 
           <div className="flex items-center justify-center text-[.16rem] text-color-text2">

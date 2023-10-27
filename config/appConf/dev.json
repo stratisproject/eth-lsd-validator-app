@@ -24,5 +24,6 @@
     "nodeDepositContract": {
       "address": "0x179386303fC2B51c306Ae9D961C73Ea9a9EA0C8d"
     }
-  }
+  },
+  "lsdAppUrl": "https://test-eth-lsd.stafi.io"
 }
