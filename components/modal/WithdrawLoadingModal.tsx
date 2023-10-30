@@ -128,6 +128,14 @@ export const WithdrawLoadingModal = () => {
             className={classNames(
               "mt-[.24rem] text-[.16rem] text-color-text2 text-center leading-tight"
             )}
+            style={{
+              WebkitLineClamp: 3,
+              lineClamp: 3,
+              overflow: "hidden",
+              display: "-webkit-box",
+              WebkitBoxOrient: "vertical",
+              wordBreak: "break-word",
+            }}
           >
             {withdrawLoadingParams?.customMsg
               ? withdrawLoadingParams.customMsg

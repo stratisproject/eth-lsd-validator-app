@@ -23,6 +23,9 @@ export function useMyData() {
   const [myRewardTokenAmount, setMyRewardTokenAmount] = useState<string>();
   const [ipfsMyRewardInfo, setIpfsMyRewardInfo] = useState<IpfsRewardItem>();
   const [availableExitDeposit, setAvailableExitDeposit] = useState<string>();
+  const [pubkeysOfNode, setPubkeysOfNode] = useState<string[]>([]);
+  const [myShareAmount, setMyShareAmount] = useState<string>();
+  const [mySharePercentage, setMySharePercentage] = useState<string>();
 
   const updateData = useCallback(async () => {
     if (!metaMaskAccount) {
@@ -89,7 +92,8 @@ export function useMyData() {
       const availableExitDeposit =
         Math.max(
           0,
-          Number(myTotalRewardAmount) - Number(totalClaimedDepositOfNode)
+          Number(myRewardInfo?.totalExitDepositAmount) -
+            Number(totalClaimedDepositOfNode)
         ) + "";
       setAvailableExitDeposit(Web3.utils.fromWei(availableExitDeposit));
 
@@ -113,6 +117,7 @@ export function useMyData() {
         .catch((err: any) => {
           console.log({ err });
         });
+      setPubkeysOfNode(pubkeysOfNode);
 
       // console.log({ pubkeysOfNode });
       // console.log({ soloNodeDepositAmount });
@@ -137,11 +142,62 @@ export function useMyData() {
     updateData();
   }, [updateData]);
 
+  const updateNodeData = useCallback(async () => {
+    if (!ipfsMyRewardInfo) {
+      return;
+    }
+    const requests = pubkeysOfNode.map((pubkeyAddress) => {
+      return (async () => {
+        const web3 = getEthWeb3();
+        const nodeDepositContract = new web3.eth.Contract(
+          getNodeDepositContractAbi(),
+          getNodeDepositContract(),
+          {
+            from: metaMaskAccount,
+          }
+        );
+
+        const pubkeyInfo = await nodeDepositContract.methods
+          .pubkeyInfoOf(pubkeyAddress)
+          .call()
+          .catch((err: any) => {
+            console.log({ err });
+          });
+
+        return pubkeyInfo;
+      })();
+    });
+
+    const pubekyInfos = await Promise.all(requests);
+    let myShareAmount = 0;
+    pubekyInfos.forEach((pubkeyInfo) => {
+      myShareAmount += Number(pubkeyInfo._nodeDepositAmount);
+    });
+
+    myShareAmount = Math.max(
+      0,
+      myShareAmount - ipfsMyRewardInfo?.totalExitDepositAmount
+    );
+
+    setMyShareAmount(Web3.utils.fromWei(myShareAmount + ""));
+    setMySharePercentage(
+      Number(Web3.utils.fromWei(myShareAmount + "")) /
+        Number(totalManagedToken) +
+        ""
+    );
+  }, [pubkeysOfNode, ipfsMyRewardInfo, totalManagedToken]);
+
+  useEffect(() => {
+    updateNodeData();
+  }, [updateNodeData]);
+
   return {
     selfDepositedToken,
     totalManagedToken,
     myRewardTokenAmount,
     ipfsMyRewardInfo,
     availableExitDeposit,
+    myShareAmount,
+    mySharePercentage,
   };
 }

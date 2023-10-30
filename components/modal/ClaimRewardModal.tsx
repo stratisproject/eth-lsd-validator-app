@@ -1,11 +1,13 @@
 import { Box, Modal } from "@mui/material";
 import classNames from "classnames";
 import { CustomButton } from "components/common/CustomButton";
+import { DataLoading } from "components/common/DataLoading";
 import { Icomoon } from "components/icon/Icomoon";
 import { roboto, robotoBold, robotoSemiBold } from "config/font";
 import { useAppDispatch, useAppSelector } from "hooks/common";
 import { IpfsRewardItem } from "interfaces/common";
 import { useRouter } from "next/router";
+import { claimValidatorRewards } from "redux/reducers/ValidatorSlice";
 import { RootState } from "redux/store";
 import { getTokenName } from "utils/configUtils";
 import { formatNumber } from "utils/numberUtils";
@@ -15,18 +17,32 @@ interface ClaimRewardModalProps {
   onClose: () => void;
   myRewardTokenAmount: string | undefined;
   ipfsMyRewardInfo: IpfsRewardItem | undefined;
+  myShareAmount: string | undefined;
+  mySharePercentage: string | undefined;
+  totalManagedAmount: string | undefined;
 }
 
 export const ClaimRewardModal = (props: ClaimRewardModalProps) => {
-  const { visible, onClose, myRewardTokenAmount, ipfsMyRewardInfo } = props;
+  const {
+    visible,
+    onClose,
+    myRewardTokenAmount,
+    ipfsMyRewardInfo,
+    myShareAmount,
+    mySharePercentage,
+    totalManagedAmount,
+  } = props;
   const router = useRouter();
   const dispatch = useAppDispatch();
 
-  const { darkMode } = useAppSelector((state: RootState) => {
-    return {
-      darkMode: state.app.darkMode,
-    };
-  });
+  const { darkMode, claimRewardsLoading } = useAppSelector(
+    (state: RootState) => {
+      return {
+        darkMode: state.app.darkMode,
+        claimRewardsLoading: state.validator.claimRewardsLoading,
+      };
+    }
+  );
 
   return (
     <Modal open={visible} onClose={onClose}>
@@ -101,11 +117,15 @@ export const ClaimRewardModal = (props: ClaimRewardModalProps) => {
                 robotoSemiBold.className
               )}
             >
-              --
+              {totalManagedAmount === undefined ? (
+                <DataLoading height=".16rem" />
+              ) : (
+                formatNumber(totalManagedAmount, { hideDecimalsForZero: true })
+              )}
             </div>
           </div>
 
-          <div className="mt-[.25rem] self-stretch flex items-center justify-between px-[.32rem]">
+          <div className="mt-[.25rem] self-stretch items-center justify-between px-[.32rem] hidden">
             <div className="text-[.14rem] text-color-text2">Vesting</div>
 
             <div
@@ -123,18 +143,45 @@ export const ClaimRewardModal = (props: ClaimRewardModalProps) => {
 
             <div
               className={classNames(
-                "text-[.14rem] text-color-text2",
+                "text-[.14rem] text-color-text2 flex",
                 robotoSemiBold.className
               )}
             >
-              -- (--%)
+              <div className="mr-[.06rem]">
+                {myShareAmount === undefined ? (
+                  <DataLoading height=".16rem" />
+                ) : (
+                  formatNumber(myShareAmount, { hideDecimalsForZero: true })
+                )}
+              </div>
+              (
+              <div className="mx-[.06rem]">
+                {mySharePercentage === undefined ? (
+                  <DataLoading height=".16rem" />
+                ) : (
+                  formatNumber(Number(mySharePercentage) * 100, {
+                    hideDecimalsForZero: true,
+                    decimals: 2,
+                  })
+                )}
+              </div>
+              %)
             </div>
           </div>
 
           <div className="self-stretch m-[.24rem]">
             <CustomButton
+              loading={claimRewardsLoading}
               height=".56rem"
               disabled={Number(myRewardTokenAmount) <= 0 || !ipfsMyRewardInfo}
+              onClick={() => {
+                dispatch(
+                  claimValidatorRewards(
+                    ipfsMyRewardInfo,
+                    myRewardTokenAmount || "0"
+                  )
+                );
+              }}
             >
               Claim
             </CustomButton>

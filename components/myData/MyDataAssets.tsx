@@ -4,23 +4,35 @@ import { DataLoading } from "components/common/DataLoading";
 import { Icomoon } from "components/icon/Icomoon";
 import { ClaimRewardModal } from "components/modal/ClaimRewardModal";
 import { getLsdAppUrl } from "config/env";
+import { useAppDispatch, useAppSelector } from "hooks/common";
 import { useMyData } from "hooks/useMyData";
 import Image from "next/image";
 import lsdTokenLogo from "public/images/token/lsdETH.svg";
 import { useMemo, useState } from "react";
+import { withdrawValidatorEth } from "redux/reducers/ValidatorSlice";
+import { RootState } from "redux/store";
 import { openLink } from "utils/commonUtils";
 import { getLsdTokenName } from "utils/configUtils";
 import { formatNumber } from "utils/numberUtils";
 
 export const MyDataAssets = () => {
+  const dispatch = useAppDispatch();
   const {
     selfDepositedToken,
     totalManagedToken,
     myRewardTokenAmount,
     availableExitDeposit,
     ipfsMyRewardInfo,
+    myShareAmount,
+    mySharePercentage,
   } = useMyData();
   const [claimRewardModalVisible, setClaimRewardModalVisible] = useState(false);
+
+  const { withdrawLoading } = useAppSelector((state: RootState) => {
+    return {
+      withdrawLoading: state.validator.withdrawLoading,
+    };
+  });
 
   const showWithdraw = useMemo(() => {
     return Number(availableExitDeposit) > 0;
@@ -132,7 +144,21 @@ export const MyDataAssets = () => {
 
         {showWithdraw && (
           <div className="flex-1 mx-[.28rem]">
-            <CustomButton type="stroke">Withdraw</CustomButton>
+            <CustomButton
+              type="stroke"
+              onClick={() => {
+                dispatch(
+                  withdrawValidatorEth(
+                    ipfsMyRewardInfo,
+                    availableExitDeposit || "0",
+                    myRewardTokenAmount || "0",
+                    false
+                  )
+                );
+              }}
+            >
+              Withdraw
+            </CustomButton>
           </div>
         )}
       </div>
@@ -140,6 +166,9 @@ export const MyDataAssets = () => {
       <ClaimRewardModal
         ipfsMyRewardInfo={ipfsMyRewardInfo}
         myRewardTokenAmount={myRewardTokenAmount}
+        totalManagedAmount={totalManagedToken}
+        myShareAmount={myShareAmount}
+        mySharePercentage={mySharePercentage}
         visible={claimRewardModalVisible}
         onClose={() => {
           setClaimRewardModalVisible(false);

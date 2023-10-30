@@ -31,6 +31,7 @@ import {
 import { setEthTxLoading, updateEthBalance } from "./EthSlice";
 import {
   ClaimProof,
+  IpfsRewardItem,
   TokenWithdrawInfo,
   ValidatorClaimType,
 } from "interfaces/common";
@@ -362,11 +363,15 @@ export const handleEthValidatorStake =
 
 export const claimValidatorRewards =
   (
-    claimProof: ClaimProof,
+    ipfsRewardItem: IpfsRewardItem | undefined,
+    // claimProof: ClaimProof,
     myClaimableReward: string,
     callback?: (success: boolean, result: any) => void
   ): AppThunk =>
   async (dispatch, getState) => {
+    if (!ipfsRewardItem) {
+      return;
+    }
     const noticeUuid = uuid();
 
     try {
@@ -386,26 +391,29 @@ export const claimValidatorRewards =
 
       dispatch(setClaimRewardsLoading(true));
 
-      const formatProofs = claimProof.proof.map((item) => {
-        const format = "0x" + item;
-        // const format = Web3.utils.hexToAscii("0x" + item);
-        // const format = Web3.utils.hexToBytes("0x" + item);
-        // const format = "0x" + Web3.utils.padLeft(item, 64);
-        // const format = Web3.utils.padRight(Web3.utils.fromAscii(item), 34);
-        console.log("format", format);
-        return format;
-      });
+      const formatProofs = ["0x" + ipfsRewardItem.proof];
+      // if (!ipfsRewardItem.proof) {
+      //   ipfsRewardItem.proof.forEach((item) => {
+      //     const format = "0x" + item;
+      //     // const format = Web3.utils.hexToAscii("0x" + item);
+      //     // const format = Web3.utils.hexToBytes("0x" + item);
+      //     // const format = "0x" + Web3.utils.padLeft(item, 64);
+      //     // const format = Web3.utils.padRight(Web3.utils.fromAscii(item), 34);
+      //     console.log("format", format);
+      //     formatProofs.push(format);
+      //   });
+      // }
 
       const claimParams = [
-        claimProof.index,
-        claimProof.address,
-        claimProof.totalRewardAmount,
-        claimProof.totalExitDepositAmount,
+        ipfsRewardItem.index,
+        ipfsRewardItem.address,
+        ipfsRewardItem.totalRewardAmount,
+        ipfsRewardItem.totalExitDepositAmount,
         formatProofs,
         ValidatorClaimType.ClaimReward,
       ];
       // console.log("111", claimParams);
-      const result = await contract.methods.claim(...claimParams).send();
+      const result = await contract.methods.nodeClaim(...claimParams).send();
       // console.log("222");
 
       callback && callback(result.status, result);
@@ -428,17 +436,17 @@ export const claimValidatorRewards =
           })
         );
 
-        const withdrawInfo: TokenWithdrawInfo = {
-          depositAmount: "0",
-          rewardAmount: Web3.utils.toWei(myClaimableReward),
-          totalAmount: Web3.utils.toWei(myClaimableReward),
-          txHash,
-          receivedAddress: metaMaskAccount,
-          operateTimestamp: dayjs().unix(),
-          timeLeft: 0,
-          explorerUrl: getEtherScanTxUrl(txHash),
-          status: 3,
-        };
+        // const withdrawInfo: TokenWithdrawInfo = {
+        //   depositAmount: "0",
+        //   rewardAmount: Web3.utils.toWei(myClaimableReward),
+        //   totalAmount: Web3.utils.toWei(myClaimableReward),
+        //   txHash,
+        //   receivedAddress: metaMaskAccount,
+        //   operateTimestamp: dayjs().unix(),
+        //   timeLeft: 0,
+        //   explorerUrl: getEtherScanTxUrl(txHash),
+        //   status: 3,
+        // };
         // addEthValidatorWithdrawRecords(withdrawInfo);
 
         snackbarUtil.success("Claim rewards success");
@@ -463,13 +471,16 @@ export const claimValidatorRewards =
 
 export const withdrawValidatorEth =
   (
+    ipfsRewardItem: IpfsRewardItem | undefined,
     withdrawAmount: string,
     myClaimableReward: string,
-    claimProof: ClaimProof,
     isReTry: boolean,
     callback?: (success: boolean, result: any) => void
   ): AppThunk =>
   async (dispatch, getState) => {
+    if (!ipfsRewardItem) {
+      return;
+    }
     const noticeUuid = uuid();
 
     try {
@@ -499,30 +510,32 @@ export const withdrawValidatorEth =
 
       dispatch(
         updateWithdrawLoadingParams({
-          customMsg: `Please confirm the ${withdrawAmount} ${getTokenName()} withdraw transaction in your MetaMask wallet`,
+          customMsg: `Please confirm the ${formatNumber(
+            withdrawAmount
+          )} ${getTokenName()} withdraw transaction in your MetaMask wallet`,
         })
       );
 
-      const formatProofs = claimProof.proof.map((item) => {
-        const format = "0x" + item;
-        // const format = Web3.utils.hexToAscii("0x" + item);
-        // const format = Web3.utils.hexToBytes("0x" + item);
-        // const format = "0x" + Web3.utils.padLeft(item, 64);
-        // const format = Web3.utils.padRight(Web3.utils.fromAscii(item), 34);
-        // console.log("format", format);
-        return format;
-      });
+      // const formatProofs = claimProof.proof.map((item) => {
+      //   const format = "0x" + item;
+      //   // const format = Web3.utils.hexToAscii("0x" + item);
+      //   // const format = Web3.utils.hexToBytes("0x" + item);
+      //   // const format = "0x" + Web3.utils.padLeft(item, 64);
+      //   // const format = Web3.utils.padRight(Web3.utils.fromAscii(item), 34);
+      //   // console.log("format", format);
+      //   return format;
+      // });
 
       const claimParams = [
-        claimProof.index,
-        claimProof.address,
-        claimProof.totalRewardAmount,
-        claimProof.totalExitDepositAmount,
-        formatProofs,
+        ipfsRewardItem.index,
+        ipfsRewardItem.address,
+        ipfsRewardItem.totalRewardAmount,
+        ipfsRewardItem.totalExitDepositAmount,
+        ["0x" + ipfsRewardItem.proof],
         ValidatorClaimType.ClaimAll,
       ];
       // console.log("111", claimParams);
-      const result = await contract.methods.claim(...claimParams).send();
+      const result = await contract.methods.nodeClaim(...claimParams).send();
 
       callback && callback(result.status, result);
       dispatch(updateEthBalance());
