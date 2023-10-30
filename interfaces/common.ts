@@ -45,9 +45,9 @@ export interface ClaimProof {
 }
 
 export enum ValidatorClaimType {
-  ClaimReward = "1",
-  ClaimDeposit = "2",
-  ClaimAll = "3",
+  ClaimReward = 1,
+  ClaimDeposit = 2,
+  ClaimAll = 3,
 }
 
 export interface TokenWithdrawInfo {
