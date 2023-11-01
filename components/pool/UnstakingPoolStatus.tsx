@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import { DataLoading } from "components/common/DataLoading";
 import { robotoBold, robotoSemiBold } from "config/font";
+import { useUnstakedTokenOfDay } from "hooks/useUnstakedTokenOfDay";
 import { useUnstakingPoolData } from "hooks/useUnstakingPoolData";
 import { getLsdTokenName, getTokenName } from "utils/configUtils";
 import { formatNumber } from "utils/numberUtils";
@@ -8,6 +9,8 @@ import { formatNumber } from "utils/numberUtils";
 export const UnstakingPoolStatus = () => {
   const { poolEth, unstakeawableEth, waitingStakers, ejectedValidators } =
     useUnstakingPoolData();
+
+  const { unstakedTokenOfDay } = useUnstakedTokenOfDay();
 
   return (
     <div>
@@ -22,9 +25,16 @@ export const UnstakingPoolStatus = () => {
         </div>
 
         <div
-          className={classNames("ml-[.16rem] text-[.16rem] text-color-text2")}
+          className={classNames(
+            "ml-[.16rem] text-[.16rem] text-color-text2 flex items-center"
+          )}
         >
-          -- ETH Unstaked today{" "}
+          {unstakedTokenOfDay === undefined ? (
+            <DataLoading height=".16rem" />
+          ) : (
+            formatNumber(unstakedTokenOfDay, { hideDecimalsForZero: true })
+          )}
+          <div className="ml-[.06rem]">ETH Unstaked today</div>
         </div>
       </div>
 
