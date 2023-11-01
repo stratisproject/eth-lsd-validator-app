@@ -26,10 +26,27 @@ export const useNodePubkeys = (
 
   const displayPubkeyInfos = useMemo(() => {
     return nodePubkeyInfos.filter((item) => {
-      if (!statusList) {
+      if (!statusList || statusList.length === 0) {
         return true;
       }
-      return statusList.indexOf(item._status as PubkeyStatus) >= 0;
+
+      let hasMatch = false;
+      statusList.forEach((status) => {
+        if (status === PubkeyStatus.Others) {
+          if (
+            item._status !== PubkeyStatus.Unmatched &&
+            item._status !== PubkeyStatus.Staked
+          ) {
+            hasMatch = true;
+          }
+        } else {
+          if (item._status === status) {
+            hasMatch = true;
+          }
+        }
+      });
+
+      return hasMatch;
     });
   }, [statusList, nodePubkeyInfos]);
 

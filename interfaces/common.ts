@@ -22,6 +22,7 @@ export enum PubkeyStatus {
   Matched = "2",
   Staked = "3",
   Unmatched = "4",
+  Others = "100",
 }
 
 export interface NodePubkeyInfo {

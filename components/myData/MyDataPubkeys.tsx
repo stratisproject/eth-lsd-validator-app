@@ -24,15 +24,15 @@ import { useRouter } from "next/router";
 import { EmptyContent } from "components/common/EmptyContent";
 import { LoadingContent } from "components/common/LoadingContent";
 import { isSupportRestApi } from "utils/configUtils";
-import { NodePubkeyInfo } from "interfaces/common";
+import { NodePubkeyInfo, PubkeyStatus } from "interfaces/common";
 
 export const MyDataPubkeys = () => {
   const { metaMaskAccount } = useWalletAccount();
   const [page, setPage] = useState(1);
-  const [types, setTypes] = useState<string[]>([]);
+  const [types, setTypes] = useState<PubkeyStatus[]>([]);
 
   const { totalCount, displayPubkeyInfos, showLoading, showEmptyContent } =
-    useNodePubkeys(metaMaskAccount, page);
+    useNodePubkeys(metaMaskAccount, page, types);
 
   const displayTypesText = useMemo(() => {
     if (types.length === 0) {
@@ -40,9 +40,9 @@ export const MyDataPubkeys = () => {
     } else if (types.length === 5) {
       return "All Types";
     } else if (types.length === 1) {
-      return types[0];
+      return getPubkeyStatusText(types[0]);
     } else {
-      return types.join(",");
+      return types.map((status) => getPubkeyStatusText(status)).join(",");
     }
   }, [types]);
 
@@ -106,7 +106,7 @@ export const MyDataPubkeys = () => {
           }}
         >
           <div className="pl-[.5rem] flex items-center justify-start text-[.16rem] text-color-text2">
-            Public Key List {totalCount !== undefined && `(${totalCount})`}
+            Public Key List {!showLoading && `(${displayPubkeyInfos.length})`}
           </div>
 
           <div className="flex items-center justify-center text-[.16rem] text-color-text2">
@@ -130,7 +130,7 @@ export const MyDataPubkeys = () => {
           </div>
         )}
 
-        <div className="my-[.32rem] flex items-center justify-center">
+        <div className="my-[.32rem] items-center justify-center hidden">
           <CustomPagination
             page={page}
             onChange={setPage}
@@ -203,8 +203,13 @@ const MyDataPubkeyItem = (props: MyDataPubkeyItemProps) => {
         </div>
       </div>
 
-      <div className="flex items-center justify-center text-[.16rem] text-error">
-        <div className="flex items-center cursor-pointer">
+      <div className="flex items-center justify-center text-[.16rem] text-color-text1">
+        <div
+          className="flex items-center cursor-pointer"
+          onClick={() => {
+            router.push(`/pubkey/${pubkeyInfo.pubkeyAddress}`);
+          }}
+        >
           <div className="mr-[.06rem]">
             {getPubkeyStatusText(pubkeyInfo._status)}
           </div>
@@ -223,15 +228,15 @@ const MyDataPubkeyItem = (props: MyDataPubkeyItemProps) => {
 interface ChooseTypePopoverProps {
   popupState: any;
   onClose: () => void;
-  types: string[];
-  onChangeTypes: (types: string[]) => void;
+  types: PubkeyStatus[];
+  onChangeTypes: (types: PubkeyStatus[]) => void;
 }
 
 const ChooseTypePopover = (props: ChooseTypePopoverProps) => {
   const { popupState, types, onChangeTypes, onClose } = props;
   const { darkMode } = useAppSlice();
 
-  const onClickType = (type: string) => {
+  const onClickType = (type: PubkeyStatus) => {
     if (types.indexOf(type) >= 0) {
       onChangeTypes(_.without(types, type));
     } else {
@@ -299,7 +304,7 @@ const ChooseTypePopover = (props: ChooseTypePopoverProps) => {
         <div
           className="cursor-pointer flex items-center justify-between"
           onClick={() => {
-            onClickType("Unmatched");
+            onClickType(PubkeyStatus.Unmatched);
           }}
         >
           <div className="flex items-center">
@@ -308,7 +313,7 @@ const ChooseTypePopover = (props: ChooseTypePopoverProps) => {
             </div>
           </div>
 
-          {types.indexOf("Unmatched") >= 0 ? (
+          {types.indexOf(PubkeyStatus.Unmatched) >= 0 ? (
             <div className="w-[.16rem] h-[.16rem] relative">
               <Image src={checkedIcon} alt="checked" layout="fill" />
             </div>
@@ -322,7 +327,7 @@ const ChooseTypePopover = (props: ChooseTypePopoverProps) => {
         <div
           className="cursor-pointer flex items-center justify-between"
           onClick={() => {
-            onClickType("Staked");
+            onClickType(PubkeyStatus.Staked);
           }}
         >
           <div className="flex items-center">
@@ -331,7 +336,7 @@ const ChooseTypePopover = (props: ChooseTypePopoverProps) => {
             </div>
           </div>
 
-          {types.indexOf("Staked") >= 0 ? (
+          {types.indexOf(PubkeyStatus.Staked) >= 0 ? (
             <div className="w-[.16rem] h-[.16rem] relative">
               <Image src={checkedIcon} alt="checked" layout="fill" />
             </div>
@@ -345,7 +350,7 @@ const ChooseTypePopover = (props: ChooseTypePopoverProps) => {
         <div
           className="cursor-pointer flex items-center justify-between"
           onClick={() => {
-            onClickType("Others");
+            onClickType(PubkeyStatus.Others);
           }}
         >
           <div className="flex items-center">
@@ -354,7 +359,7 @@ const ChooseTypePopover = (props: ChooseTypePopoverProps) => {
             </div>
           </div>
 
-          {types.indexOf("Others") >= 0 ? (
+          {types.indexOf(PubkeyStatus.Others) >= 0 ? (
             <div className="w-[.16rem] h-[.16rem] relative">
               <Image src={checkedIcon} alt="checked" layout="fill" />
             </div>

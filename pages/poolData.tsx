@@ -26,7 +26,7 @@ const PoolDataPage = () => {
             <div
               className={classNames(
                 robotoBold.className,
-                "text-[.34rem] ml-[.12rem]"
+                "text-[.34rem] ml-[.12rem] text-color-text1"
               )}
             >
               {getLsdTokenName()} Pool

@@ -67,6 +67,8 @@ export const getPubkeyStatusText = (status: string) => {
       return "Staked";
     case 4:
       return "Unmatched";
+    case 100:
+      return "Others";
     default:
       return "Unknown";
   }
