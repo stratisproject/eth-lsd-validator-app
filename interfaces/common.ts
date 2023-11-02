@@ -16,6 +16,14 @@ export interface IpfsRewardItem {
   totalRewardAmount: string;
 }
 
+export enum ChainPubkeyStatus {
+  UnInitial = "0",
+  Deposited = "1",
+  Match = "2",
+  Staked = "3",
+  UnMatch = "4",
+}
+
 export enum PubkeyStatus {
   Unmatched = "1",
   Staked = "2",

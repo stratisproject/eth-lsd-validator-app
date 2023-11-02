@@ -116,7 +116,7 @@ export const isPubkeyStakeable = (status: string) => {
 export const getBeaconStatusListOfPubkeyStatus = (status: PubkeyStatus) => {
   switch (status) {
     case PubkeyStatus.Unmatched:
-      return ["PENDING_INITIALIZED", undefined];
+      return ["PENDING_INITIALIZED"];
     case PubkeyStatus.Staked:
       return [
         "PENDING_QUEUED",
@@ -134,6 +134,7 @@ export const getBeaconStatusListOfPubkeyStatus = (status: PubkeyStatus) => {
         "WITHDRAWAL_DONE",
         "EXITED",
         "WITHDRAWAL",
+        undefined,
       ];
     default:
       return [];

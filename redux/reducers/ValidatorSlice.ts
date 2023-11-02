@@ -134,6 +134,32 @@ export const handleEthValidatorDeposit =
         }
       );
 
+      const nodeInfoOf = await nodeDepositContract.methods
+        .nodeInfoOf(address)
+        .call();
+
+      if (nodeInfoOf._removed) {
+        throw Error("Node already removed");
+      }
+
+      const trustNodePubkeyNumberLimit = await nodeDepositContract.methods
+        .trustNodePubkeyNumberLimit()
+        .call();
+
+      const pubkeysOfNode = await nodeDepositContract.methods
+        .getPubkeysOfNode(address)
+        .call()
+        .catch((err: any) => {
+          console.log({ err });
+        });
+
+      if (
+        Number(trustNodePubkeyNumberLimit) <
+        pubkeysOfNode.length + validatorKeys.length
+      ) {
+        throw Error("Pubkey amount over limit");
+      }
+
       const pubkeys: string[] = [];
       const signatures: string[] = [];
       const depositDataRoots: string[] = [];
@@ -144,9 +170,9 @@ export const handleEthValidatorDeposit =
         depositDataRoots.push("0x" + validatorKey.deposit_data_root);
       });
 
-      console.log("pubkeys", pubkeys);
-      console.log("signatures", signatures);
-      console.log("depositDataRoots", depositDataRoots);
+      // console.log("pubkeys", pubkeys);
+      // console.log("signatures", signatures);
+      // console.log("depositDataRoots", depositDataRoots);
 
       const sendParams = {};
 
@@ -190,18 +216,6 @@ export const handleEthValidatorDeposit =
             );
           }
         });
-
-        //TODO
-        // const accountPubkeyCount = await nodeDepositContract.methods
-        //   .getSuperNodePubkeyCount(address)
-        //   .call();
-
-        // const pubkeyLimit = await nodeDepositContract.methods
-        //   .trustNodePubkeyNumberLimit()
-        //   .call();
-        // if (Number(accountPubkeyCount) + pubkeys.length > pubkeyLimit) {
-        //   throw Error("Pubkey amount over limit");
-        // }
       }
 
       const result = await nodeDepositContract.methods

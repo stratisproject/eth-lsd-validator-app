@@ -1,6 +1,7 @@
 import { Box, Modal } from "@mui/material";
 import classNames from "classnames";
 import { CustomButton } from "components/common/CustomButton";
+import { PrimaryLoading } from "components/common/PrimaryLoading";
 import { Icomoon } from "components/icon/Icomoon";
 import { roboto, robotoBold } from "config/font";
 import { useAppDispatch, useAppSelector } from "hooks/common";
@@ -35,7 +36,7 @@ export const DepositLoadingModal = () => {
       ? `File need to be checked before delegation, it may take about 5 minutes, please wait for a moment…`
       : depositLoadingParams?.status === "error"
       ? "Something went wrong, please try again later"
-      : "It seems that you are uploading files, please wait for a moment";
+      : "Deposit processing, please wait for a moment";
   }, [depositLoadingParams]);
 
   const closeModal = () => {
@@ -87,6 +88,12 @@ export const DepositLoadingModal = () => {
             />
           </div>
 
+          {depositLoadingParams?.status === "loading" && (
+            <div className="mt-[.0rem] mb-[.24rem]  w-[.8rem] h-[.8rem] relative">
+              <PrimaryLoading size=".8rem" />
+            </div>
+          )}
+
           {depositLoadingParams?.status === "success" && (
             <div className="mt-[.0rem] mb-[.24rem]  w-[.8rem] h-[.8rem] relative">
               <Image src={successIcon} alt="success" layout="fill" />
@@ -131,9 +138,11 @@ export const DepositLoadingModal = () => {
           </div>
 
           <div className="self-stretch m-[.24rem]">
-            <CustomButton height=".56rem" onClick={closeModal}>
-              Ok, I Understand
-            </CustomButton>
+            {depositLoadingParams?.status === "success" && (
+              <CustomButton height=".56rem" onClick={closeModal}>
+                Ok, I Understand
+              </CustomButton>
+            )}
           </div>
         </div>
       </Box>

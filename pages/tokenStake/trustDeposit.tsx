@@ -7,6 +7,8 @@ import {
 import uploadIcon from "public/images/upload.svg";
 import fileIcon from "public/images/file.svg";
 import Image from "next/image";
+import errorIcon from "public/images/tx_error.png";
+import refreshIcon from "public/images/refresh_icon.svg";
 import { useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "hooks/common";
 import { RootState } from "redux/store";
@@ -28,6 +30,31 @@ import { DataLoading } from "components/common/DataLoading";
 import { formatNumber } from "utils/numberUtils";
 import { connectMetaMask } from "redux/reducers/WalletSlice";
 import { useWalletAccount } from "hooks/useWalletAccount";
+import { useIsTrustedValidator } from "hooks/useIsTrustedValidator";
+import { openLink } from "utils/commonUtils";
+import { styled } from "@mui/styles";
+import LinearProgress, {
+  linearProgressClasses,
+} from "@mui/material/LinearProgress";
+import { PrimaryLoading } from "components/common/PrimaryLoading";
+import { getEthWeb3 } from "utils/web3Utils";
+import {
+  getNodeDepositContract,
+  getNodeDepositContractAbi,
+} from "config/contract";
+import snackbarUtil from "utils/snackbarUtils";
+
+const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
+  height: 6,
+  borderRadius: 4,
+  [`&.${linearProgressClasses.colorPrimary}`]: {
+    backgroundColor: "white",
+  },
+  [`& .${linearProgressClasses.bar}`]: {
+    borderRadius: 4,
+    backgroundColor: "#80CAFF",
+  },
+}));
 
 const TrustDepositPage = () => {
   const router = useRouter();
@@ -35,6 +62,9 @@ const TrustDepositPage = () => {
   const { darkMode } = useAppSlice();
   const [validatorKeys, setValidatorKeys] = useState<any[]>([]);
   const [fileName, setFileName] = useState<string>("");
+  const [uploadingStatus, setUploadingStatus] = useState<
+    "normal" | "loading" | "error"
+  >("normal");
   const [deleteConfirmModalVisible, setDeleteConfirmModalVisible] =
     useState(false);
 
@@ -52,9 +82,92 @@ const TrustDepositPage = () => {
     }
   );
 
+  const { isTrust } = useIsTrustedValidator();
+
   const isWrongMetaMaskNetwork = useMemo(() => {
     return Number(metaMaskChainId) !== getEthereumChainId();
   }, [metaMaskChainId]);
+
+  const checkFileKeyFormat = (validatorKey: any) => {
+    if (
+      !validatorKey.deposit_data_root ||
+      !validatorKey.signature ||
+      !validatorKey.pubkey
+    ) {
+      throw new Error("Miss deposit_data_root or signature or pubkey");
+    }
+    if (validatorKey.amount !== 1000000000) {
+      throw new Error("Please use trusted validator file to deposit");
+    }
+    // console.log(
+    //   "validatorKey.withdrawal_credentials:",
+    //   validatorKey.withdrawal_credentials
+    // );
+    if (
+      validatorKey.withdrawal_credentials !== validatorWithdrawalCredentials
+    ) {
+      // console.log(validatorWithdrawalCredentials);
+      // console.log(validatorKey.withdrawal_credentials);
+
+      throw new Error(`Incorrect withdrawal_credentials value`);
+    }
+    const networkName = getEthereumNetworkName();
+    // console.log({ validatorKey });
+    if (validatorKey.eth2_network_name !== networkName) {
+      throw new Error(`Please use ${networkName} validator file to deposit`);
+    }
+  };
+
+  const checkKeys = async (validatorKeys: any[]) => {
+    try {
+      setUploadingStatus("loading");
+
+      const pubkeys: string[] = [];
+
+      validatorKeys.forEach((validatorKey) => {
+        pubkeys.push("0x" + validatorKey.pubkey);
+      });
+
+      const web3 = getEthWeb3();
+      let nodeDepositContract = new web3.eth.Contract(
+        getNodeDepositContractAbi(),
+        getNodeDepositContract(),
+        {}
+      );
+
+      const statusRequests = pubkeys.map((pubkey) => {
+        return (async () => {
+          const pubkeyInfoOf = await nodeDepositContract.methods
+            .pubkeyInfoOf(pubkey)
+            .call();
+          const status = pubkeyInfoOf._status;
+          return status;
+        })();
+      });
+
+      const statusList = await Promise.all(statusRequests);
+
+      console.log({ statusList });
+
+      let hasRepeat = false;
+      statusList.forEach((status, index) => {
+        if (Number(status) !== 0) {
+          hasRepeat = true;
+        }
+      });
+
+      if (hasRepeat) {
+        setUploadingStatus("error");
+        setValidatorKeys([]);
+      } else {
+        setUploadingStatus("normal");
+        setValidatorKeys(validatorKeys);
+      }
+    } catch (err: any) {
+      setUploadingStatus("error");
+      setValidatorKeys([]);
+    }
+  };
 
   return (
     <div className="w-smallContentW xl:w-contentW 2xl:w-largeContentW mx-auto">
@@ -66,7 +179,7 @@ const TrustDepositPage = () => {
 
       <div className="flex mt-[.24rem] items-start">
         <CardContainer width="6.2rem" title="Trusted Validator Deposit">
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center pb-[.24rem]">
             <div className="mt-[.32rem] flex items-center text-[.14rem]">
               <div
                 className={classNames(
@@ -105,47 +218,12 @@ const TrustDepositPage = () => {
             </div>
 
             <div className="mt-[.46rem]">
-              {validatorKeys.length === 0 ? (
+              {!fileName ? (
                 <ValidatorKeyUpload
-                  checkValidatorKey={(validatorKey) => {
-                    if (
-                      !validatorKey.deposit_data_root ||
-                      !validatorKey.signature ||
-                      !validatorKey.pubkey
-                    ) {
-                      throw new Error(
-                        "Miss deposit_data_root or signature or pubkey"
-                      );
-                    }
-                    if (validatorKey.amount !== 1000000000) {
-                      throw new Error(
-                        "Please use trusted validator file to deposit"
-                      );
-                    }
-                    console.log(
-                      "validatorKey.withdrawal_credentials:",
-                      validatorKey.withdrawal_credentials
-                    );
-                    if (
-                      validatorKey.withdrawal_credentials !==
-                      validatorWithdrawalCredentials
-                    ) {
-                      console.log(validatorWithdrawalCredentials);
-                      console.log(validatorKey.withdrawal_credentials);
-
-                      throw new Error(`Incorrect withdrawal_credentials value`);
-                    }
-                    const networkName = getEthereumNetworkName();
-                    // console.log({ validatorKey });
-                    if (validatorKey.eth2_network_name !== networkName) {
-                      throw new Error(
-                        `Please use ${networkName} validator file to deposit`
-                      );
-                    }
-                  }}
+                  checkValidatorKey={checkFileKeyFormat}
                   onSuccess={(validatorKeys, fileName) => {
-                    setValidatorKeys(validatorKeys);
                     setFileName(fileName);
+                    checkKeys(validatorKeys);
                   }}
                 >
                   <div>
@@ -162,17 +240,31 @@ const TrustDepositPage = () => {
                 </ValidatorKeyUpload>
               ) : (
                 <div className="max-h-[3rem] overflow-auto">
-                  {validatorKeys.map((item, index) => (
-                    <div
-                      key={index}
-                      className="bg-color-bgPage rounded-[.16rem] h-[.66rem] w-[4.5rem] flex items-center relative"
-                    >
+                  <div
+                    className={classNames(
+                      "rounded-[.16rem] h-[.66rem] w-[4.5rem] flex items-center relative",
+                      uploadingStatus === "error"
+                        ? "bg-[#FF52C41A] border-dashed border-[0.01rem] border-[#FF52C4]"
+                        : "bg-color-bgPage"
+                    )}
+                  >
+                    {uploadingStatus === "normal" ? (
                       <div className="ml-[.2rem] w-[.22rem] h-[.27rem] relative">
                         <Image src={fileIcon} layout="fill" alt="file" />
                       </div>
+                    ) : uploadingStatus === "loading" ? (
+                      <div className="ml-[.2rem] w-[.22rem] h-[.22rem] relative">
+                        <PrimaryLoading size=".22rem" />
+                      </div>
+                    ) : (
+                      <div className="ml-[.2rem] w-[.22rem] h-[.22rem] relative">
+                        <Image src={errorIcon} alt="error" layout="fill" />
+                      </div>
+                    )}
 
+                    <div className="ml-[.2rem]">
                       <div
-                        className="ml-[.2rem] text-color-text2 text-[.12rem] mr-[.4rem] leading-normal"
+                        className="text-color-text2 text-[.12rem] mr-[.4rem] leading-normal"
                         style={{
                           maxLines: 2,
                           overflow: "hidden",
@@ -192,9 +284,38 @@ const TrustDepositPage = () => {
                         >
                           {fileName}
                         </span>{" "}
-                        uploaded successfully!
+                        {uploadingStatus === "normal"
+                          ? " uploaded successfully!"
+                          : uploadingStatus === "loading"
+                          ? "is uploading"
+                          : "already exist"}
                       </div>
 
+                      {uploadingStatus === "loading" && (
+                        <div className="mt-[.08rem]">
+                          {/* <LinearProgress
+                          sx={{
+                            "& .MuiLinearProgress-root": {
+                              "& .MuiLinearProgress-barColorPrimary": {
+                                backgroundColor: "#80CAFF ",
+                              },
+                            },
+                            "& .MuiLinearProgress-barColorPrimary": {},
+                            // "& .MuiLinearProgress-root": {
+                            //   backgroundColor: "white",
+                            // },
+                            "& .MuiLinearProgress-bar": {
+                              backgroundColor: "white",
+                            },
+                          }}
+                        /> */}
+
+                          <BorderLinearProgress />
+                        </div>
+                      )}
+                    </div>
+
+                    {uploadingStatus !== "loading" && (
                       <div
                         className="absolute right-[.06rem] top-[.06rem] cursor-pointer"
                         onClick={() => {
@@ -209,31 +330,61 @@ const TrustDepositPage = () => {
                           color={darkMode ? "#ffffff80" : "#6C86AD"}
                         />
                       </div>
-                    </div>
-                  ))}
+                    )}
+                  </div>
                 </div>
               )}
             </div>
 
-            <div className="self-stretch mx-[.24rem] mt-[.46rem] mb-[.32rem]">
+            {uploadingStatus === "error" && (
+              <div className="mt-[.2rem] flex items-center">
+                <ValidatorKeyUpload
+                  checkValidatorKey={checkFileKeyFormat}
+                  onSuccess={(validatorKeys, fileName) => {
+                    setFileName(fileName);
+                    checkKeys(validatorKeys);
+                  }}
+                >
+                  <div className="w-[.14rem] h-[.14rem] relative">
+                    <Image src={refreshIcon} alt="refresh" layout="fill" />
+                  </div>
+                </ValidatorKeyUpload>
+
+                <div
+                  className="ml-[.28rem] cursor-pointer"
+                  onClick={() => {
+                    setDeleteConfirmModalVisible(true);
+                  }}
+                >
+                  <Icomoon icon="delete" size=".14rem" color="#FF52C4" />
+                </div>
+              </div>
+            )}
+
+            <div className="self-stretch mx-[.24rem] mt-[.46rem]">
               <CustomButton
                 height=".56rem"
                 loading={ethTxLoading}
                 disabled={
                   !!metaMaskAccount &&
                   !isWrongMetaMaskNetwork &&
+                  isTrust &&
                   (validatorKeys.length === 0 ||
                     isNaN(Number(unmatchedEth)) ||
                     Number(unmatchedEth) < validatorKeys.length)
                 }
                 type={
-                  !metaMaskAccount || isWrongMetaMaskNetwork
+                  !metaMaskAccount || isWrongMetaMaskNetwork || !isTrust
                     ? "secondary"
                     : "primary"
                 }
                 onClick={() => {
                   if (!metaMaskAccount || isWrongMetaMaskNetwork) {
                     dispatch(connectMetaMask(getEthereumChainId()));
+                    return;
+                  }
+                  if (!isTrust) {
+                    openLink("https://www.google.com");
                     return;
                   }
                   dispatch(
@@ -272,6 +423,8 @@ const TrustDepositPage = () => {
                   ? "Connect Wallet"
                   : isWrongMetaMaskNetwork
                   ? "Switch Network"
+                  : !isTrust
+                  ? "Apply Trusted Validator"
                   : validatorKeys.length === 0
                   ? "Please Upload 1 json file"
                   : ethTxLoading
@@ -282,6 +435,15 @@ const TrustDepositPage = () => {
                   : "Deposit"}
               </CustomButton>
             </div>
+
+            {validatorKeys.length > 0 && (
+              <div className="mt-[.24rem] text-color-text2 text-[.14rem]">
+                <span className={classNames("text-color-text1")}>
+                  {validatorKeys.length} Node Number
+                </span>{" "}
+                according to the file uploaded
+              </div>
+            )}
           </div>
         </CardContainer>
 
@@ -299,6 +461,7 @@ const TrustDepositPage = () => {
           setValidatorKeys([]);
           setFileName("");
           setDeleteConfirmModalVisible(false);
+          setUploadingStatus("normal");
         }}
         title="Sure Delete?"
         content="Sure you want to delete this file?"

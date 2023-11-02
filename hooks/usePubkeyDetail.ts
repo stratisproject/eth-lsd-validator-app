@@ -39,11 +39,15 @@ export function usePubkeyDetail(pubkeyAddress: string | undefined) {
 
       const pubkeyInfo = await nodeDepositContract.methods
         .pubkeyInfoOf(pubkeyAddress)
+        // .pubkeyInfoOf(
+        //   "0xa6710aa9f9bf9e8fb01020e3a7dcca92fa9f24c07b4038d7b8437ad2082df41c01419760111c7857561da5c3d67db664"
+        // )
         .call()
         .catch((err: any) => {
           console.log({ err });
         });
 
+      console.log({ pubkeyInfo });
       setPubkeyInfo({
         pubkeyAddress: pubkeyAddress,
         ...pubkeyInfo,

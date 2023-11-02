@@ -3,6 +3,7 @@ import {
   getNodeDepositContractAbi,
 } from "config/contract";
 import {
+  ChainPubkeyStatus,
   DisplayPubkeyStatus,
   NodePubkeyInfo,
   PubkeyStatus,
@@ -133,6 +134,15 @@ export const useNodePubkeys = (
       let stakedCount = 0;
       let othersCount = 0;
       nodePubkeyInfos.forEach((item, index) => {
+        // if (!item.beaconApiStatus) {
+        //   if (item._status === ChainPubkeyStatus.UnMatch) {
+        //     unmatchedCount++;
+        //   } else if (item._status === ChainPubkeyStatus.Staked) {
+        //     stakedCount++;
+        //   } else {
+        //     othersCount++;
+        //   }
+        // } else {
         if (
           getBeaconStatusListOfPubkeyStatus(PubkeyStatus.Unmatched).indexOf(
             item.beaconApiStatus
@@ -148,6 +158,7 @@ export const useNodePubkeys = (
         } else {
           othersCount++;
         }
+        // }
       });
 
       let pendingCount = 0;
@@ -155,6 +166,13 @@ export const useNodePubkeys = (
       let exitedCount = 0;
       let withdrawalCount = 0;
       nodePubkeyInfos.forEach((item, index) => {
+        // if (!item.beaconApiStatus) {
+        //   if (item._status === ChainPubkeyStatus.Staked) {
+        //     pendingCount++;
+        //   } else {
+        //     activeCount++;
+        //   }
+        // } else {
         if (
           getBeaconStatusListOfDisplayPubkeyStatus(
             DisplayPubkeyStatus.Pending
@@ -180,6 +198,7 @@ export const useNodePubkeys = (
         ) {
           withdrawalCount++;
         }
+        // }
       });
 
       setNodePubkeyInfos(nodePubkeyInfos);
