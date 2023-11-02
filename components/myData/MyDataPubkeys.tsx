@@ -1,38 +1,51 @@
+import { Popover } from "@mui/material";
 import classNames from "classnames";
-import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
-import { Icomoon } from "components/icon/Icomoon";
 import { CustomButton } from "components/common/CustomButton";
-import { getPubkeyStatusText, openLink } from "utils/commonUtils";
-import { useWalletAccount } from "hooks/useWalletAccount";
-import { useNodePubkeys } from "hooks/useNodePubkeys";
-import { useAppSlice } from "hooks/selector";
-import snackbarUtil from "utils/snackbarUtils";
-import { getShortAddress } from "utils/stringUtils";
 import { CustomPagination } from "components/common/CustomPagination";
-import { MyDataNodeElection } from "./MyDataNodeElection";
-import checkedIcon from "public/images/checked.svg";
+import { EmptyContent } from "components/common/EmptyContent";
+import { LoadingContent } from "components/common/LoadingContent";
+import { Icomoon } from "components/icon/Icomoon";
+import { useAppSlice } from "hooks/selector";
+import { useNodePubkeys } from "hooks/useNodePubkeys";
+import { useWalletAccount } from "hooks/useWalletAccount";
+import { DisplayPubkeyStatus, NodePubkeyInfo } from "interfaces/common";
+import _ from "lodash";
 import {
-  bindHover,
   bindPopover,
   bindTrigger,
   usePopupState,
 } from "material-ui-popup-state/hooks";
-import { Popover } from "@mui/material";
-import _ from "lodash";
+import Image from "next/image";
 import { useRouter } from "next/router";
-import { EmptyContent } from "components/common/EmptyContent";
-import { LoadingContent } from "components/common/LoadingContent";
+import checkedIcon from "public/images/checked.svg";
+import { useMemo, useState } from "react";
+import {
+  getBeaconStatusListOfDisplayPubkeyStatus,
+  getDisplayPubkeyStatusFromBeaconStatus,
+  getDisplayPubkeyStatusText,
+  getPubkeyStatusText,
+  openLink,
+} from "utils/commonUtils";
 import { isSupportRestApi } from "utils/configUtils";
-import { NodePubkeyInfo, PubkeyStatus } from "interfaces/common";
+import snackbarUtil from "utils/snackbarUtils";
+import { getShortAddress } from "utils/stringUtils";
+import { MyDataNodeElection } from "./MyDataNodeElection";
 
 export const MyDataPubkeys = () => {
   const { metaMaskAccount } = useWalletAccount();
   const [page, setPage] = useState(1);
-  const [types, setTypes] = useState<PubkeyStatus[]>([]);
+  const [types, setTypes] = useState<DisplayPubkeyStatus[]>([]);
 
-  const { totalCount, displayPubkeyInfos, showLoading, showEmptyContent } =
-    useNodePubkeys(metaMaskAccount, page, types);
+  const statusList = useMemo(() => {
+    if (types.length === 0) {
+      return undefined;
+    }
+    const res: (string | undefined)[] = [];
+    types.forEach((type) => {
+      res.push(...getBeaconStatusListOfDisplayPubkeyStatus(type));
+    });
+    return res;
+  }, [types]);
 
   const displayTypesText = useMemo(() => {
     if (types.length === 0) {
@@ -40,11 +53,16 @@ export const MyDataPubkeys = () => {
     } else if (types.length === 5) {
       return "All Types";
     } else if (types.length === 1) {
-      return getPubkeyStatusText(types[0]);
+      return getDisplayPubkeyStatusText(types[0]);
     } else {
-      return types.map((status) => getPubkeyStatusText(status)).join(",");
+      return types
+        .map((status) => getDisplayPubkeyStatusText(status))
+        .join(",");
     }
   }, [types]);
+
+  const { totalCount, displayPubkeyInfos, showLoading, showEmptyContent } =
+    useNodePubkeys(metaMaskAccount, page, statusList);
 
   const typePopupState = usePopupState({
     variant: "popover",
@@ -210,8 +228,19 @@ const MyDataPubkeyItem = (props: MyDataPubkeyItemProps) => {
             router.push(`/pubkey/${pubkeyInfo.pubkeyAddress}`);
           }}
         >
-          <div className="mr-[.06rem]">
-            {getPubkeyStatusText(pubkeyInfo._status)}
+          <div
+            className={classNames(
+              "mr-[.06rem]",
+              getDisplayPubkeyStatusFromBeaconStatus(
+                pubkeyInfo.beaconApiStatus
+              ) === DisplayPubkeyStatus.Exited
+                ? "text-error"
+                : ""
+            )}
+          >
+            {getDisplayPubkeyStatusText(
+              getDisplayPubkeyStatusFromBeaconStatus(pubkeyInfo.beaconApiStatus)
+            )}
           </div>
 
           <Icomoon
@@ -228,15 +257,15 @@ const MyDataPubkeyItem = (props: MyDataPubkeyItemProps) => {
 interface ChooseTypePopoverProps {
   popupState: any;
   onClose: () => void;
-  types: PubkeyStatus[];
-  onChangeTypes: (types: PubkeyStatus[]) => void;
+  types: DisplayPubkeyStatus[];
+  onChangeTypes: (types: DisplayPubkeyStatus[]) => void;
 }
 
 const ChooseTypePopover = (props: ChooseTypePopoverProps) => {
   const { popupState, types, onChangeTypes, onClose } = props;
   const { darkMode } = useAppSlice();
 
-  const onClickType = (type: PubkeyStatus) => {
+  const onClickType = (type: DisplayPubkeyStatus) => {
     if (types.indexOf(type) >= 0) {
       onChangeTypes(_.without(types, type));
     } else {
@@ -304,16 +333,16 @@ const ChooseTypePopover = (props: ChooseTypePopoverProps) => {
         <div
           className="cursor-pointer flex items-center justify-between"
           onClick={() => {
-            onClickType(PubkeyStatus.Unmatched);
+            onClickType(DisplayPubkeyStatus.Pending);
           }}
         >
           <div className="flex items-center">
             <div className="ml-[.12rem] text-color-text1 text-[.16rem]">
-              Unmatched
+              Pending
             </div>
           </div>
 
-          {types.indexOf(PubkeyStatus.Unmatched) >= 0 ? (
+          {types.indexOf(DisplayPubkeyStatus.Pending) >= 0 ? (
             <div className="w-[.16rem] h-[.16rem] relative">
               <Image src={checkedIcon} alt="checked" layout="fill" />
             </div>
@@ -327,16 +356,16 @@ const ChooseTypePopover = (props: ChooseTypePopoverProps) => {
         <div
           className="cursor-pointer flex items-center justify-between"
           onClick={() => {
-            onClickType(PubkeyStatus.Staked);
+            onClickType(DisplayPubkeyStatus.Active);
           }}
         >
           <div className="flex items-center">
             <div className="ml-[.12rem] text-color-text1 text-[.16rem]">
-              Staked
+              Active
             </div>
           </div>
 
-          {types.indexOf(PubkeyStatus.Staked) >= 0 ? (
+          {types.indexOf(DisplayPubkeyStatus.Active) >= 0 ? (
             <div className="w-[.16rem] h-[.16rem] relative">
               <Image src={checkedIcon} alt="checked" layout="fill" />
             </div>
@@ -350,16 +379,39 @@ const ChooseTypePopover = (props: ChooseTypePopoverProps) => {
         <div
           className="cursor-pointer flex items-center justify-between"
           onClick={() => {
-            onClickType(PubkeyStatus.Others);
+            onClickType(DisplayPubkeyStatus.Exited);
           }}
         >
           <div className="flex items-center">
             <div className="ml-[.12rem] text-color-text1 text-[.16rem]">
-              Others
+              Exited
             </div>
           </div>
 
-          {types.indexOf(PubkeyStatus.Others) >= 0 ? (
+          {types.indexOf(DisplayPubkeyStatus.Exited) >= 0 ? (
+            <div className="w-[.16rem] h-[.16rem] relative">
+              <Image src={checkedIcon} alt="checked" layout="fill" />
+            </div>
+          ) : (
+            <div className="w-[.16rem] h-[.16rem] rounded-[0.03rem] border-solid border-[1px] border-color-border3" />
+          )}
+        </div>
+
+        <div className="my-[.16rem] h-[0.01rem] bg-color-divider1" />
+
+        <div
+          className="cursor-pointer flex items-center justify-between"
+          onClick={() => {
+            onClickType(DisplayPubkeyStatus.Withdrawal);
+          }}
+        >
+          <div className="flex items-center">
+            <div className="ml-[.12rem] text-color-text1 text-[.16rem]">
+              Withdrawal
+            </div>
+          </div>
+
+          {types.indexOf(DisplayPubkeyStatus.Withdrawal) >= 0 ? (
             <div className="w-[.16rem] h-[.16rem] relative">
               <Image src={checkedIcon} alt="checked" layout="fill" />
             </div>

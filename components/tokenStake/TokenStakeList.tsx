@@ -5,10 +5,13 @@ import { robotoSemiBold } from "config/font";
 import { useAppSlice } from "hooks/selector";
 import { useNodePubkeys } from "hooks/useNodePubkeys";
 import { useWalletAccount } from "hooks/useWalletAccount";
-import { PubkeyStatus } from "interfaces/common";
+import { DisplayPubkeyStatus, PubkeyStatus } from "interfaces/common";
 import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import {
+  getBeaconStatusListOfPubkeyStatus,
+  getDisplayPubkeyStatusFromBeaconStatus,
+  getDisplayPubkeyStatusText,
   getPubkeyStatusText,
   isPubkeyStakeable,
   openLink,
@@ -32,15 +35,11 @@ export const TokenStakeList = () => {
       case "All":
         return undefined;
       case "Unmatched":
-        return [PubkeyStatus.Unmatched];
+        return getBeaconStatusListOfPubkeyStatus(PubkeyStatus.Unmatched);
       case "Staked":
-        return [PubkeyStatus.Staked];
+        return getBeaconStatusListOfPubkeyStatus(PubkeyStatus.Staked);
       case "Others":
-        return [
-          PubkeyStatus.UnInitial,
-          PubkeyStatus.Deposited,
-          PubkeyStatus.Matched,
-        ];
+        return getBeaconStatusListOfPubkeyStatus(PubkeyStatus.Others);
     }
   }, [selectedTab]);
 
@@ -242,8 +241,21 @@ export const TokenStakeList = () => {
                 </div>
               </div>
 
-              <div className="flex items-center justify-center text-[.16rem] text-color-text2">
-                {getPubkeyStatusText(pubkeyInfo._status)}
+              <div
+                className={classNames(
+                  "flex items-center justify-center text-[.16rem] ",
+                  getDisplayPubkeyStatusFromBeaconStatus(
+                    pubkeyInfo.beaconApiStatus
+                  ) === DisplayPubkeyStatus.Exited
+                    ? "text-error"
+                    : "text-color-text2"
+                )}
+              >
+                {getDisplayPubkeyStatusText(
+                  getDisplayPubkeyStatusFromBeaconStatus(
+                    pubkeyInfo.beaconApiStatus
+                  )
+                )}
               </div>
 
               <div className="flex items-center justify-end pr-[.56rem] text-[.16rem] text-color-text2">

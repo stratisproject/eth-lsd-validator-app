@@ -7,10 +7,16 @@ import { PubkeyDetailSlashHistory } from "components/pubkey/PubkeyDetailSlashHis
 import { robotoBold } from "config/font";
 import { useAppSlice } from "hooks/selector";
 import { usePubkeyDetail } from "hooks/usePubkeyDetail";
+import { usePubkeyStatus } from "hooks/usePubkeyStatus";
+import { DisplayPubkeyStatus } from "interfaces/common";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import tokenStakeIcon from "public/images/token/lsdETH.svg";
 import { useMemo } from "react";
+import {
+  getDisplayPubkeyStatusFromBeaconStatus,
+  getDisplayPubkeyStatusText,
+} from "utils/commonUtils";
 import snackbarUtil from "utils/snackbarUtils";
 import { getShortAddress } from "utils/stringUtils";
 
@@ -29,6 +35,8 @@ const PubkeyDetailPage = () => {
       return undefined;
     }
   }, [router]);
+
+  const { beaconStatus } = usePubkeyStatus(pubkeyAddress);
 
   return (
     <div>
@@ -55,8 +63,21 @@ const PubkeyDetailPage = () => {
                   Public Key Detail
                 </div>
 
-                <CustomTag type="active" ml=".16rem">
-                  Active
+                <CustomTag
+                  type={
+                    getDisplayPubkeyStatusFromBeaconStatus(beaconStatus) ===
+                    DisplayPubkeyStatus.Exited
+                      ? "error"
+                      : getDisplayPubkeyStatusFromBeaconStatus(beaconStatus) ===
+                        DisplayPubkeyStatus.Pending
+                      ? "pending"
+                      : "active"
+                  }
+                  ml=".16rem"
+                >
+                  {getDisplayPubkeyStatusText(
+                    getDisplayPubkeyStatusFromBeaconStatus(beaconStatus)
+                  )}
                 </CustomTag>
               </div>
 

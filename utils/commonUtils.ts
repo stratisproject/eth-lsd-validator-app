@@ -2,6 +2,7 @@ import {
   CANCELLED_ERR_MESSAGE1,
   CANCELLED_ERR_MESSAGE2,
 } from "constants/common";
+import { DisplayPubkeyStatus, PubkeyStatus } from "interfaces/common";
 
 /**
  * create uuid
@@ -75,6 +76,25 @@ export const getPubkeyStatusText = (status: string) => {
 };
 
 /**
+ * Get chain pubkey status display text.
+ * @param status pubkey status value
+ */
+export const getDisplayPubkeyStatusText = (status: string | undefined) => {
+  switch (Number(status)) {
+    case 0:
+      return "Pending";
+    case 1:
+      return "Active";
+    case 2:
+      return "Exited";
+    case 3:
+      return "Withdrawal";
+    default:
+      return "Unknown";
+  }
+};
+
+/**
  * Check pubkey status, whether it's stakeable.
  * @param status pubkey status value
  */
@@ -86,5 +106,91 @@ export const isPubkeyStakeable = (status: string) => {
       return true;
     default:
       return false;
+  }
+};
+
+/**
+ * Get matched beacon api status list of PubkeyStatus
+ * @param status pubkey status value
+ */
+export const getBeaconStatusListOfPubkeyStatus = (status: PubkeyStatus) => {
+  switch (status) {
+    case PubkeyStatus.Unmatched:
+      return ["PENDING_INITIALIZED", undefined];
+    case PubkeyStatus.Staked:
+      return [
+        "PENDING_QUEUED",
+        "ACTIVE_ONGOING",
+        "ACTIVE_EXITING",
+        "ACTIVE_SLASHED",
+        "ACTIVE",
+        "PENDING",
+      ];
+    case PubkeyStatus.Others:
+      return [
+        "EXITED_UNSLASHED",
+        "EXITED_SLASHED",
+        "WITHDRAWAL_POSSIBLE",
+        "WITHDRAWAL_DONE",
+        "EXITED",
+        "WITHDRAWAL",
+      ];
+    default:
+      return [];
+  }
+};
+
+/**
+ * Get matched beacon api status list of DisplayPubkeyStatus
+ * @param status pubkey status value
+ */
+export const getBeaconStatusListOfDisplayPubkeyStatus = (
+  status: DisplayPubkeyStatus
+) => {
+  switch (status) {
+    case DisplayPubkeyStatus.Pending:
+      return ["PENDING_INITIALIZED", "PENDING_QUEUED", "PENDING", undefined];
+    case DisplayPubkeyStatus.Active:
+      return ["ACTIVE_ONGOING", "ACTIVE_EXITING", "ACTIVE_SLASHED", "ACTIVE"];
+    case DisplayPubkeyStatus.Exited:
+      return ["EXITED_UNSLASHED", "EXITED_SLASHED", "EXITED"];
+    case DisplayPubkeyStatus.Withdrawal:
+      return ["WITHDRAWAL_POSSIBLE", "WITHDRAWAL_DONE", "WITHDRAWAL"];
+    default:
+      return [];
+  }
+};
+
+/**
+ * Get chain DisplayPubkeyStatus.
+ * @param status pubkey status value
+ */
+export const getDisplayPubkeyStatusFromBeaconStatus = (
+  beaconStatus: string | undefined
+) => {
+  if (
+    getBeaconStatusListOfDisplayPubkeyStatus(
+      DisplayPubkeyStatus.Pending
+    ).indexOf(beaconStatus) >= 0
+  ) {
+    return DisplayPubkeyStatus.Pending;
+  } else if (
+    getBeaconStatusListOfDisplayPubkeyStatus(
+      DisplayPubkeyStatus.Active
+    ).indexOf(beaconStatus) >= 0
+  ) {
+    return DisplayPubkeyStatus.Active;
+  } else if (
+    getBeaconStatusListOfDisplayPubkeyStatus(
+      DisplayPubkeyStatus.Exited
+    ).indexOf(beaconStatus) >= 0
+  ) {
+    return DisplayPubkeyStatus.Exited;
+  } else if (
+    getBeaconStatusListOfDisplayPubkeyStatus(
+      DisplayPubkeyStatus.Withdrawal
+    ).indexOf(beaconStatus) >= 0
+  ) {
+    return DisplayPubkeyStatus.Withdrawal;
   }
 };

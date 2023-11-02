@@ -17,15 +17,20 @@ export interface IpfsRewardItem {
 }
 
 export enum PubkeyStatus {
-  UnInitial = "0",
-  Deposited = "1",
-  Matched = "2",
-  Staked = "3",
-  Unmatched = "4",
-  Others = "100",
+  Unmatched = "1",
+  Staked = "2",
+  Others = "3",
+}
+
+export enum DisplayPubkeyStatus {
+  Pending = "0",
+  Active = "1",
+  Exited = "2",
+  Withdrawal = "3",
 }
 
 export interface NodePubkeyInfo {
+  beaconApiStatus: string | undefined;
   pubkeyAddress: string;
   _status: string;
   _owner: string;

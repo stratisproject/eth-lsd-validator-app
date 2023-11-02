@@ -1,23 +1,35 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useWalletAccount } from "./useWalletAccount";
-import { getEthWeb3 } from "utils/web3Utils";
 import {
   getNodeDepositContract,
   getNodeDepositContractAbi,
 } from "config/contract";
-import { NodePubkeyInfo, PubkeyStatus } from "interfaces/common";
+import {
+  DisplayPubkeyStatus,
+  NodePubkeyInfo,
+  PubkeyStatus,
+} from "interfaces/common";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  getBeaconStatusListOfDisplayPubkeyStatus,
+  getBeaconStatusListOfPubkeyStatus,
+} from "utils/commonUtils";
+import { getEthWeb3 } from "utils/web3Utils";
 import { useAppSlice } from "./selector";
 
 export const useNodePubkeys = (
   nodeAddress: string | undefined,
   page: number,
-  statusList?: PubkeyStatus[]
+  beaconStatusList?: (string | undefined)[]
 ) => {
   const { updateFlag } = useAppSlice();
   const [totalCount, setTotalCount] = useState<number>();
   const [unmatchedCount, setUnmatchedCount] = useState<number>();
   const [stakedCount, setStakedCount] = useState<number>();
   const [othersCount, setOthersCount] = useState<number>();
+
+  const [pendingCount, setPendingCount] = useState<number>();
+  const [activeCount, setActiveCount] = useState<number>();
+  const [exitedCount, setExitedCount] = useState<number>();
+  const [withdrawalCount, setWithdrawalCount] = useState<number>();
 
   const [nodePubkeyInfos, setNodePubkeyInfos] = useState<NodePubkeyInfo[]>([]);
 
@@ -26,29 +38,13 @@ export const useNodePubkeys = (
 
   const displayPubkeyInfos = useMemo(() => {
     return nodePubkeyInfos.filter((item) => {
-      if (!statusList || statusList.length === 0) {
+      if (!beaconStatusList || beaconStatusList.length === 0) {
         return true;
       }
 
-      let hasMatch = false;
-      statusList.forEach((status) => {
-        if (status === PubkeyStatus.Others) {
-          if (
-            item._status !== PubkeyStatus.Unmatched &&
-            item._status !== PubkeyStatus.Staked
-          ) {
-            hasMatch = true;
-          }
-        } else {
-          if (item._status === status) {
-            hasMatch = true;
-          }
-        }
-      });
-
-      return hasMatch;
+      return beaconStatusList.indexOf(item.beaconApiStatus) >= 0;
     });
-  }, [statusList, nodePubkeyInfos]);
+  }, [beaconStatusList, nodePubkeyInfos]);
 
   const showLoading = useMemo(() => {
     return (
@@ -110,33 +106,90 @@ export const useNodePubkeys = (
       const pubkeyInfos = await Promise.all(requests);
       // console.log({ pubkeyInfos });
 
+      const beaconStatusResponse = await fetch(
+        `/api/pubkeyStatus?id=${pubkeysOfNode.join(",")}`,
+        {
+          method: "GET",
+        }
+      );
+      const beaconStatusResJson = await beaconStatusResponse.json();
+      console.log({ beaconStatusResJson });
+
+      const nodePubkeyInfos: NodePubkeyInfo[] = pubkeyInfos.map(
+        (item, index) => {
+          const matchedBeaconData = beaconStatusResJson.data?.find(
+            (item: any) => item.validator?.pubkey === pubkeysOfNode[index]
+          );
+          return {
+            pubkeyAddress: pubkeysOfNode[index],
+            beaconApiStatus:
+              matchedBeaconData?.status?.toUpperCase() || undefined,
+            ...item,
+          };
+        }
+      );
+
       let unmatchedCount = 0;
       let stakedCount = 0;
       let othersCount = 0;
-
-      pubkeyInfos.forEach((item, index) => {
-        if (item._status === PubkeyStatus.Unmatched) {
+      nodePubkeyInfos.forEach((item, index) => {
+        if (
+          getBeaconStatusListOfPubkeyStatus(PubkeyStatus.Unmatched).indexOf(
+            item.beaconApiStatus
+          ) >= 0
+        ) {
           unmatchedCount++;
-        } else if (item._status === PubkeyStatus.Staked) {
+        } else if (
+          getBeaconStatusListOfPubkeyStatus(PubkeyStatus.Staked).indexOf(
+            item.beaconApiStatus
+          ) >= 0
+        ) {
           stakedCount++;
         } else {
           othersCount++;
         }
       });
 
-      const nodePubkeyInfo: NodePubkeyInfo[] = pubkeyInfos.map(
-        (item, index) => {
-          return {
-            pubkeyAddress: pubkeysOfNode[index],
-            ...item,
-          };
+      let pendingCount = 0;
+      let activeCount = 0;
+      let exitedCount = 0;
+      let withdrawalCount = 0;
+      nodePubkeyInfos.forEach((item, index) => {
+        if (
+          getBeaconStatusListOfDisplayPubkeyStatus(
+            DisplayPubkeyStatus.Pending
+          ).indexOf(item.beaconApiStatus) >= 0
+        ) {
+          pendingCount++;
+        } else if (
+          getBeaconStatusListOfDisplayPubkeyStatus(
+            DisplayPubkeyStatus.Active
+          ).indexOf(item.beaconApiStatus) >= 0
+        ) {
+          activeCount++;
+        } else if (
+          getBeaconStatusListOfDisplayPubkeyStatus(
+            DisplayPubkeyStatus.Exited
+          ).indexOf(item.beaconApiStatus) >= 0
+        ) {
+          exitedCount++;
+        } else if (
+          getBeaconStatusListOfDisplayPubkeyStatus(
+            DisplayPubkeyStatus.Withdrawal
+          ).indexOf(item.beaconApiStatus) >= 0
+        ) {
+          withdrawalCount++;
         }
-      );
+      });
 
-      setNodePubkeyInfos(nodePubkeyInfo);
+      setNodePubkeyInfos(nodePubkeyInfos);
       setUnmatchedCount(unmatchedCount);
       setStakedCount(stakedCount);
       setOthersCount(othersCount);
+      setPendingCount(pendingCount);
+      setActiveCount(activeCount);
+      setExitedCount(exitedCount);
+      setWithdrawalCount(withdrawalCount);
       setRefreshing(false);
       setRequestFirstTime(false);
     } catch (err: any) {
@@ -158,5 +211,9 @@ export const useNodePubkeys = (
     unmatchedCount,
     stakedCount,
     othersCount,
+    pendingCount,
+    activeCount,
+    exitedCount,
+    withdrawalCount,
   };
 };

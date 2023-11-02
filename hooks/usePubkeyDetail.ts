@@ -4,11 +4,10 @@ import {
   getNodeDepositContract,
   getNodeDepositContractAbi,
 } from "config/contract";
+import { NodePubkeyInfo } from "interfaces/common";
 import { useCallback, useEffect, useState } from "react";
 import { getEthWeb3 } from "utils/web3Utils";
 import { useWalletAccount } from "./useWalletAccount";
-import Web3 from "web3";
-import { NodePubkeyInfo } from "interfaces/common";
 
 export function usePubkeyDetail(pubkeyAddress: string | undefined) {
   const { metaMaskAccount } = useWalletAccount();
