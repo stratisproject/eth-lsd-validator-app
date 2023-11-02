@@ -82,7 +82,7 @@ export const getPubkeyStatusText = (status: string) => {
 export const getDisplayPubkeyStatusText = (status: string | undefined) => {
   switch (Number(status)) {
     case 0:
-      return "Pending";
+      return "Waiting";
     case 1:
       return "Active";
     case 2:
@@ -149,7 +149,7 @@ export const getBeaconStatusListOfDisplayPubkeyStatus = (
   status: DisplayPubkeyStatus
 ) => {
   switch (status) {
-    case DisplayPubkeyStatus.Pending:
+    case DisplayPubkeyStatus.Waiting:
       return ["PENDING_INITIALIZED", "PENDING_QUEUED", "PENDING", undefined];
     case DisplayPubkeyStatus.Active:
       return ["ACTIVE_ONGOING", "ACTIVE_EXITING", "ACTIVE_SLASHED", "ACTIVE"];
@@ -171,10 +171,10 @@ export const getDisplayPubkeyStatusFromBeaconStatus = (
 ) => {
   if (
     getBeaconStatusListOfDisplayPubkeyStatus(
-      DisplayPubkeyStatus.Pending
+      DisplayPubkeyStatus.Waiting
     ).indexOf(beaconStatus) >= 0
   ) {
-    return DisplayPubkeyStatus.Pending;
+    return DisplayPubkeyStatus.Waiting;
   } else if (
     getBeaconStatusListOfDisplayPubkeyStatus(
       DisplayPubkeyStatus.Active

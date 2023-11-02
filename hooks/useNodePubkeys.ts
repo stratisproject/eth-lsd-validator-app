@@ -114,7 +114,7 @@ export const useNodePubkeys = (
         }
       );
       const beaconStatusResJson = await beaconStatusResponse.json();
-      console.log({ beaconStatusResJson });
+      // console.log({ beaconStatusResJson });
 
       const nodePubkeyInfos: NodePubkeyInfo[] = pubkeyInfos.map(
         (item, index) => {
@@ -175,7 +175,7 @@ export const useNodePubkeys = (
         // } else {
         if (
           getBeaconStatusListOfDisplayPubkeyStatus(
-            DisplayPubkeyStatus.Pending
+            DisplayPubkeyStatus.Waiting
           ).indexOf(item.beaconApiStatus) >= 0
         ) {
           pendingCount++;

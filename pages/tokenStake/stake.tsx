@@ -84,7 +84,9 @@ const StakePage = () => {
     }
     console.log({ validatorKey });
     if (validatorKey.amount !== 31000000000) {
-      throw new Error("Please use trusted validator file to stake");
+      throw new Error(
+        "Please use  stake_data file of trusted validator to stake"
+      );
     }
     if (
       validatorKey.withdrawal_credentials !== validatorWithdrawalCredentials
@@ -93,7 +95,7 @@ const StakePage = () => {
     }
     const networkName = getEthereumNetworkName();
     if (validatorKey.eth2_network_name !== networkName) {
-      throw new Error(`Please use ${networkName} validator file to deposit`);
+      throw new Error(`Please use ${networkName} validator file to stake`);
     }
   };
 

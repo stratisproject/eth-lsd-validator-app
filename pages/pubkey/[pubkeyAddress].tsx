@@ -69,7 +69,7 @@ const PubkeyDetailPage = () => {
                     DisplayPubkeyStatus.Exited
                       ? "error"
                       : getDisplayPubkeyStatusFromBeaconStatus(beaconStatus) ===
-                        DisplayPubkeyStatus.Pending
+                        DisplayPubkeyStatus.Waiting
                       ? "pending"
                       : "active"
                   }

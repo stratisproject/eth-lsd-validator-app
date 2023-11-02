@@ -50,8 +50,8 @@ export function useUnstakingPoolData() {
           console.log({ err });
         });
 
-      console.log({ lsdTotalSupply });
-      console.log({ lsdRate });
+      // console.log({ lsdTotalSupply });
+      // console.log({ lsdRate });
 
       const userDepositBalance = await web3.eth.getBalance(
         getEthDepositContract()

@@ -111,7 +111,7 @@ export function usePoolData() {
       const poolEth =
         Number(Web3.utils.fromWei(lsdTotalSupply)) *
         Number(Web3.utils.fromWei(lsdRate));
-      console.log({ poolEth });
+      // console.log({ poolEth });
 
       const unmatchedEth = Web3.utils.fromWei(
         Number(userDepositBalance) - Number(totalMissingAmountForWithdraw) + ""
@@ -166,7 +166,7 @@ export function usePoolData() {
         matchedValidators += Number(length);
       });
 
-      console.log({ matchedValidators });
+      // console.log({ matchedValidators });
       setMatchedValidators(matchedValidators + "");
 
       setStakedToken(matchedValidators * 32 + "");

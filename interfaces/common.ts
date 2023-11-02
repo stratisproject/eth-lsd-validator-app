@@ -31,7 +31,7 @@ export enum PubkeyStatus {
 }
 
 export enum DisplayPubkeyStatus {
-  Pending = "0",
+  Waiting = "0",
   Active = "1",
   Exited = "2",
   Withdrawal = "3",

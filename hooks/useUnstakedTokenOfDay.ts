@@ -22,7 +22,7 @@ export function useUnstakedTokenOfDay() {
       );
 
       const currentBlock = await web3.eth.getBlockNumber();
-      console.log({ currentBlock });
+      // console.log({ currentBlock });
 
       const topics = Web3.utils.sha3(
         "Unstake(address,uint256,uint256,uint256,bool)"
@@ -31,13 +31,13 @@ export function useUnstakedTokenOfDay() {
         fromBlock: currentBlock - Math.floor((1 / 12) * 60 * 60 * 24),
         toBlock: currentBlock,
       });
-      console.log({ events });
+      // console.log({ events });
 
       const unstakeEvents = events
         .filter((e) => e.raw.topics.length === 1 && e.raw.topics[0] === topics)
         .sort((a, b) => a.blockNumber - b.blockNumber);
 
-      console.log({ unstakeEvents });
+      // console.log({ unstakeEvents });
 
       let totalUnstakedAmount = 0;
 

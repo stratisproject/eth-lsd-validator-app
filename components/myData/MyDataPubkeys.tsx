@@ -333,16 +333,16 @@ const ChooseTypePopover = (props: ChooseTypePopoverProps) => {
         <div
           className="cursor-pointer flex items-center justify-between"
           onClick={() => {
-            onClickType(DisplayPubkeyStatus.Pending);
+            onClickType(DisplayPubkeyStatus.Waiting);
           }}
         >
           <div className="flex items-center">
             <div className="ml-[.12rem] text-color-text1 text-[.16rem]">
-              Pending
+              Waiting
             </div>
           </div>
 
-          {types.indexOf(DisplayPubkeyStatus.Pending) >= 0 ? (
+          {types.indexOf(DisplayPubkeyStatus.Waiting) >= 0 ? (
             <div className="w-[.16rem] h-[.16rem] relative">
               <Image src={checkedIcon} alt="checked" layout="fill" />
             </div>

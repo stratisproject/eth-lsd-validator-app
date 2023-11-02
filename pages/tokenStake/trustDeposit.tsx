@@ -97,7 +97,9 @@ const TrustDepositPage = () => {
       throw new Error("Miss deposit_data_root or signature or pubkey");
     }
     if (validatorKey.amount !== 1000000000) {
-      throw new Error("Please use trusted validator file to deposit");
+      throw new Error(
+        "Please use  deposit_data file of trusted validator to deposit"
+      );
     }
     // console.log(
     //   "validatorKey.withdrawal_credentials:",

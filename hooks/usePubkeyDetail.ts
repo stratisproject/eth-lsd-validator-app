@@ -47,7 +47,7 @@ export function usePubkeyDetail(pubkeyAddress: string | undefined) {
           console.log({ err });
         });
 
-      console.log({ pubkeyInfo });
+      // console.log({ pubkeyInfo });
       setPubkeyInfo({
         pubkeyAddress: pubkeyAddress,
         ...pubkeyInfo,
