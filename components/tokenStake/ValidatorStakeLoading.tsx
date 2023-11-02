@@ -42,9 +42,9 @@ export const ValidatorStakeLoading = () => {
       ? `You are now onboard`
       : validatorStakeLoadingParams?.status === "error"
       ? "Something went wrong, please try again later"
-      : `File is uploading onchain, ${
+      : `Submitting on chain, ${
           validatorStakeLoadingParams?.stakeAmount
-        } ${getTokenName()} are being staked in your account`;
+        } ${getTokenName()} are being staked in your validator`;
   }, [validatorStakeLoadingParams]);
 
   return (

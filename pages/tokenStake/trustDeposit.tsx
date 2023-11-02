@@ -1,48 +1,43 @@
-import { ValidatorKeyUpload } from "components/tokenStake/ValidatorKeyUpload";
-import {
-  getEthereumChainId,
-  getEthereumChainName,
-  getEthereumNetworkName,
-} from "config/env";
-import uploadIcon from "public/images/upload.svg";
-import fileIcon from "public/images/file.svg";
-import Image from "next/image";
-import errorIcon from "public/images/tx_error.png";
-import refreshIcon from "public/images/refresh_icon.svg";
-import { useMemo, useState } from "react";
-import { useAppDispatch, useAppSelector } from "hooks/common";
-import { RootState } from "redux/store";
-import { CustomButton } from "components/common/CustomButton";
-import { handleEthValidatorDeposit } from "redux/reducers/ValidatorSlice";
-import { updateEthBalance } from "redux/reducers/EthSlice";
-import { BackNavigation } from "components/common/BackNavigation";
-import { useRouter } from "next/router";
-import { CardContainer } from "components/common/CardContainer";
-import classNames from "classnames";
-import { robotoBold } from "config/font";
-import { Icomoon } from "components/icon/Icomoon";
-import { useAppSlice } from "hooks/selector";
-import { usePoolData } from "hooks/usePoolData";
-import { DepositGuide } from "components/tokenStake/DepositGuide";
-import { ConfirmModal } from "components/modal/ConfirmModal";
-import { getTokenName } from "utils/configUtils";
-import { DataLoading } from "components/common/DataLoading";
-import { formatNumber } from "utils/numberUtils";
-import { connectMetaMask } from "redux/reducers/WalletSlice";
-import { useWalletAccount } from "hooks/useWalletAccount";
-import { useIsTrustedValidator } from "hooks/useIsTrustedValidator";
-import { openLink } from "utils/commonUtils";
-import { styled } from "@mui/styles";
 import LinearProgress, {
   linearProgressClasses,
 } from "@mui/material/LinearProgress";
+import { styled } from "@mui/styles";
+import classNames from "classnames";
+import { BackNavigation } from "components/common/BackNavigation";
+import { CardContainer } from "components/common/CardContainer";
+import { CustomButton } from "components/common/CustomButton";
+import { DataLoading } from "components/common/DataLoading";
 import { PrimaryLoading } from "components/common/PrimaryLoading";
-import { getEthWeb3 } from "utils/web3Utils";
+import { Icomoon } from "components/icon/Icomoon";
+import { ConfirmModal } from "components/modal/ConfirmModal";
+import { DepositGuide } from "components/tokenStake/DepositGuide";
+import { ValidatorKeyUpload } from "components/tokenStake/ValidatorKeyUpload";
 import {
   getNodeDepositContract,
   getNodeDepositContractAbi,
 } from "config/contract";
-import snackbarUtil from "utils/snackbarUtils";
+import { getEthereumChainId, getEthereumNetworkName } from "config/env";
+import { robotoBold } from "config/font";
+import { useAppDispatch, useAppSelector } from "hooks/common";
+import { useAppSlice } from "hooks/selector";
+import { useIsTrustedValidator } from "hooks/useIsTrustedValidator";
+import { usePoolData } from "hooks/usePoolData";
+import { useWalletAccount } from "hooks/useWalletAccount";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import fileIcon from "public/images/file.svg";
+import refreshIcon from "public/images/refresh_icon.svg";
+import errorIcon from "public/images/tx_error.png";
+import uploadIcon from "public/images/upload.svg";
+import { useMemo, useState } from "react";
+import { updateEthBalance } from "redux/reducers/EthSlice";
+import { handleEthValidatorDeposit } from "redux/reducers/ValidatorSlice";
+import { connectMetaMask } from "redux/reducers/WalletSlice";
+import { RootState } from "redux/store";
+import { openLink } from "utils/commonUtils";
+import { getTokenName } from "utils/configUtils";
+import { formatNumber } from "utils/numberUtils";
+import { getEthWeb3 } from "utils/web3Utils";
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 6,
@@ -50,7 +45,7 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   [`&.${linearProgressClasses.colorPrimary}`]: {
     backgroundColor: "white",
   },
-  [`& .${linearProgressClasses.bar}`]: {
+  [`&.${linearProgressClasses.bar}`]: {
     borderRadius: 4,
     backgroundColor: "#80CAFF",
   },
@@ -149,7 +144,7 @@ const TrustDepositPage = () => {
 
       const statusList = await Promise.all(statusRequests);
 
-      console.log({ statusList });
+      // console.log({ statusList });
 
       let hasRepeat = false;
       statusList.forEach((status, index) => {
@@ -295,24 +290,21 @@ const TrustDepositPage = () => {
 
                       {uploadingStatus === "loading" && (
                         <div className="mt-[.08rem]">
-                          {/* <LinearProgress
-                          sx={{
-                            "& .MuiLinearProgress-root": {
-                              "& .MuiLinearProgress-barColorPrimary": {
-                                backgroundColor: "#80CAFF ",
-                              },
-                            },
-                            "& .MuiLinearProgress-barColorPrimary": {},
-                            // "& .MuiLinearProgress-root": {
-                            //   backgroundColor: "white",
-                            // },
-                            "& .MuiLinearProgress-bar": {
+                          <LinearProgress
+                            sx={{
+                              color: "#80CAFF",
+                              borderRadius: ".04rem",
                               backgroundColor: "white",
-                            },
-                          }}
-                        /> */}
+                              // "& .MuiLinearProgress-barColorPrimary": {
+                              //   backgroundColor: "white",
+                              // },
+                              "& .MuiLinearProgress-bar": {
+                                backgroundColor: "#80CAFF",
+                              },
+                            }}
+                          />
 
-                          <BorderLinearProgress />
+                          {/* <BorderLinearProgress /> */}
                         </div>
                       )}
                     </div>

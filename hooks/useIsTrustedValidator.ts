@@ -26,8 +26,8 @@ export function useIsTrustedValidator() {
         .nodeInfoOf(metaMaskAccount)
         .call();
 
-      console.log({ nodeInfoOf });
-      console.log(nodeInfoOf._nodeType);
+      // console.log({ nodeInfoOf });
+      // console.log(nodeInfoOf._nodeType);
 
       setIsTrust(
         nodeInfoOf && nodeInfoOf._nodeType === ValidatorNodeType.Trusted

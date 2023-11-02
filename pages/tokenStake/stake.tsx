@@ -11,6 +11,7 @@ import { getEthereumChainId, getEthereumNetworkName } from "config/env";
 import { robotoBold } from "config/font";
 import { useAppDispatch, useAppSelector } from "hooks/common";
 import { useAppSlice } from "hooks/selector";
+import { useIsTrustedValidator } from "hooks/useIsTrustedValidator";
 import { useWalletAccount } from "hooks/useWalletAccount";
 import _ from "lodash";
 import Image from "next/image";
@@ -22,6 +23,7 @@ import { updateEthBalance } from "redux/reducers/EthSlice";
 import { handleEthValidatorStake } from "redux/reducers/ValidatorSlice";
 import { connectMetaMask } from "redux/reducers/WalletSlice";
 import { RootState } from "redux/store";
+import { openLink } from "utils/commonUtils";
 import { getShortAddress } from "utils/stringUtils";
 
 const StakePage = () => {
@@ -42,6 +44,8 @@ const StakePage = () => {
   const isWrongMetaMaskNetwork = useMemo(() => {
     return Number(metaMaskChainId) !== getEthereumChainId();
   }, [metaMaskChainId]);
+
+  const { isTrust } = useIsTrustedValidator();
 
   const {
     validatorWithdrawalCredentials,
@@ -351,18 +355,24 @@ const StakePage = () => {
                   height=".56rem"
                   loading={ethTxLoading}
                   type={
-                    !metaMaskAccount || isWrongMetaMaskNetwork
+                    !metaMaskAccount || isWrongMetaMaskNetwork || !isTrust
                       ? "secondary"
                       : "primary"
                   }
                   disabled={
                     !!metaMaskAccount &&
                     !isWrongMetaMaskNetwork &&
+                    isTrust &&
                     validatorKeys.length < stakePubkeyAddressList.length
                   }
                   onClick={() => {
                     if (!metaMaskAccount || isWrongMetaMaskNetwork) {
                       dispatch(connectMetaMask(getEthereumChainId()));
+                      return;
+                    }
+
+                    if (!isTrust) {
+                      openLink("https://www.google.com");
                       return;
                     }
 
@@ -391,6 +401,8 @@ const StakePage = () => {
                     ? "Connect Wallet"
                     : isWrongMetaMaskNetwork
                     ? "Switch Network"
+                    : !isTrust
+                    ? "Apply Trusted Validator"
                     : validatorKeys.length < stakePubkeyAddressList.length
                     ? `Please Upload ${stakePubkeyAddressList.length} ${
                         stakePubkeyAddressList.length <= 1
