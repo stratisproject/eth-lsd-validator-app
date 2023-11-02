@@ -9,8 +9,6 @@ import classNames from "classnames";
 import { useAppSlice } from "hooks/selector";
 import { roboto } from "config/font";
 import { WithdrawLoadingModal } from "components/modal/WithdrawLoadingModal";
-import { StakeLoadingSidebar } from "components/modal/StakeLoadingSidebar";
-import { UnstakeLoadingSidebar } from "components/modal/UnstakeLoadingSidebar";
 import { WithdrawLoadingSidebar } from "components/modal/WithdrawLoadingSidebar";
 import { getAppTitle } from "utils/configUtils";
 import { DepositLoadingModal } from "components/modal/DepositLoadingModal";
@@ -71,8 +69,7 @@ export const Layout = (props: React.PropsWithChildren) => {
 
         <div className="fixed right-0 top-[4rem]">
           <DepositLoadingSidebar />
-          <StakeLoadingSidebar />
-          <UnstakeLoadingSidebar />
+
           <WithdrawLoadingSidebar />
         </div>
       </div>
