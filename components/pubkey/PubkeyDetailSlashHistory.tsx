@@ -1,4 +1,5 @@
 import classNames from "classnames";
+import { EmptyContent } from "components/common/EmptyContent";
 import { Icomoon } from "components/icon/Icomoon";
 import { robotoBold, robotoSemiBold } from "config/font";
 import { useAppSlice } from "hooks/selector";
@@ -56,7 +57,11 @@ export const PubkeyDetailSlashHistory = () => {
           </div>
         </div>
 
-        <SlashHistoryItem index={0} />
+        <div className="h-[2rem] flex items-center justify-center">
+          <EmptyContent />
+        </div>
+
+        {/* <SlashHistoryItem index={0} /> */}
 
         {/* <div className="my-[.32rem] flex items-center justify-center">
           <CustomPagination

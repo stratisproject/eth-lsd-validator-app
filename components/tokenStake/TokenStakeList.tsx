@@ -1,27 +1,24 @@
 import classNames from "classnames";
 import { CustomButton } from "components/common/CustomButton";
+import { EmptyContent } from "components/common/EmptyContent";
+import { LoadingContent } from "components/common/LoadingContent";
 import { Icomoon } from "components/icon/Icomoon";
+import { getValidatorProfileUrl } from "config/explorer";
 import { robotoSemiBold } from "config/font";
 import { useAppSlice } from "hooks/selector";
-import { useNodePubkeys } from "hooks/useNodePubkeys";
+import { useNodePubkeysHome } from "hooks/useNodePubkeysHome";
 import { useWalletAccount } from "hooks/useWalletAccount";
 import { DisplayPubkeyStatus, PubkeyStatus } from "interfaces/common";
 import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import {
-  getBeaconStatusListOfPubkeyStatus,
   getDisplayPubkeyStatusFromBeaconStatus,
-  getDisplayPubkeyStatusText,
-  getPubkeyStatusText,
   isPubkeyStakeable,
   openLink,
 } from "utils/commonUtils";
 import snackbarUtil from "utils/snackbarUtils";
 import { getShortAddress } from "utils/stringUtils";
 import { TokenStakeListTabs } from "./TokenStakeListTabs";
-import { EmptyContent } from "components/common/EmptyContent";
-import { LoadingContent } from "components/common/LoadingContent";
-import { getValidatorProfileUrl } from "config/explorer";
 
 export const TokenStakeList = () => {
   const router = useRouter();
@@ -30,16 +27,16 @@ export const TokenStakeList = () => {
   const [page, setPage] = useState(1);
   const [selectedTab, setSelectedTab] = useState("All");
 
-  const statusList = useMemo(() => {
+  const selectedStatus = useMemo(() => {
     switch (selectedTab) {
       case "All":
         return undefined;
       case "Unmatched":
-        return getBeaconStatusListOfPubkeyStatus(PubkeyStatus.Unmatched);
+        return PubkeyStatus.Unmatched;
       case "Staked":
-        return getBeaconStatusListOfPubkeyStatus(PubkeyStatus.Staked);
+        return PubkeyStatus.Staked;
       case "Others":
-        return getBeaconStatusListOfPubkeyStatus(PubkeyStatus.Others);
+        return PubkeyStatus.Others;
     }
   }, [selectedTab]);
 
@@ -51,7 +48,7 @@ export const TokenStakeList = () => {
     unmatchedCount,
     stakedCount,
     othersCount,
-  } = useNodePubkeys(metaMaskAccount, page, statusList);
+  } = useNodePubkeysHome(metaMaskAccount, page, selectedStatus);
   // } = useNodePubkeys(
   //   "0x99C6a3B0d131C996D9f65275fB5a196a8B57B583",
   //   page,
@@ -249,18 +246,14 @@ export const TokenStakeList = () => {
               <div
                 className={classNames(
                   "flex items-center justify-center text-[.16rem] ",
-                  getDisplayPubkeyStatusFromBeaconStatus(
-                    pubkeyInfo.beaconApiStatus
-                  ) === DisplayPubkeyStatus.Exited
+                  pubkeyInfo.displayStatus === "Exited"
                     ? "text-error"
+                    : pubkeyInfo.displayStatus === "Active"
+                    ? "text-color-text1"
                     : "text-color-text2"
                 )}
               >
-                {getDisplayPubkeyStatusText(
-                  getDisplayPubkeyStatusFromBeaconStatus(
-                    pubkeyInfo.beaconApiStatus
-                  )
-                )}
+                {pubkeyInfo.displayStatus}
               </div>
 
               <div className="flex items-center justify-end pr-[.56rem] text-[.16rem] text-color-text2">

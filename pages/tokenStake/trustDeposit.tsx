@@ -22,6 +22,7 @@ import { useAppDispatch, useAppSelector } from "hooks/common";
 import { useAppSlice } from "hooks/selector";
 import { useIsTrustedValidator } from "hooks/useIsTrustedValidator";
 import { usePoolData } from "hooks/usePoolData";
+import { useUnmatchedToken } from "hooks/useUnmatchedToken";
 import { useWalletAccount } from "hooks/useWalletAccount";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -63,7 +64,7 @@ const TrustDepositPage = () => {
   const [deleteConfirmModalVisible, setDeleteConfirmModalVisible] =
     useState(false);
 
-  const { unmatchedEth } = usePoolData();
+  const { unmatchedEth } = useUnmatchedToken();
 
   const { metaMaskAccount, metaMaskChainId } = useWalletAccount();
   const { validatorWithdrawalCredentials, ethTxLoading } = useAppSelector(

@@ -30,16 +30,26 @@ export enum PubkeyStatus {
   Others = "3",
 }
 
+export enum PubkeyStatusType {
+  Active = "1",
+  Pending = "2",
+  Exited = "3",
+  Others = "4",
+}
+
 export enum DisplayPubkeyStatus {
   Waiting = "0",
-  Active = "1",
-  Exited = "2",
-  Withdrawal = "3",
+  Pending = "1",
+  Active = "2",
+  Exited = "3",
+  Withdrawal = "4",
 }
 
 export interface NodePubkeyInfo {
   beaconApiStatus: string | undefined;
   pubkeyAddress: string;
+  canStake?: boolean;
+  displayStatus?: string;
   _status: string;
   _owner: string;
   _nodeDepositAmount: string;

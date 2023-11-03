@@ -8,7 +8,7 @@ import { StakeGuide } from "components/tokenStake/StakeGuide";
 import { ValidatorKeyUpload } from "components/tokenStake/ValidatorKeyUpload";
 import { ValidatorStakeLoading } from "components/tokenStake/ValidatorStakeLoading";
 import { getEthereumChainId, getEthereumNetworkName } from "config/env";
-import { robotoBold } from "config/font";
+import { robotoBold, robotoSemiBold } from "config/font";
 import { useAppDispatch, useAppSelector } from "hooks/common";
 import { useAppSlice } from "hooks/selector";
 import { useIsTrustedValidator } from "hooks/useIsTrustedValidator";
@@ -24,6 +24,7 @@ import { handleEthValidatorStake } from "redux/reducers/ValidatorSlice";
 import { connectMetaMask } from "redux/reducers/WalletSlice";
 import { RootState } from "redux/store";
 import { openLink } from "utils/commonUtils";
+import snackbarUtil from "utils/snackbarUtils";
 import { getShortAddress } from "utils/stringUtils";
 
 const StakePage = () => {
@@ -71,6 +72,9 @@ const StakePage = () => {
   }, [router]);
 
   const stakePubkeyAddressList = useMemo(() => {
+    // return [
+    //   "0xa781f3c716e0cca12b736c610ac5b39d6bf082772fc4952248884f6cdc1cc2184a9a116ed8a38e61582b6706eee6630a",
+    // ];
     const { pubkeyAddressList } = router.query;
     if (!Array.isArray(pubkeyAddressList)) {
       return [pubkeyAddressList];
@@ -86,7 +90,7 @@ const StakePage = () => {
     ) {
       throw new Error("Miss deposit_data_root or signature or pubkey");
     }
-    console.log({ validatorKey });
+    // console.log({ validatorKey });
     if (validatorKey.amount !== 31000000000) {
       throw new Error(
         "Please use  stake_data file of trusted validator to stake"
@@ -141,9 +145,9 @@ const StakePage = () => {
             <div className="flex flex-col items-center">
               <div className="mt-[.56rem]">
                 <ValidatorKeyUpload
-                  disabled={
-                    stakePubkeyAddressList.length === validatorKeys.length
-                  }
+                  // disabled={
+                  //   stakePubkeyAddressList.length === validatorKeys.length
+                  // }
                   checkValidatorKey={checkUploadPubkey}
                   onSuccess={handleNewValidaorKeys}
                 >
@@ -173,10 +177,11 @@ const StakePage = () => {
                   <div
                     className={classNames(
                       "text-color-text1 text-[.14rem]",
-                      robotoBold.className
+                      robotoSemiBold.className
                     )}
                   >
-                    {validatorKeys.length} Uploaded
+                    {validatorKeys.length}{" "}
+                    {validatorKeys.length > 1 ? "files" : "file"} Uploaded
                   </div>
 
                   {editMode ? (
@@ -198,24 +203,34 @@ const StakePage = () => {
                       </CustomButton>
 
                       <div
-                        className="ml-[.16rem] cursor-pointer"
+                        className="ml-[.16rem] px-[.16rem] flex items-center h-[.26rem] rounded-[.2rem] border-[.01rem] border-solid border-[#6C86AD4D]"
                         onClick={() => {
                           setEditMode(false);
                         }}
                       >
-                        <Icomoon
-                          icon="complete-outline"
-                          color={darkMode ? "#ffffff80" : "#6C86AD"}
-                          size=".12rem"
-                        />
+                        <div className="cursor-pointer" onClick={() => {}}>
+                          <Icomoon
+                            size=".15rem"
+                            color={darkMode ? "#ffffff80" : "#6C86AD"}
+                            icon="edit"
+                          />
+                        </div>
+
+                        <div className="ml-[.24rem] cursor-pointer">
+                          <Icomoon
+                            icon="complete-outline"
+                            color={darkMode ? "#ffffff80" : "#6C86AD"}
+                            size=".12rem"
+                          />
+                        </div>
                       </div>
                     </div>
                   ) : (
                     <div className="flex items-center">
                       <ValidatorKeyUpload
-                        disabled={
-                          stakePubkeyAddressList.length === validatorKeys.length
-                        }
+                        // disabled={
+                        //   stakePubkeyAddressList.length === validatorKeys.length
+                        // }
                         checkValidatorKey={checkUploadPubkey}
                         onSuccess={handleNewValidaorKeys}
                       >

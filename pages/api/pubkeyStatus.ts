@@ -24,7 +24,7 @@ type ResponseData = {
     11: "EXITED",
     12: "WITHDRAWAL",
 
-    四大类: penging 0 1  10,  active  2 3 4 9,  exited  5 6 11,  withdrawal 7 8 12
+    四大类: pending 0 1  10,  active  2 3 4 9,  exited  5 6 11,  withdrawal 7 8 12
  */
 export default async function handler(
   req: NextApiRequest,

@@ -13,10 +13,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import tokenStakeIcon from "public/images/token/lsdETH.svg";
 import { useMemo } from "react";
-import {
-  getDisplayPubkeyStatusFromBeaconStatus,
-  getDisplayPubkeyStatusText,
-} from "utils/commonUtils";
+import { getDisplayPubkeyStatusFromBeaconStatus } from "utils/commonUtils";
 import snackbarUtil from "utils/snackbarUtils";
 import { getShortAddress } from "utils/stringUtils";
 
@@ -36,7 +33,7 @@ const PubkeyDetailPage = () => {
     }
   }, [router]);
 
-  const { beaconStatus } = usePubkeyStatus(pubkeyAddress);
+  const { pubkeyInfo } = usePubkeyDetail(pubkeyAddress);
 
   return (
     <div>
@@ -63,22 +60,20 @@ const PubkeyDetailPage = () => {
                   Public Key Detail
                 </div>
 
-                <CustomTag
-                  type={
-                    getDisplayPubkeyStatusFromBeaconStatus(beaconStatus) ===
-                    DisplayPubkeyStatus.Exited
-                      ? "error"
-                      : getDisplayPubkeyStatusFromBeaconStatus(beaconStatus) ===
-                        DisplayPubkeyStatus.Waiting
-                      ? "pending"
-                      : "active"
-                  }
-                  ml=".16rem"
-                >
-                  {getDisplayPubkeyStatusText(
-                    getDisplayPubkeyStatusFromBeaconStatus(beaconStatus)
-                  )}
-                </CustomTag>
+                {pubkeyInfo && (
+                  <CustomTag
+                    type={
+                      pubkeyInfo.displayStatus === "Exited"
+                        ? "error"
+                        : pubkeyInfo.displayStatus === "Active"
+                        ? "active"
+                        : "pending"
+                    }
+                    ml=".16rem"
+                  >
+                    {pubkeyInfo.displayStatus}
+                  </CustomTag>
+                )}
               </div>
 
               {pubkeyAddress && (

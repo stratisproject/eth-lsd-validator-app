@@ -22,6 +22,7 @@ import { createWeb3, getEthWeb3 } from "utils/web3Utils";
 import {
   addNotice,
   setDepositLoadingParams,
+  setUpdateFlag,
   setValidatorStakeLoadingParams,
   setWithdrawLoadingParams,
   updateDepositLoadingParams,
@@ -397,7 +398,7 @@ export const claimValidatorRewards =
       const web3 = createWeb3();
       const contract = new web3.eth.Contract(
         getNetworkWithdrawContractAbi(),
-        getNetworkBalanceContract(),
+        getNetworkWithdrawContract(),
         {
           from: metaMaskAccount,
         }
@@ -465,6 +466,7 @@ export const claimValidatorRewards =
 
         snackbarUtil.success("Claim rewards success");
         callback && callback(true, {});
+        dispatch(setUpdateFlag(dayjs().unix()));
       } else {
         throw new Error(TRANSACTION_FAILED_MESSAGE);
       }

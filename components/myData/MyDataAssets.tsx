@@ -28,11 +28,14 @@ export const MyDataAssets = () => {
   } = useMyData();
   const [claimRewardModalVisible, setClaimRewardModalVisible] = useState(false);
 
-  const { withdrawLoading } = useAppSelector((state: RootState) => {
-    return {
-      withdrawLoading: state.validator.withdrawLoading,
-    };
-  });
+  const { withdrawLoading, claimRewardsLoading } = useAppSelector(
+    (state: RootState) => {
+      return {
+        claimRewardsLoading: state.validator.claimRewardsLoading,
+        withdrawLoading: state.validator.withdrawLoading,
+      };
+    }
+  );
 
   const showWithdraw = useMemo(() => {
     return Number(availableExitDeposit) > 0;
@@ -122,6 +125,7 @@ export const MyDataAssets = () => {
       <div className="my-[.32rem] flex px-[.4rem]">
         <div className="flex-1 mx-[.28rem]">
           <CustomButton
+            loading={claimRewardsLoading}
             disabled={!myRewardTokenAmount || Number(myRewardTokenAmount) <= 0}
             onClick={() => {
               setClaimRewardModalVisible(true);
@@ -145,6 +149,7 @@ export const MyDataAssets = () => {
         {showWithdraw && (
           <div className="flex-1 mx-[.28rem]">
             <CustomButton
+              loading={withdrawLoading}
               type="stroke"
               onClick={() => {
                 dispatch(

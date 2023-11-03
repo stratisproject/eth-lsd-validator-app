@@ -1,7 +1,11 @@
 import Switch, { SwitchProps } from "@mui/material/Switch";
 import { styled } from "@mui/material/styles";
 
-export const IOSSwitch = styled((props: SwitchProps) => (
+interface Props extends SwitchProps {
+  darkMode: boolean;
+}
+
+export const IOSSwitch = styled((props: Props) => (
   <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
 ))(({ theme }) => ({
   width: ".76rem",
@@ -61,5 +65,9 @@ export const IOSSwitch = styled((props: SwitchProps) => (
     transition: theme.transitions.create(["background-color"], {
       duration: 500,
     }),
+    // border: props.darkMode
+    //   ? '"0.01rem solid #ffffff80"'
+    //   : "0.01rem solid #ffffff80",
+    border: "0.01rem solid #ffffff80",
   },
 }));

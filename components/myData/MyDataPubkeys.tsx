@@ -8,7 +8,7 @@ import { Icomoon } from "components/icon/Icomoon";
 import { useAppSlice } from "hooks/selector";
 import { useNodePubkeys } from "hooks/useNodePubkeys";
 import { useWalletAccount } from "hooks/useWalletAccount";
-import { DisplayPubkeyStatus, NodePubkeyInfo } from "interfaces/common";
+import { NodePubkeyInfo, PubkeyStatusType } from "interfaces/common";
 import _ from "lodash";
 import {
   bindPopover,
@@ -19,13 +19,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import checkedIcon from "public/images/checked.svg";
 import { useMemo, useState } from "react";
-import {
-  getBeaconStatusListOfDisplayPubkeyStatus,
-  getDisplayPubkeyStatusFromBeaconStatus,
-  getDisplayPubkeyStatusText,
-  getPubkeyStatusText,
-  openLink,
-} from "utils/commonUtils";
+import { getPubkeyStatusTypeText, openLink } from "utils/commonUtils";
 import { isSupportRestApi } from "utils/configUtils";
 import snackbarUtil from "utils/snackbarUtils";
 import { getShortAddress } from "utils/stringUtils";
@@ -34,35 +28,39 @@ import { MyDataNodeElection } from "./MyDataNodeElection";
 export const MyDataPubkeys = () => {
   const { metaMaskAccount } = useWalletAccount();
   const [page, setPage] = useState(1);
-  const [types, setTypes] = useState<DisplayPubkeyStatus[]>([]);
+  const [types, setTypes] = useState<PubkeyStatusType[]>([]);
 
-  const statusList = useMemo(() => {
-    if (types.length === 0) {
-      return undefined;
-    }
-    const res: (string | undefined)[] = [];
-    types.forEach((type) => {
-      res.push(...getBeaconStatusListOfDisplayPubkeyStatus(type));
-    });
-    return res;
-  }, [types]);
+  // const statusList = useMemo(() => {
+  //   if (types.length === 0) {
+  //     return undefined;
+  //   }
+  //   const res: (string | undefined)[] = [];
+  //   types.forEach((type) => {
+  //     res.push(...getBeaconStatusListOfDisplayPubkeyStatus(type));
+  //   });
+  //   return res;
+  // }, [types]);
 
   const displayTypesText = useMemo(() => {
     if (types.length === 0) {
       return "All Types";
-    } else if (types.length === 5) {
-      return "All Types";
     } else if (types.length === 1) {
-      return getDisplayPubkeyStatusText(types[0]);
+      return getPubkeyStatusTypeText(types[0]);
     } else {
-      return types
-        .map((status) => getDisplayPubkeyStatusText(status))
-        .join(",");
+      return types.map((status) => getPubkeyStatusTypeText(status)).join(",");
     }
   }, [types]);
 
-  const { totalCount, displayPubkeyInfos, showLoading, showEmptyContent } =
-    useNodePubkeys(metaMaskAccount, page, statusList);
+  const {
+    totalCount,
+    displayPubkeyInfos,
+    showLoading,
+    showEmptyContent,
+    activeCount,
+    pendingCount,
+    exitedCount,
+    othersCount,
+  } = useNodePubkeys(metaMaskAccount, page, types);
 
   const typePopupState = usePopupState({
     variant: "popover",
@@ -84,7 +82,7 @@ export const MyDataPubkeys = () => {
           <div
             className={classNames(
               "flex-1 text-[.16rem] w-[0.8rem] flex items-center justify-center",
-              typePopupState.isOpen ? "text-text1" : "text-color-text1"
+              typePopupState.isOpen ? "text-text1" : "text-color-text2"
             )}
             style={{
               maxLines: 1,
@@ -160,6 +158,11 @@ export const MyDataPubkeys = () => {
       {isSupportRestApi() && <MyDataNodeElection />}
 
       <ChooseTypePopover
+        totalCount={totalCount}
+        activeCount={activeCount}
+        pendingCount={pendingCount}
+        exitedCount={exitedCount}
+        othersCount={othersCount}
         popupState={typePopupState}
         types={types}
         onChangeTypes={setTypes}
@@ -231,16 +234,14 @@ const MyDataPubkeyItem = (props: MyDataPubkeyItemProps) => {
           <div
             className={classNames(
               "mr-[.06rem]",
-              getDisplayPubkeyStatusFromBeaconStatus(
-                pubkeyInfo.beaconApiStatus
-              ) === DisplayPubkeyStatus.Exited
+              pubkeyInfo.displayStatus === "Exited"
                 ? "text-error"
-                : ""
+                : pubkeyInfo.displayStatus === "Active"
+                ? "text-color-text1"
+                : "text-color-text2"
             )}
           >
-            {getDisplayPubkeyStatusText(
-              getDisplayPubkeyStatusFromBeaconStatus(pubkeyInfo.beaconApiStatus)
-            )}
+            {pubkeyInfo.displayStatus}
           </div>
 
           <Icomoon
@@ -255,17 +256,32 @@ const MyDataPubkeyItem = (props: MyDataPubkeyItemProps) => {
 };
 
 interface ChooseTypePopoverProps {
+  totalCount: undefined | number;
+  activeCount: undefined | number;
+  pendingCount: undefined | number;
+  exitedCount: undefined | number;
+  othersCount: undefined | number;
   popupState: any;
   onClose: () => void;
-  types: DisplayPubkeyStatus[];
-  onChangeTypes: (types: DisplayPubkeyStatus[]) => void;
+  types: PubkeyStatusType[];
+  onChangeTypes: (types: PubkeyStatusType[]) => void;
 }
 
 const ChooseTypePopover = (props: ChooseTypePopoverProps) => {
-  const { popupState, types, onChangeTypes, onClose } = props;
+  const {
+    popupState,
+    types,
+    onChangeTypes,
+    onClose,
+    totalCount,
+    activeCount,
+    pendingCount,
+    exitedCount,
+    othersCount,
+  } = props;
   const { darkMode } = useAppSlice();
 
-  const onClickType = (type: DisplayPubkeyStatus) => {
+  const onClickType = (type: PubkeyStatusType) => {
     if (types.indexOf(type) >= 0) {
       onChangeTypes(_.without(types, type));
     } else {
@@ -317,6 +333,16 @@ const ChooseTypePopover = (props: ChooseTypePopoverProps) => {
             <div className="ml-[.12rem] text-color-text1 text-[.16rem]">
               All
             </div>
+
+            <div
+              className={classNames(
+                "ml-[.03rem] mb-[.1rem] w-[.16rem] h-[.16rem] items-center justify-center rounded-full",
+                "bg-[#E8EFFD] text-text2",
+                totalCount === undefined ? "hidden" : "flex"
+              )}
+            >
+              <div className="scale-[.6] origin-center">{totalCount}</div>
+            </div>
           </div>
 
           {types.length === 0 ? (
@@ -333,39 +359,26 @@ const ChooseTypePopover = (props: ChooseTypePopoverProps) => {
         <div
           className="cursor-pointer flex items-center justify-between"
           onClick={() => {
-            onClickType(DisplayPubkeyStatus.Waiting);
-          }}
-        >
-          <div className="flex items-center">
-            <div className="ml-[.12rem] text-color-text1 text-[.16rem]">
-              Waiting
-            </div>
-          </div>
-
-          {types.indexOf(DisplayPubkeyStatus.Waiting) >= 0 ? (
-            <div className="w-[.16rem] h-[.16rem] relative">
-              <Image src={checkedIcon} alt="checked" layout="fill" />
-            </div>
-          ) : (
-            <div className="w-[.16rem] h-[.16rem] rounded-[0.03rem] border-solid border-[1px] border-color-border3" />
-          )}
-        </div>
-
-        <div className="my-[.16rem] h-[0.01rem] bg-color-divider1" />
-
-        <div
-          className="cursor-pointer flex items-center justify-between"
-          onClick={() => {
-            onClickType(DisplayPubkeyStatus.Active);
+            onClickType(PubkeyStatusType.Active);
           }}
         >
           <div className="flex items-center">
             <div className="ml-[.12rem] text-color-text1 text-[.16rem]">
               Active
             </div>
+
+            <div
+              className={classNames(
+                "ml-[.03rem] mb-[.1rem] w-[.16rem] h-[.16rem] items-center justify-center rounded-full",
+                "bg-[#E8EFFD] text-text2",
+                activeCount === undefined ? "hidden" : "flex"
+              )}
+            >
+              <div className="scale-[.6] origin-center">{activeCount}</div>
+            </div>
           </div>
 
-          {types.indexOf(DisplayPubkeyStatus.Active) >= 0 ? (
+          {types.indexOf(PubkeyStatusType.Active) >= 0 ? (
             <div className="w-[.16rem] h-[.16rem] relative">
               <Image src={checkedIcon} alt="checked" layout="fill" />
             </div>
@@ -379,16 +392,59 @@ const ChooseTypePopover = (props: ChooseTypePopoverProps) => {
         <div
           className="cursor-pointer flex items-center justify-between"
           onClick={() => {
-            onClickType(DisplayPubkeyStatus.Exited);
+            onClickType(PubkeyStatusType.Pending);
+          }}
+        >
+          <div className="flex items-center">
+            <div className="ml-[.12rem] text-color-text1 text-[.16rem]">
+              Pending
+            </div>
+
+            <div
+              className={classNames(
+                "ml-[.03rem] mb-[.1rem] w-[.16rem] h-[.16rem] items-center justify-center rounded-full",
+                "bg-[#E8EFFD] text-text2",
+                pendingCount === undefined ? "hidden" : "flex"
+              )}
+            >
+              <div className="scale-[.6] origin-center">{pendingCount}</div>
+            </div>
+          </div>
+
+          {types.indexOf(PubkeyStatusType.Pending) >= 0 ? (
+            <div className="w-[.16rem] h-[.16rem] relative">
+              <Image src={checkedIcon} alt="checked" layout="fill" />
+            </div>
+          ) : (
+            <div className="w-[.16rem] h-[.16rem] rounded-[0.03rem] border-solid border-[1px] border-color-border3" />
+          )}
+        </div>
+
+        <div className="my-[.16rem] h-[0.01rem] bg-color-divider1" />
+
+        <div
+          className="cursor-pointer flex items-center justify-between"
+          onClick={() => {
+            onClickType(PubkeyStatusType.Exited);
           }}
         >
           <div className="flex items-center">
             <div className="ml-[.12rem] text-color-text1 text-[.16rem]">
               Exited
             </div>
+
+            <div
+              className={classNames(
+                "ml-[.03rem] mb-[.1rem] w-[.16rem] h-[.16rem] items-center justify-center rounded-full",
+                "bg-[#E8EFFD] text-text2",
+                exitedCount === undefined ? "hidden" : "flex"
+              )}
+            >
+              <div className="scale-[.6] origin-center">{exitedCount}</div>
+            </div>
           </div>
 
-          {types.indexOf(DisplayPubkeyStatus.Exited) >= 0 ? (
+          {types.indexOf(PubkeyStatusType.Exited) >= 0 ? (
             <div className="w-[.16rem] h-[.16rem] relative">
               <Image src={checkedIcon} alt="checked" layout="fill" />
             </div>
@@ -402,16 +458,26 @@ const ChooseTypePopover = (props: ChooseTypePopoverProps) => {
         <div
           className="cursor-pointer flex items-center justify-between"
           onClick={() => {
-            onClickType(DisplayPubkeyStatus.Withdrawal);
+            onClickType(PubkeyStatusType.Others);
           }}
         >
           <div className="flex items-center">
             <div className="ml-[.12rem] text-color-text1 text-[.16rem]">
-              Withdrawal
+              Others
+            </div>
+
+            <div
+              className={classNames(
+                "ml-[.03rem] mb-[.1rem] w-[.16rem] h-[.16rem] items-center justify-center rounded-full",
+                "bg-[#E8EFFD] text-text2",
+                othersCount === undefined ? "hidden" : "flex"
+              )}
+            >
+              <div className="scale-[.6] origin-center">{othersCount}</div>
             </div>
           </div>
 
-          {types.indexOf(DisplayPubkeyStatus.Withdrawal) >= 0 ? (
+          {types.indexOf(PubkeyStatusType.Others) >= 0 ? (
             <div className="w-[.16rem] h-[.16rem] relative">
               <Image src={checkedIcon} alt="checked" layout="fill" />
             </div>

@@ -9,6 +9,7 @@ import { getEthWeb3 } from "utils/web3Utils";
 import { useWalletAccount } from "./useWalletAccount";
 import Web3 from "web3";
 import { IpfsRewardItem } from "interfaces/common";
+import { useAppSlice } from "./selector";
 
 interface RewardJsonResponse {
   Epoch: number;
@@ -16,6 +17,7 @@ interface RewardJsonResponse {
 }
 
 export function useMyData() {
+  const { updateFlag } = useAppSlice();
   const { metaMaskAccount } = useWalletAccount();
 
   const [selfDepositedToken, setSelfDepositedToken] = useState<string>();
@@ -140,7 +142,7 @@ export function useMyData() {
 
   useEffect(() => {
     updateData();
-  }, [updateData]);
+  }, [updateData, updateFlag]);
 
   const updateNodeData = useCallback(async () => {
     if (!ipfsMyRewardInfo) {
@@ -189,7 +191,7 @@ export function useMyData() {
 
   useEffect(() => {
     updateNodeData();
-  }, [updateNodeData]);
+  }, [updateNodeData, updateFlag]);
 
   return {
     selfDepositedToken,

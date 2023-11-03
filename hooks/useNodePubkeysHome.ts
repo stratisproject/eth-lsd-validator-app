@@ -5,25 +5,23 @@ import {
 import {
   ChainPubkeyStatus,
   NodePubkeyInfo,
-  PubkeyStatusType,
+  PubkeyStatus,
 } from "interfaces/common";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { getPubkeyDisplayStatus } from "utils/commonUtils";
 import { getEthWeb3 } from "utils/web3Utils";
 import { useAppSlice } from "./selector";
 import { useUnmatchedToken } from "./useUnmatchedToken";
+import { getPubkeyDisplayStatus } from "utils/commonUtils";
 
-export const useNodePubkeys = (
+export const useNodePubkeysHome = (
   nodeAddress: string | undefined,
   page: number,
-  pubkeyStatusTypes?: PubkeyStatusType[]
+  selectedPubkeyStatus?: PubkeyStatus
 ) => {
   const { updateFlag } = useAppSlice();
   const [totalCount, setTotalCount] = useState<number>();
-
-  const [pendingCount, setPendingCount] = useState<number>();
-  const [activeCount, setActiveCount] = useState<number>();
-  const [exitedCount, setExitedCount] = useState<number>();
+  const [unmatchedCount, setUnmatchedCount] = useState<number>();
+  const [stakedCount, setStakedCount] = useState<number>();
   const [othersCount, setOthersCount] = useState<number>();
 
   const [nodePubkeyInfos, setNodePubkeyInfos] = useState<NodePubkeyInfo[]>([]);
@@ -40,9 +38,8 @@ export const useNodePubkeys = (
     let remainingTokenAmount =
       !unmatchedEth || isNaN(Number(unmatchedEth)) ? 0 : Number(unmatchedEth);
 
-    let activeCount = 0;
-    let pendingCount = 0;
-    let exitedCount = 0;
+    let unmatchedCount = 0;
+    let stakedCount = 0;
     let othersCount = 0;
 
     const resList: NodePubkeyInfo[] = [];
@@ -59,75 +56,46 @@ export const useNodePubkeys = (
         canStake = true;
       }
 
-      const newItem = { ...item, displayStatus, canStake };
-
-      const isActive =
+      const isUnmatch = item.displayStatus === "Unmatched";
+      const isStaked =
         item._status === ChainPubkeyStatus.Staked &&
-        (item.beaconApiStatus === "ACTIVE_ONGOING" ||
-          item.beaconApiStatus === "ACTIVE_EXITING" ||
-          item.beaconApiStatus === "ACTIVE_SLASHED" ||
-          item.beaconApiStatus === "ACTIVE");
+        item.beaconApiStatus !== "EXITED_UNSLASHED" &&
+        item.beaconApiStatus !== "EXITED_SLASHED" &&
+        item.beaconApiStatus !== "WITHDRAWAL_POSSIBLE" &&
+        item.beaconApiStatus !== "WITHDRAWAL_DONE" &&
+        item.beaconApiStatus !== "EXITED" &&
+        item.beaconApiStatus !== "WITHDRAWAL";
 
-      const isPending =
-        item._status === ChainPubkeyStatus.Staked &&
-        (item.beaconApiStatus === undefined ||
-          item.beaconApiStatus === "PENDING_INITIALIZED" ||
-          item.beaconApiStatus === "PENDING_QUEUED" ||
-          item.beaconApiStatus === "PENDING");
-
-      const isExit =
-        item._status === ChainPubkeyStatus.Staked &&
-        (item.beaconApiStatus === "EXITED_UNSLASHED" ||
-          item.beaconApiStatus === "EXITED_SLASHED" ||
-          item.beaconApiStatus === "EXITED");
-
-      const isOthers = !isActive && !isPending && !isExit;
-
-      if (isActive) {
-        activeCount++;
-        if (
-          !pubkeyStatusTypes ||
-          pubkeyStatusTypes.length === 0 ||
-          pubkeyStatusTypes.indexOf(PubkeyStatusType.Active) >= 0
-        ) {
-          resList.push(newItem);
-        }
-      } else if (isPending) {
-        pendingCount++;
-        if (
-          !pubkeyStatusTypes ||
-          pubkeyStatusTypes.length === 0 ||
-          pubkeyStatusTypes.indexOf(PubkeyStatusType.Pending) >= 0
-        ) {
-          resList.push(newItem);
-        }
-      } else if (isExit) {
-        exitedCount++;
-        if (
-          !pubkeyStatusTypes ||
-          pubkeyStatusTypes.length === 0 ||
-          pubkeyStatusTypes.indexOf(PubkeyStatusType.Exited) >= 0
-        ) {
-          resList.push(newItem);
-        }
+      if (isUnmatch) {
+        unmatchedCount++;
+      } else if (isStaked) {
+        stakedCount++;
       } else {
         othersCount++;
-        if (
-          !pubkeyStatusTypes ||
-          pubkeyStatusTypes.length === 0 ||
-          pubkeyStatusTypes.indexOf(PubkeyStatusType.Others) >= 0
-        ) {
-          resList.push(newItem);
-        }
+      }
+
+      const newItem = { ...item, displayStatus, canStake };
+
+      if (isUnmatch && selectedPubkeyStatus === PubkeyStatus.Unmatched) {
+        resList.push(newItem);
+      } else if (isStaked && selectedPubkeyStatus === PubkeyStatus.Staked) {
+        resList.push(newItem);
+      } else if (
+        !isUnmatch &&
+        !isStaked &&
+        selectedPubkeyStatus === PubkeyStatus.Others
+      ) {
+        resList.push(newItem);
+      } else if (!selectedPubkeyStatus) {
+        resList.push(newItem);
       }
     });
 
     setDisplayPubkeyInfos(resList);
-    setActiveCount(activeCount);
-    setPendingCount(pendingCount);
-    setExitedCount(exitedCount);
+    setUnmatchedCount(unmatchedCount);
+    setStakedCount(stakedCount);
     setOthersCount(othersCount);
-  }, [nodePubkeyInfos, pubkeyStatusTypes, unmatchedEth]);
+  }, [nodePubkeyInfos, selectedPubkeyStatus, unmatchedEth]);
 
   const showLoading = useMemo(() => {
     return (
@@ -144,9 +112,8 @@ export const useNodePubkeys = (
   const updateData = useCallback(async () => {
     if (!nodeAddress) {
       setTotalCount(undefined);
-      setActiveCount(undefined);
-      setPendingCount(undefined);
-      setExitedCount(undefined);
+      setUnmatchedCount(undefined);
+      setStakedCount(undefined);
       setOthersCount(undefined);
       setNodePubkeyInfos([]);
       return;
@@ -197,7 +164,7 @@ export const useNodePubkeys = (
         }
       );
       const beaconStatusResJson = await beaconStatusResponse.json();
-      // console.log({ beaconStatusResJson });
+      console.log({ beaconStatusResJson });
 
       const nodePubkeyInfos: NodePubkeyInfo[] = pubkeyInfos.map(
         (item, index) => {
@@ -214,6 +181,9 @@ export const useNodePubkeys = (
       );
 
       setNodePubkeyInfos(nodePubkeyInfos);
+      setUnmatchedCount(unmatchedCount);
+      setStakedCount(stakedCount);
+      setOthersCount(othersCount);
       setRefreshing(false);
       setRequestFirstTime(false);
     } catch (err: any) {
@@ -230,11 +200,10 @@ export const useNodePubkeys = (
   return {
     showLoading,
     showEmptyContent,
-    totalCount,
-    othersCount,
-    pendingCount,
-    activeCount,
-    exitedCount,
     displayPubkeyInfos,
+    totalCount,
+    unmatchedCount,
+    stakedCount,
+    othersCount,
   };
 };

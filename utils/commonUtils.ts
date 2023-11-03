@@ -2,7 +2,12 @@ import {
   CANCELLED_ERR_MESSAGE1,
   CANCELLED_ERR_MESSAGE2,
 } from "constants/common";
-import { DisplayPubkeyStatus, PubkeyStatus } from "interfaces/common";
+import {
+  ChainPubkeyStatus,
+  DisplayPubkeyStatus,
+  NodePubkeyInfo,
+  PubkeyStatus,
+} from "interfaces/common";
 
 /**
  * create uuid
@@ -79,18 +84,16 @@ export const getPubkeyStatusText = (status: string) => {
  * Get chain pubkey status display text.
  * @param status pubkey status value
  */
-export const getDisplayPubkeyStatusText = (status: string | undefined) => {
+export const getPubkeyStatusTypeText = (status: string | undefined) => {
   switch (Number(status)) {
-    case 0:
-      return "Waiting";
     case 1:
       return "Active";
     case 2:
-      return "Exited";
+      return "Pending";
     case 3:
-      return "Withdrawal";
+      return "Exited";
     default:
-      return "Unknown";
+      return "Others";
   }
 };
 
@@ -151,6 +154,8 @@ export const getBeaconStatusListOfDisplayPubkeyStatus = (
   switch (status) {
     case DisplayPubkeyStatus.Waiting:
       return ["PENDING_INITIALIZED", "PENDING_QUEUED", "PENDING", undefined];
+    case DisplayPubkeyStatus.Pending:
+      return ["PENDING_INITIALIZED", "PENDING_QUEUED", "PENDING", undefined];
     case DisplayPubkeyStatus.Active:
       return ["ACTIVE_ONGOING", "ACTIVE_EXITING", "ACTIVE_SLASHED", "ACTIVE"];
     case DisplayPubkeyStatus.Exited:
@@ -194,4 +199,62 @@ export const getDisplayPubkeyStatusFromBeaconStatus = (
   ) {
     return DisplayPubkeyStatus.Withdrawal;
   }
+};
+
+/**
+ * Get Pubkey display status text
+ * @param status pubkey status value
+ */
+export const getPubkeyDisplayStatus = (
+  item: NodePubkeyInfo,
+  unmatchedToken: number
+) => {
+  if (item._status === ChainPubkeyStatus.Deposited) {
+    return "Waiting";
+  }
+  if (item._status === ChainPubkeyStatus.UnMatch) {
+    return "Failed";
+  }
+  if (item._status === ChainPubkeyStatus.Match && unmatchedToken < 31) {
+    return "Unmatched";
+  }
+  if (item._status === ChainPubkeyStatus.Match && unmatchedToken >= 31) {
+    return "Matched";
+  }
+  if (
+    item._status === ChainPubkeyStatus.Staked &&
+    (item.beaconApiStatus === undefined ||
+      item.beaconApiStatus === "PENDING_INITIALIZED" ||
+      item.beaconApiStatus === "PENDING_QUEUED" ||
+      item.beaconApiStatus === "PENDING")
+  ) {
+    return "Pending";
+  }
+  if (
+    item._status === ChainPubkeyStatus.Staked &&
+    (item.beaconApiStatus === "ACTIVE_ONGOING" ||
+      item.beaconApiStatus === "ACTIVE_EXITING" ||
+      item.beaconApiStatus === "ACTIVE_SLASHED" ||
+      item.beaconApiStatus === "ACTIVE")
+  ) {
+    return "Active";
+  }
+  if (
+    item._status === ChainPubkeyStatus.Staked &&
+    (item.beaconApiStatus === "EXITED_UNSLASHED" ||
+      item.beaconApiStatus === "EXITED_SLASHED" ||
+      item.beaconApiStatus === "EXITED")
+  ) {
+    return "Exited";
+  }
+  if (
+    item._status === ChainPubkeyStatus.Staked &&
+    (item.beaconApiStatus === "WITHDRAWAL_POSSIBLE" ||
+      item.beaconApiStatus === "WITHDRAWAL_DONE" ||
+      item.beaconApiStatus === "WITHDRAWAL")
+  ) {
+    return "Withdrawal";
+  }
+
+  return "Unknown";
 };

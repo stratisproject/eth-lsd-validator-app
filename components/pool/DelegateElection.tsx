@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import { CustomPagination } from "components/common/CustomPagination";
+import { EmptyContent } from "components/common/EmptyContent";
 import { Icomoon } from "components/icon/Icomoon";
 import { robotoBold, robotoSemiBold } from "config/font";
 import { useAppSlice } from "hooks/selector";
@@ -72,11 +73,15 @@ export const DelegateElection = () => {
           </div>
         </div>
 
-        <NodeElectionItem index={0} />
+        <div className="h-[2rem] flex items-center justify-center">
+          <EmptyContent />
+        </div>
+
+        {/* <NodeElectionItem index={0} />
 
         <div className="my-[.32rem] flex items-center justify-center">
           <CustomPagination page={page} onChange={setPage} totalCount={1} />
-        </div>
+        </div> */}
       </div>
     </div>
   );

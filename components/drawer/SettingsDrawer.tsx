@@ -50,6 +50,7 @@ export const SettingsDrawer = (props: Props) => {
               </div>
 
               <IOSSwitch
+                darkMode={darkMode}
                 checked={darkMode}
                 onChange={(e) => {
                   dispatch(setDarkMode(e.target.checked));

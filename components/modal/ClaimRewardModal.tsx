@@ -178,7 +178,12 @@ export const ClaimRewardModal = (props: ClaimRewardModalProps) => {
                 dispatch(
                   claimValidatorRewards(
                     ipfsMyRewardInfo,
-                    myRewardTokenAmount || "0"
+                    myRewardTokenAmount || "0",
+                    (success) => {
+                      if (success) {
+                        onClose();
+                      }
+                    }
                   )
                 );
               }}

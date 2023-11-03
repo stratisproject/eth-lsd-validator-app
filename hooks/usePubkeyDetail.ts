@@ -6,11 +6,14 @@ import {
 } from "config/contract";
 import { NodePubkeyInfo } from "interfaces/common";
 import { useCallback, useEffect, useState } from "react";
+import { getPubkeyDisplayStatus } from "utils/commonUtils";
 import { getEthWeb3 } from "utils/web3Utils";
+import { useUnmatchedToken } from "./useUnmatchedToken";
 import { useWalletAccount } from "./useWalletAccount";
 
 export function usePubkeyDetail(pubkeyAddress: string | undefined) {
   const { metaMaskAccount } = useWalletAccount();
+  const { unmatchedEth } = useUnmatchedToken();
 
   const [pubkeyInfo, setPubkeyInfo] = useState<NodePubkeyInfo>();
 
@@ -47,9 +50,36 @@ export function usePubkeyDetail(pubkeyAddress: string | undefined) {
           console.log({ err });
         });
 
+      const beaconStatusResponse = await fetch(
+        `/api/pubkeyStatus?id=${pubkeyAddress}`,
+        {
+          method: "GET",
+        }
+      );
+      const beaconStatusResJson = await beaconStatusResponse.json();
+
+      const matchedBeaconData = beaconStatusResJson.data?.find(
+        (item: any) => item.validator?.pubkey === pubkeyAddress
+      );
+
+      const beaconApiStatus =
+        matchedBeaconData?.status?.toUpperCase() || undefined;
+      const newPubkeyInfo = {
+        pubkeyAddress: pubkeyAddress,
+        beaconApiStatus,
+        ...pubkeyInfo,
+      };
+
+      const displayStatus = getPubkeyDisplayStatus(
+        newPubkeyInfo,
+        Number(unmatchedEth)
+      );
+
       // console.log({ pubkeyInfo });
       setPubkeyInfo({
         pubkeyAddress: pubkeyAddress,
+        beaconApiStatus,
+        displayStatus,
         ...pubkeyInfo,
       });
     } catch (err: any) {
