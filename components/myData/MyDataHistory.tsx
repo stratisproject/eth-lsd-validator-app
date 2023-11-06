@@ -73,7 +73,7 @@ export const MyDataHistory = () => {
 
         <div className="ml-[.36rem] flex items-center">
           <IOSSwitch
-            darkMode={darkMode}
+            // darkMode={darkMode}
             checked={toggleOn}
             onChange={(e) => {
               setToggleOn(e.target.checked);
@@ -104,7 +104,7 @@ export const MyDataHistory = () => {
         </div>
 
         <div
-          className="h-[.7rem] grid items-center font-[500]"
+          className="h-[.7rem] grid items-center font-[500] border-solid border-b-[.01rem] border-white dark:border-[#222C3C]"
           style={{
             gridTemplateColumns: "20% 16% 16% 16% 16% 16%",
           }}
@@ -275,7 +275,7 @@ const ChooseTypePopover = (props: ChooseTypePopoverProps) => {
               <Image src={checkedIcon} alt="checked" layout="fill" />
             </div>
           ) : (
-            <div className="w-[.16rem] h-[.16rem] rounded-[0.03rem] border-solid border-[1px] border-color-border3" />
+            <div className="w-[.16rem] h-[.16rem] rounded-[0.03rem] border-solid border-[1px] border-[#6C86AD4D]" />
           )}
         </div>
 
@@ -298,7 +298,7 @@ const ChooseTypePopover = (props: ChooseTypePopoverProps) => {
               <Image src={checkedIcon} alt="checked" layout="fill" />
             </div>
           ) : (
-            <div className="w-[.16rem] h-[.16rem] rounded-[0.03rem] border-solid border-[1px] border-color-border3" />
+            <div className="w-[.16rem] h-[.16rem] rounded-[0.03rem] border-solid border-[1px] border-[#6C86AD4D]" />
           )}
         </div>
 
@@ -321,7 +321,7 @@ const ChooseTypePopover = (props: ChooseTypePopoverProps) => {
               <Image src={checkedIcon} alt="checked" layout="fill" />
             </div>
           ) : (
-            <div className="w-[.16rem] h-[.16rem] rounded-[0.03rem] border-solid border-[1px] border-color-border3" />
+            <div className="w-[.16rem] h-[.16rem] rounded-[0.03rem] border-solid border-[1px] border-[#6C86AD4D]" />
           )}
         </div>
       </div>

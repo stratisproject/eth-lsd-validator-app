@@ -127,6 +127,7 @@ export const useNodePubkeys = (
     setPendingCount(pendingCount);
     setExitedCount(exitedCount);
     setOthersCount(othersCount);
+    setTotalCount(nodePubkeyInfos.length);
   }, [nodePubkeyInfos, pubkeyStatusTypes, unmatchedEth]);
 
   const showLoading = useMemo(() => {
@@ -170,9 +171,6 @@ export const useNodePubkeys = (
         .catch((err: any) => {
           console.log({ err });
         });
-
-      // console.log({ pubkeysOfNode });
-      setTotalCount(pubkeysOfNode.length);
 
       const requests = pubkeysOfNode?.map((pubkeyAddress: string) => {
         return (async () => {

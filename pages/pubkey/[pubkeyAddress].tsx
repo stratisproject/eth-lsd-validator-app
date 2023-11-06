@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import { CustomTag } from "components/common/CustomTag";
+import { DataLoading } from "components/common/DataLoading";
 import { PageTitleContainer } from "components/common/PageTitleContainer";
 import { Icomoon } from "components/icon/Icomoon";
 import { PubkeyDetailAsset } from "components/pubkey/PubkeyDetailAsset";
@@ -105,16 +106,29 @@ const PubkeyDetailPage = () => {
               <div
                 className={classNames(
                   robotoBold.className,
-                  "text-[.34rem] ml-[.12rem]"
+                  "text-[.34rem] ml-[.12rem] flex items-center text-color-text1"
                 )}
               >
-                -- Days
+                {pubkeyInfo?.days === undefined ? (
+                  <DataLoading height=".12rem" />
+                ) : (
+                  pubkeyInfo?.days
+                )}
+
+                <div className="ml-[.06rem]">Days</div>
               </div>
             </div>
 
             <div className="mt-[.12rem] flex items-center justify-center text-[.12rem] text-color-text2 cursor-pointer">
               <CustomTag type="stroke" ml=".16rem">
-                Epoch --
+                <div className="flex items-center text-color-text1">
+                  <div className="mr-[.06rem]">Epoch</div>
+                  {pubkeyInfo?.eligibilityEpoch === undefined ? (
+                    <DataLoading height=".12rem" />
+                  ) : (
+                    pubkeyInfo?.eligibilityEpoch
+                  )}
+                </div>
               </CustomTag>
 
               <div className="ml-[.06rem]">Eligible for Activation</div>

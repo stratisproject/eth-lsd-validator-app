@@ -32,7 +32,7 @@ export const PoolAssets = () => {
   return (
     <div className="mt-[.24rem] bg-color-bg2 border-[0.01rem] border-color-border1 rounded-[.3rem]">
       <div
-        className="h-[.7rem] grid items-center font-[500]"
+        className="h-[.7rem] grid items-center font-[500] border-solid border-b-[.01rem] border-white dark:border-[#222C3C]"
         style={{
           gridTemplateColumns: "20% 16% 16% 16% 16% 16%",
         }}
@@ -97,7 +97,7 @@ export const PoolAssets = () => {
               )}
             </div>
 
-            <div className="text-color-text2 mt-[.16rem] hidden">
+            <div className="text-color-text2 mt-[.24rem] hidden">
               -- Contracts
             </div>
           </div>
@@ -115,7 +115,7 @@ export const PoolAssets = () => {
 
             <div
               className={classNames(
-                "text-color-text2 mt-[.16rem]",
+                "text-color-text2 mt-[.24rem]",
                 isSupportTokenPrice() ? "" : "hidden"
               )}
             >
@@ -143,7 +143,7 @@ export const PoolAssets = () => {
 
             <div
               className={classNames(
-                "text-color-text2 mt-[.16rem]",
+                "text-color-text2 mt-[.24rem]",
                 isSupportTokenPrice() ? "" : "hidden"
               )}
             >
@@ -168,7 +168,7 @@ export const PoolAssets = () => {
                 formatNumber(unmatchedEth, { hideDecimalsForZero: true })
               )}
             </div>
-            <div className="text-color-text2 mt-[.16rem]">32 ETH / Pool</div>
+            <div className="text-color-text2 mt-[.24rem]">32 ETH / Pool</div>
           </div>
         </div>
 
@@ -182,7 +182,7 @@ export const PoolAssets = () => {
               )}
             </div>
             <div
-              className="flex items-center mt-[.16rem] cursor-pointer"
+              className="flex items-center mt-[.24rem] cursor-pointer"
               onClick={() => {
                 openLink("https://www.google.com");
               }}

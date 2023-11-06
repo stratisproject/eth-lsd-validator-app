@@ -210,7 +210,8 @@ export const getPubkeyDisplayStatus = (
   unmatchedToken: number
 ) => {
   if (item._status === ChainPubkeyStatus.Deposited) {
-    return "Waiting";
+    // return "Waiting";
+    return "Pending";
   }
   if (item._status === ChainPubkeyStatus.UnMatch) {
     return "Failed";

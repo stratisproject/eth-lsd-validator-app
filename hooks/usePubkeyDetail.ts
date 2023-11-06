@@ -62,11 +62,31 @@ export function usePubkeyDetail(pubkeyAddress: string | undefined) {
         (item: any) => item.validator?.pubkey === pubkeyAddress
       );
 
+      console.log({ matchedBeaconData });
       const beaconApiStatus =
         matchedBeaconData?.status?.toUpperCase() || undefined;
+      const eligibilityEpoch =
+        matchedBeaconData?.validator?.activation_eligibility_epoch || "--";
+
+      const beaconCheckpointsResponse = await fetch(`/api/beaconCheckpoints`, {
+        method: "GET",
+      });
+      const beaconCheckpointsResJson = await beaconCheckpointsResponse.json();
+      console.log({ beaconCheckpointsResJson });
+      const currentEpoch = beaconCheckpointsResJson?.data?.finalized?.epoch;
+
+      const days =
+        ((Number(currentEpoch) -
+          Number(matchedBeaconData?.validator?.activation_epoch)) *
+          32 *
+          12) /
+        (24 * 60 * 60);
+
       const newPubkeyInfo = {
         pubkeyAddress: pubkeyAddress,
         beaconApiStatus,
+        eligibilityEpoch,
+        days: Math.floor(days) + "",
         ...pubkeyInfo,
       };
 
@@ -76,12 +96,7 @@ export function usePubkeyDetail(pubkeyAddress: string | undefined) {
       );
 
       // console.log({ pubkeyInfo });
-      setPubkeyInfo({
-        pubkeyAddress: pubkeyAddress,
-        beaconApiStatus,
-        displayStatus,
-        ...pubkeyInfo,
-      });
+      setPubkeyInfo({ ...newPubkeyInfo, displayStatus });
     } catch (err: any) {
       console.log({ err });
     }

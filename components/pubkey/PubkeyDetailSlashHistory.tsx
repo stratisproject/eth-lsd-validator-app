@@ -27,9 +27,9 @@ export const PubkeyDetailSlashHistory = () => {
 
       <div className="mt-[.24rem] bg-color-bg2 border-[0.01rem] border-color-border1 rounded-[.3rem]">
         <div
-          className="h-[.7rem] grid items-center font-[500]"
+          className="h-[.7rem] grid items-center font-[500] border-solid border-b-[.01rem] border-white dark:border-[#222C3C]"
           style={{
-            gridTemplateColumns: "25% 25% 20% 30%",
+            gridTemplateColumns: "25% 22% 22% 31%",
           }}
         >
           <div className="flex items-center justify-center text-[.16rem] text-color-text2">
@@ -45,14 +45,14 @@ export const PubkeyDetailSlashHistory = () => {
           </div>
 
           <div className="flex items-center text-[.16rem] text-color-text2">
-            <div className="flex-1 ml-[.32rem] mr-[.9rem] flex items-center justify-between">
+            <div className="flex-1 ml-[.56rem] mr-[.9rem] flex items-center justify-between">
               <div>Detials</div>
 
-              <Icomoon
+              {/* <Icomoon
                 icon="right"
                 color={darkMode ? "#ffffff80" : "#6C86AD"}
                 size=".13rem"
-              />
+              /> */}
             </div>
           </div>
         </div>
@@ -90,7 +90,7 @@ const SlashHistoryItem = (props: SlashHistoryItemProps) => {
         index % 2 === 0 ? "bg-bgPage/50 dark:bg-bgPageDark/50" : ""
       )}
       style={{
-        gridTemplateColumns: "25% 25% 20% 30%",
+        gridTemplateColumns: "25% 22% 22% 31%",
       }}
     >
       <div className="flex items-center justify-center text-[.16rem] text-color-text2 cursor-pointer">
@@ -119,7 +119,7 @@ const SlashHistoryItem = (props: SlashHistoryItemProps) => {
       </div>
 
       <div className="flex items-center justify-center text-color-text1 text-[.16rem]">
-        <div className="flex-1 ml-[.32rem] mr-[.9rem] flex items-center justify-between">
+        <div className="flex-1 ml-[.56rem] mr-[.9rem] flex items-center justify-between">
           <div
             className={classNames("mr-[.04rem] flex-1")}
             style={{

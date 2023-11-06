@@ -44,7 +44,7 @@ export const MyDataAssets = () => {
   return (
     <div className="mt-[.24rem] bg-color-bg2 border-[0.01rem] border-color-border1 rounded-[.3rem]">
       <div
-        className="h-[.7rem] grid items-center font-[500]"
+        className="h-[.7rem] grid items-center font-[500] border-solid border-b-[.01rem] border-white dark:border-[#222C3C]"
         style={{
           gridTemplateColumns: "20% 20% 20% 20% 20%",
         }}

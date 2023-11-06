@@ -2,7 +2,7 @@ import Switch, { SwitchProps } from "@mui/material/Switch";
 import { styled } from "@mui/material/styles";
 
 interface Props extends SwitchProps {
-  darkMode: boolean;
+  // darkMode: boolean;
 }
 
 export const IOSSwitch = styled((props: Props) => (
@@ -68,6 +68,6 @@ export const IOSSwitch = styled((props: Props) => (
     // border: props.darkMode
     //   ? '"0.01rem solid #ffffff80"'
     //   : "0.01rem solid #ffffff80",
-    border: "0.01rem solid #ffffff80",
+    border: "0.01rem solid #ffffff",
   },
 }));

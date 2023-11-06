@@ -50,6 +50,8 @@ export interface NodePubkeyInfo {
   pubkeyAddress: string;
   canStake?: boolean;
   displayStatus?: string;
+  eligibilityEpoch?: string;
+  days?: string;
   _status: string;
   _owner: string;
   _nodeDepositAmount: string;
