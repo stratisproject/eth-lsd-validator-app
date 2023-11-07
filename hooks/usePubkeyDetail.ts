@@ -64,7 +64,6 @@ export function usePubkeyDetail(pubkeyAddress: string | undefined) {
       const matchedBeaconData = beaconStatusResJson.data?.find(
         (item: any) => item.validator?.pubkey === pubkeyAddress
       );
-      console.log({ matchedBeaconData });
 
       const beaconApiStatus =
         matchedBeaconData?.status?.toUpperCase() || undefined;

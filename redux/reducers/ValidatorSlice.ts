@@ -115,6 +115,7 @@ export const updateValidatorWithdrawalCredentials =
 export const updateNodePubkeys = (): AppThunk => async (dispatch, getState) => {
   try {
     const nodeAddress = getState().wallet.metaMaskAccount;
+
     if (!nodeAddress) {
       // dispatch(setNodePubkeys([]));
       return;
