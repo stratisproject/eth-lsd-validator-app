@@ -8,13 +8,10 @@ import { PubkeyDetailSlashHistory } from "components/pubkey/PubkeyDetailSlashHis
 import { robotoBold } from "config/font";
 import { useAppSlice } from "hooks/selector";
 import { usePubkeyDetail } from "hooks/usePubkeyDetail";
-import { usePubkeyStatus } from "hooks/usePubkeyStatus";
-import { DisplayPubkeyStatus } from "interfaces/common";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import tokenStakeIcon from "public/images/token/lsdETH.svg";
 import { useMemo } from "react";
-import { getDisplayPubkeyStatusFromBeaconStatus } from "utils/commonUtils";
 import snackbarUtil from "utils/snackbarUtils";
 import { getShortAddress } from "utils/stringUtils";
 
@@ -138,7 +135,10 @@ const PubkeyDetailPage = () => {
       </PageTitleContainer>
 
       <div className="w-smallContentW xl:w-contentW 2xl:w-largeContentW mx-auto">
-        <PubkeyDetailAsset pubkeyAddress={pubkeyAddress} />
+        <PubkeyDetailAsset
+          pubkeyAddress={pubkeyAddress}
+          pubkeyInfo={pubkeyInfo}
+        />
 
         <PubkeyDetailSlashHistory />
       </div>

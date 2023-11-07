@@ -12,7 +12,7 @@ import { openLink } from "utils/commonUtils";
 import { getTokenName } from "utils/configUtils";
 import { getShortAddress } from "utils/stringUtils";
 
-export const MyDataNodeElection = () => {
+export const MyDataNodeEjection = () => {
   const { darkMode } = useAppSlice();
   const { metaMaskAccount } = useWalletAccount();
   const [page, setPage] = useState(1);
@@ -26,7 +26,7 @@ export const MyDataNodeElection = () => {
             "text-[.24rem] text-color-text1"
           )}
         >
-          Node Election
+          Node Ejection
         </div>
 
         <div className="ml-[.24rem]">

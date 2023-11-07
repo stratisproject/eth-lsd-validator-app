@@ -1,11 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
-  getNetworkBalanceContract,
-  getNetworkBalanceContractAbi,
   getNetworkWithdrawContract,
-  getNetworkWithdrawContractAbi,
   getNodeDepositContract,
-  getNodeDepositContractAbi,
 } from "config/contract";
 import { getEtherScanTxUrl } from "config/explorer";
 import {
@@ -14,11 +10,21 @@ import {
   CONNECTION_ERROR_MESSAGE,
   TRANSACTION_FAILED_MESSAGE,
 } from "constants/common";
+import dayjs from "dayjs";
+import {
+  IpfsRewardItem,
+  NodePubkeyInfo,
+  TokenWithdrawInfo,
+  ValidatorClaimType,
+} from "interfaces/common";
 import { AppThunk } from "redux/store";
 import { isEvmTxCancelError, uuid } from "utils/commonUtils";
+import { getTokenName } from "utils/configUtils";
+import { formatNumber } from "utils/numberUtils";
 import snackbarUtil from "utils/snackbarUtils";
 import { getShortAddress } from "utils/stringUtils";
 import { createWeb3, getEthWeb3 } from "utils/web3Utils";
+import Web3 from "web3";
 import {
   addNotice,
   setDepositLoadingParams,
@@ -31,26 +37,22 @@ import {
 } from "./AppSlice";
 import { setEthTxLoading, updateEthBalance } from "./EthSlice";
 import {
-  ClaimProof,
-  IpfsRewardItem,
-  TokenWithdrawInfo,
-  ValidatorClaimType,
-} from "interfaces/common";
-import { formatNumber } from "utils/numberUtils";
-import { getTokenName } from "utils/configUtils";
-import Web3 from "web3";
-import dayjs from "dayjs";
+  getNetworkWithdrawContractAbi,
+  getNodeDepositContractAbi,
+} from "config/contractAbi";
 
 export interface ValidatorState {
   validatorWithdrawalCredentials: string;
   claimRewardsLoading: boolean;
   withdrawLoading: boolean;
+  nodePubkeys: NodePubkeyInfo[] | undefined;
 }
 
 const initialState: ValidatorState = {
   validatorWithdrawalCredentials: "--",
   claimRewardsLoading: false,
   withdrawLoading: false,
+  nodePubkeys: undefined,
 };
 
 export const validatorSlice = createSlice({
@@ -75,6 +77,12 @@ export const validatorSlice = createSlice({
     ) => {
       state.withdrawLoading = action.payload;
     },
+    setNodePubkeys: (
+      state: ValidatorState,
+      action: PayloadAction<NodePubkeyInfo[]>
+    ) => {
+      state.nodePubkeys = action.payload;
+    },
   },
 });
 
@@ -82,6 +90,7 @@ export const {
   setValidatorWithdrawalCredentials,
   setClaimRewardsLoading,
   setWithdrawLoading,
+  setNodePubkeys,
 } = validatorSlice.actions;
 
 export default validatorSlice.reducer;
@@ -100,11 +109,73 @@ export const updateValidatorWithdrawalCredentials =
 
       const res = await contract.methods.withdrawCredentials().call();
       dispatch(setValidatorWithdrawalCredentials(res.slice(2)));
-      // console.log("res", res);
-    } catch (err: unknown) {
-      console.log("err", err);
-    }
+    } catch (err: unknown) {}
   };
+
+export const updateNodePubkeys = (): AppThunk => async (dispatch, getState) => {
+  try {
+    const nodeAddress = getState().wallet.metaMaskAccount;
+    if (!nodeAddress) {
+      // dispatch(setNodePubkeys([]));
+      return;
+    }
+
+    const web3 = getEthWeb3();
+
+    const nodeDepositContract = new web3.eth.Contract(
+      getNodeDepositContractAbi(),
+      getNodeDepositContract(),
+      {
+        from: nodeAddress,
+      }
+    );
+
+    const pubkeysOfNode = await nodeDepositContract.methods
+      .getPubkeysOfNode(nodeAddress)
+      .call()
+      .catch((err: any) => {
+        console.log({ err });
+      });
+
+    const requests = pubkeysOfNode?.map((pubkeyAddress: string) => {
+      return (async () => {
+        const pubkeyInfo = await nodeDepositContract.methods
+          .pubkeyInfoOf(pubkeyAddress)
+          .call()
+          .catch((err: any) => {
+            console.log({ err });
+          });
+
+        return pubkeyInfo;
+      })();
+    });
+
+    const pubkeyInfos = await Promise.all(requests);
+
+    const beaconStatusResponse = await fetch(
+      `/api/pubkeyStatus?id=${pubkeysOfNode.join(",")}`,
+      {
+        method: "GET",
+      }
+    );
+    const beaconStatusResJson = await beaconStatusResponse.json();
+
+    const nodePubkeyInfos: NodePubkeyInfo[] = pubkeyInfos.map((item, index) => {
+      const matchedBeaconData = beaconStatusResJson.data?.find(
+        (item: any) => item.validator?.pubkey === pubkeysOfNode[index]
+      );
+      return {
+        pubkeyAddress: pubkeysOfNode[index],
+        beaconApiStatus: matchedBeaconData?.status?.toUpperCase() || undefined,
+        ...item,
+      };
+    });
+
+    dispatch(setNodePubkeys(nodePubkeyInfos));
+  } catch (err: any) {
+    console.log({ err });
+  }
+};
 
 export const handleEthValidatorDeposit =
   (
@@ -171,24 +242,9 @@ export const handleEthValidatorDeposit =
         depositDataRoots.push("0x" + validatorKey.deposit_data_root);
       });
 
-      // console.log("pubkeys", pubkeys);
-      // console.log("signatures", signatures);
-      // console.log("depositDataRoots", depositDataRoots);
-
       const sendParams = {};
 
       {
-        // let nodeManagerContract = new web3.eth.Contract(
-        //   getStafiNodeManagerAbi(),
-        //   ethContractConfig.stafiNodeManager
-        // );
-        // const exist = await nodeManagerContract.methods
-        //   .getSuperNodeExists(address)
-        //   .call();
-        // if (!exist) {
-        //   throw Error("Invalid trusted node");
-        // }
-
         const depositEnabled = await nodeDepositContract.methods
           .trustNodeDepositEnabled()
           .call();
@@ -208,8 +264,6 @@ export const handleEthValidatorDeposit =
 
         const statusList = await Promise.all(statusRequests);
 
-        console.log({ statusList });
-
         statusList.forEach((status, index) => {
           if (Number(status) !== 0) {
             throw Error(
@@ -222,7 +276,6 @@ export const handleEthValidatorDeposit =
       const result = await nodeDepositContract.methods
         .deposit(pubkeys, signatures, depositDataRoots)
         .send(sendParams);
-      // console.log("result", result);
 
       dispatch(setEthTxLoading(false));
       callback && callback(result?.status, result);
@@ -300,20 +353,6 @@ export const handleEthValidatorStake =
         depositDataRoots.push("0x" + validatorKey.deposit_data_root);
       });
 
-      // console.log("pubkeys", pubkeys);
-      // console.log("signatures", signatures);
-      // console.log("depositDataRoots", depositDataRoots);
-
-      // dispatch(
-      //   setEthValidatorStakeParams({
-      //     pubkeys,
-      //     type,
-      //     status: "staking",
-      //     txHash: "",
-      //   })
-      // );
-      // dispatch(setEthValiatorStakeModalVisible(true));
-
       dispatch(setEthTxLoading(true));
       dispatch(
         setValidatorStakeLoadingParams({
@@ -326,8 +365,6 @@ export const handleEthValidatorStake =
       const result = await nodeDepositContract.methods
         .stake(pubkeys, signatures, depositDataRoots)
         .send();
-
-      // console.log("result", result);
 
       dispatch(setEthTxLoading(false));
       callback && callback(result?.status, result);
@@ -363,7 +400,6 @@ export const handleEthValidatorStake =
       dispatch(setEthTxLoading(false));
       if (isEvmTxCancelError(err)) {
         snackbarUtil.error(CANCELLED_MESSAGE);
-        // dispatch(setEthValiatorStakeModalVisible(false));
         dispatch(setValidatorStakeLoadingParams(undefined));
       } else {
         dispatch(
@@ -379,7 +415,6 @@ export const handleEthValidatorStake =
 export const claimValidatorRewards =
   (
     ipfsRewardItem: IpfsRewardItem | undefined,
-    // claimProof: ClaimProof,
     myClaimableReward: string,
     callback?: (success: boolean, result: any) => void
   ): AppThunk =>
@@ -407,17 +442,6 @@ export const claimValidatorRewards =
       dispatch(setClaimRewardsLoading(true));
 
       const formatProofs = ["0x" + ipfsRewardItem.proof];
-      // if (!ipfsRewardItem.proof) {
-      //   ipfsRewardItem.proof.forEach((item) => {
-      //     const format = "0x" + item;
-      //     // const format = Web3.utils.hexToAscii("0x" + item);
-      //     // const format = Web3.utils.hexToBytes("0x" + item);
-      //     // const format = "0x" + Web3.utils.padLeft(item, 64);
-      //     // const format = Web3.utils.padRight(Web3.utils.fromAscii(item), 34);
-      //     console.log("format", format);
-      //     formatProofs.push(format);
-      //   });
-      // }
 
       const claimParams = [
         ipfsRewardItem.index,
@@ -427,15 +451,12 @@ export const claimValidatorRewards =
         formatProofs,
         ValidatorClaimType.ClaimReward,
       ];
-      // console.log("111", claimParams);
       const result = await contract.methods.nodeClaim(...claimParams).send();
-      // console.log("222");
 
       callback && callback(result.status, result);
       dispatch(updateEthBalance());
       dispatch(setClaimRewardsLoading(false));
 
-      // console.log("result", result);
       if (result && result.status) {
         const txHash = result.transactionHash;
         dispatch(
@@ -471,7 +492,6 @@ export const claimValidatorRewards =
         throw new Error(TRANSACTION_FAILED_MESSAGE);
       }
     } catch (err: any) {
-      console.log("errrrr", err);
       let displayMsg = err.message || TRANSACTION_FAILED_MESSAGE;
       if (err.code === -32603) {
         displayMsg = COMMON_ERROR_MESSAGE;
@@ -532,16 +552,6 @@ export const withdrawValidatorEth =
         })
       );
 
-      // const formatProofs = claimProof.proof.map((item) => {
-      //   const format = "0x" + item;
-      //   // const format = Web3.utils.hexToAscii("0x" + item);
-      //   // const format = Web3.utils.hexToBytes("0x" + item);
-      //   // const format = "0x" + Web3.utils.padLeft(item, 64);
-      //   // const format = Web3.utils.padRight(Web3.utils.fromAscii(item), 34);
-      //   // console.log("format", format);
-      //   return format;
-      // });
-
       const claimParams = [
         ipfsRewardItem.index,
         ipfsRewardItem.address,
@@ -550,7 +560,6 @@ export const withdrawValidatorEth =
         ["0x" + ipfsRewardItem.proof],
         ValidatorClaimType.ClaimAll,
       ];
-      // console.log("111", claimParams);
       const result = await contract.methods.nodeClaim(...claimParams).send();
 
       callback && callback(result.status, result);
@@ -600,7 +609,6 @@ export const withdrawValidatorEth =
       }
     } catch (err: any) {
       {
-        console.log("errrrr", err);
         let displayMsg = err.message || TRANSACTION_FAILED_MESSAGE;
         if (err.code === -32603) {
           displayMsg = CONNECTION_ERROR_MESSAGE;

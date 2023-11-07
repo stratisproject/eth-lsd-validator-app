@@ -8,12 +8,18 @@ export enum ValidatorNodeType {
   Trusted = "2",
 }
 
+export interface RewardJsonResponse {
+  Epoch: number;
+  List: IpfsRewardItem[];
+}
+
 export interface IpfsRewardItem {
   index: number;
   address: string;
   proof: string;
   totalExitDepositAmount: number;
   totalRewardAmount: string;
+  totalDepositAmount?: string;
 }
 
 export enum ChainPubkeyStatus {
@@ -52,6 +58,7 @@ export interface NodePubkeyInfo {
   displayStatus?: string;
   eligibilityEpoch?: string;
   days?: string;
+  currentTokenAmount?: string;
   _status: string;
   _owner: string;
   _nodeDepositAmount: string;

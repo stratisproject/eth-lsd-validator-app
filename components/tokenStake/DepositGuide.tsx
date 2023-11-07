@@ -56,24 +56,22 @@ export const DepositGuide = () => {
         >
           {soloNodeDepositAmount && Number(soloNodeDepositAmount) > 0 && (
             <>
-              Deposit{" "}
+              Begin as a delegated validator with the StaFi rToken App by
+              depositing{" "}
               <span className={robotoBold.className}>
                 {soloNodeDepositAmount} ETH
-              </span>{" "}
-              to register as a delegated validator on StaFi;
-              <div className="mt-[.1rem]" />
-              StaFi will match{" "}
+              </span>
+              . StaFi will contribute an additional{" "}
               <span className={robotoBold.className}>
                 {32 - Number(soloNodeDepositAmount)} ETH
-              </span>{" "}
-              to your node so that it can meet the validator conditions of ETH
-              2.0.
+              </span>
+              , ensuring your node fulfills the validator requirements for{" "}
+              <span className={robotoBold.className}>ETH 2.0</span>.
               <div className="mt-[.1rem]" />
             </>
           )}
-          If you are a{" "}
-          <span className={robotoBold.className}>trusted validator</span>, you
-          don't need to deposit {getTokenName()} yourself.
+          Note: <span className={robotoBold.className}>Trusted validators</span>{" "}
+          do not need to deposit ETH.
         </div>
 
         <div className="ml-[.05rem] mt-[-0.04rem]">
@@ -108,12 +106,14 @@ export const DepositGuide = () => {
           className="text-color-text2 text-[.14rem] px-[.2rem] py-[.1rem] mt-[.06rem] ml-[.1rem] leading-normal border-dashed border-l-[1px] border-l-text2/30 dark:border-l-text2Dark/30"
           style={{}}
         >
-          Once your node reaches{" "}
-          <span className={robotoBold.className}>32 ETH</span>, you can deposit{" "}
-          <span className={robotoBold.className}>32 ETH</span> to the deposit
-          contract of <span className={robotoBold.className}>ETH 1.0</span>.
+          Once your node balance reaches{" "}
+          <span className={robotoBold.className}>32 ETH</span>, you may proceed
+          to deploy a pool contract. This action allocates{" "}
+          <span className={robotoBold.className}>32 ETH</span> to the{" "}
+          <span className={robotoBold.className}>ETH 2.0</span> deposit
+          contract.
           <div className="mt-[.1rem]" />
-          After that, please wait for validating progress on{" "}
+          Subsequently, you will need to await the validation progress on{" "}
           <span className={robotoBold.className}>ETH 2.0</span>.
         </div>
 
@@ -149,9 +149,9 @@ export const DepositGuide = () => {
           className="text-color-text2 text-[.14rem] px-[.2rem] py-[.1rem] mt-[.06rem] ml-[.1rem] leading-normal"
           style={{}}
         >
-          There is nothing we can do in this step, once you stake, we should{" "}
-          <span className={robotoBold.className}>wait for the queen</span>,
-          check the status on the{" "}
+          After your stake is in place, our protocol takes over. There's nothing
+          more required from you. As a validator, you may monitor the status via
+          our user-friendly{" "}
           <span
             className={classNames(
               "underline cursor-pointer",
@@ -163,7 +163,7 @@ export const DepositGuide = () => {
           >
             dashboard
           </span>
-          .
+          . Patience is key here, as we await the network's nod of approval.
         </div>
       </div>
     </div>

@@ -1,8 +1,8 @@
 import {
   getEthDepositContract,
   getNetworkWithdrawContract,
-  getNetworkWithdrawContractAbi,
 } from "config/contract";
+import { getNetworkWithdrawContractAbi } from "config/contractAbi";
 import { useCallback, useEffect, useState } from "react";
 import { getEthWeb3 } from "utils/web3Utils";
 import Web3 from "web3";

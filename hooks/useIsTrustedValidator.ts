@@ -1,11 +1,9 @@
-import {
-  getNodeDepositContract,
-  getNodeDepositContractAbi,
-} from "config/contract";
+import { getNodeDepositContract } from "config/contract";
 import { useCallback, useEffect, useState } from "react";
 import { createWeb3 } from "utils/web3Utils";
 import { useWalletAccount } from "./useWalletAccount";
 import { ValidatorNodeType } from "interfaces/common";
+import { getNodeDepositContractAbi } from "config/contractAbi";
 
 export function useIsTrustedValidator() {
   const { metaMaskAccount } = useWalletAccount();
@@ -25,9 +23,6 @@ export function useIsTrustedValidator() {
       const nodeInfoOf = await nodeDepositContract.methods
         .nodeInfoOf(metaMaskAccount)
         .call();
-
-      // console.log({ nodeInfoOf });
-      // console.log(nodeInfoOf._nodeType);
 
       setIsTrust(
         nodeInfoOf && nodeInfoOf._nodeType === ValidatorNodeType.Trusted

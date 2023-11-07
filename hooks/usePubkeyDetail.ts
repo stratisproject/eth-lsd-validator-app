@@ -1,8 +1,6 @@
 import {
   getNetworkWithdrawContract,
-  getNetworkWithdrawContractAbi,
   getNodeDepositContract,
-  getNodeDepositContractAbi,
 } from "config/contract";
 import { NodePubkeyInfo } from "interfaces/common";
 import { useCallback, useEffect, useState } from "react";
@@ -10,6 +8,11 @@ import { getPubkeyDisplayStatus } from "utils/commonUtils";
 import { getEthWeb3 } from "utils/web3Utils";
 import { useUnmatchedToken } from "./useUnmatchedToken";
 import { useWalletAccount } from "./useWalletAccount";
+import {
+  getNetworkWithdrawContractAbi,
+  getNodeDepositContractAbi,
+} from "config/contractAbi";
+import Web3 from "web3";
 
 export function usePubkeyDetail(pubkeyAddress: string | undefined) {
   const { metaMaskAccount } = useWalletAccount();
@@ -61,8 +64,8 @@ export function usePubkeyDetail(pubkeyAddress: string | undefined) {
       const matchedBeaconData = beaconStatusResJson.data?.find(
         (item: any) => item.validator?.pubkey === pubkeyAddress
       );
-
       console.log({ matchedBeaconData });
+
       const beaconApiStatus =
         matchedBeaconData?.status?.toUpperCase() || undefined;
       const eligibilityEpoch =
@@ -72,7 +75,6 @@ export function usePubkeyDetail(pubkeyAddress: string | undefined) {
         method: "GET",
       });
       const beaconCheckpointsResJson = await beaconCheckpointsResponse.json();
-      console.log({ beaconCheckpointsResJson });
       const currentEpoch = beaconCheckpointsResJson?.data?.finalized?.epoch;
 
       const days =
@@ -87,6 +89,9 @@ export function usePubkeyDetail(pubkeyAddress: string | undefined) {
         beaconApiStatus,
         eligibilityEpoch,
         days: Math.floor(days) + "",
+        currentTokenAmount: matchedBeaconData
+          ? Web3.utils.fromWei(matchedBeaconData.balance, "gwei")
+          : "--",
         ...pubkeyInfo,
       };
 
@@ -95,7 +100,6 @@ export function usePubkeyDetail(pubkeyAddress: string | undefined) {
         Number(unmatchedEth)
       );
 
-      // console.log({ pubkeyInfo });
       setPubkeyInfo({ ...newPubkeyInfo, displayStatus });
     } catch (err: any) {
       console.log({ err });

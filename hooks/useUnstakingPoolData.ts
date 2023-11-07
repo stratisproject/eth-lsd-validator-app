@@ -1,18 +1,15 @@
-import { useCallback, useEffect, useState } from "react";
-import { RootState } from "redux/store";
-import Web3 from "web3";
-import { useAppSelector } from "./common";
-import { useAppSlice } from "./selector";
-import { getEthWeb3 } from "utils/web3Utils";
 import {
   getEthDepositContract,
   getLsdEthTokenContract,
-  getLsdEthTokenContractAbi,
   getNetworkWithdrawContract,
-  getNetworkWithdrawContractAbi,
-  getNodeDepositContract,
-  getNodeDepositContractAbi,
 } from "config/contract";
+import {
+  getLsdEthTokenContractAbi,
+  getNetworkWithdrawContractAbi,
+} from "config/contractAbi";
+import { useCallback, useEffect, useState } from "react";
+import { getEthWeb3 } from "utils/web3Utils";
+import Web3 from "web3";
 
 export function useUnstakingPoolData() {
   const [poolEth, setPoolEth] = useState<string>();
@@ -49,9 +46,6 @@ export function useUnstakingPoolData() {
         .catch((err: any) => {
           console.log({ err });
         });
-
-      // console.log({ lsdTotalSupply });
-      // console.log({ lsdRate });
 
       const userDepositBalance = await web3.eth.getBalance(
         getEthDepositContract()

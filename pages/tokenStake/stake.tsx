@@ -90,7 +90,6 @@ const StakePage = () => {
     ) {
       throw new Error("Miss deposit_data_root or signature or pubkey");
     }
-    // console.log({ validatorKey });
     if (validatorKey.amount !== 31000000000) {
       throw new Error(
         "Please use  stake_data file of trusted validator to stake"
@@ -387,7 +386,7 @@ const StakePage = () => {
                     }
 
                     if (!isTrust) {
-                      openLink("https://www.google.com");
+                      openLink("https://forms.gle/RtFK7qo9GzabQTCfA");
                       return;
                     }
 

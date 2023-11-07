@@ -26,7 +26,10 @@ import {
   updateEthLatestBlockTimestamp,
 } from "redux/reducers/EthSlice";
 import { useWalletAccount } from "./useWalletAccount";
-import { updateValidatorWithdrawalCredentials } from "redux/reducers/ValidatorSlice";
+import {
+  updateNodePubkeys,
+  updateValidatorWithdrawalCredentials,
+} from "redux/reducers/ValidatorSlice";
 
 declare const window: { ethereum: any };
 declare const ethereum: any;
@@ -52,8 +55,6 @@ export function useInit() {
 
   useEffect(() => {
     if (dispatch && updateFlag) {
-      // Query Dex Price change data
-      // dispatch(updatePriceChangeRateData());
       // Query eth latest block timestamp
       dispatch(updateEthLatestBlockTimestamp());
       // query apr
@@ -98,6 +99,13 @@ export function useInit() {
   useEffect(() => {
     dispatch(updateEthBalance());
   }, [dispatch, walletMetaMaskAccount, metaMaskChainId, updateFlag]);
+
+  // Query user node pubkeys
+  useEffect(() => {
+    if (dispatch && updateFlag) {
+      dispatch(updateNodePubkeys());
+    }
+  }, [updateFlag, dispatch, walletMetaMaskAccount]);
 
   // Change body backgroundColor
   useEffect(() => {

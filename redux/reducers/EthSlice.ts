@@ -1,28 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import {
-  getEthWithdrawContract,
-  getEthWithdrawContractAbi,
-} from "config/contract";
-import { getEtherScanTxUrl } from "config/explorer";
-import {
-  CANCELLED_MESSAGE,
-  CONNECTION_ERROR_MESSAGE,
-  LOADING_MESSAGE_WITHDRAWING,
-  TRANSACTION_FAILED_MESSAGE,
-} from "constants/common";
 import { AppThunk } from "redux/store";
-import { uuid } from "utils/commonUtils";
-import { getTokenName } from "utils/configUtils";
-import { formatNumber } from "utils/numberUtils";
-import snackbarUtil from "utils/snackbarUtils";
-import { createWeb3, getEthWeb3 } from "utils/web3Utils";
+import { getEthWeb3 } from "utils/web3Utils";
 import Web3 from "web3";
-import {
-  addNotice,
-  setWithdrawLoading,
-  setWithdrawLoadingParams,
-  updateWithdrawLoadingParams,
-} from "./AppSlice";
 
 export interface EthState {
   txLoading: boolean;

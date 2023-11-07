@@ -30,7 +30,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ) {
-  // console.log(req.query);
   const response = await fetch(
     `https://beacon-lighthouse-goerli.stafi.io/eth/v1/beacon/states/head/validators\?id=${req.query.id}`,
     {

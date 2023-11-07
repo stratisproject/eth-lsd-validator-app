@@ -6,7 +6,7 @@ import { EmptyContent } from "components/common/EmptyContent";
 import { LoadingContent } from "components/common/LoadingContent";
 import { Icomoon } from "components/icon/Icomoon";
 import { useAppSlice } from "hooks/selector";
-import { useNodePubkeys } from "hooks/useNodePubkeys";
+import { usePubkeysMyData } from "hooks/usePubkeysMyData";
 import { useWalletAccount } from "hooks/useWalletAccount";
 import { NodePubkeyInfo, PubkeyStatusType } from "interfaces/common";
 import _ from "lodash";
@@ -23,7 +23,7 @@ import { getPubkeyStatusTypeText, openLink } from "utils/commonUtils";
 import { isSupportRestApi } from "utils/configUtils";
 import snackbarUtil from "utils/snackbarUtils";
 import { getShortAddress } from "utils/stringUtils";
-import { MyDataNodeElection } from "./MyDataNodeElection";
+import { MyDataNodeEjection } from "./MyDataNodeEjection";
 
 export const MyDataPubkeys = () => {
   const { metaMaskAccount } = useWalletAccount();
@@ -60,7 +60,7 @@ export const MyDataPubkeys = () => {
     pendingCount,
     exitedCount,
     othersCount,
-  } = useNodePubkeys(metaMaskAccount, page, types);
+  } = usePubkeysMyData(metaMaskAccount, page, types);
 
   const typePopupState = usePopupState({
     variant: "popover",
@@ -155,7 +155,7 @@ export const MyDataPubkeys = () => {
         </div>
       </div>
 
-      {isSupportRestApi() && <MyDataNodeElection />}
+      {isSupportRestApi() && <MyDataNodeEjection />}
 
       <ChooseTypePopover
         totalCount={totalCount}

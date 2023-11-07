@@ -12,10 +12,8 @@ import { Icomoon } from "components/icon/Icomoon";
 import { ConfirmModal } from "components/modal/ConfirmModal";
 import { DepositGuide } from "components/tokenStake/DepositGuide";
 import { ValidatorKeyUpload } from "components/tokenStake/ValidatorKeyUpload";
-import {
-  getNodeDepositContract,
-  getNodeDepositContractAbi,
-} from "config/contract";
+import { getNodeDepositContract } from "config/contract";
+import { getNodeDepositContractAbi } from "config/contractAbi";
 import { getEthereumChainId, getEthereumNetworkName } from "config/env";
 import { robotoBold } from "config/font";
 import { useAppDispatch, useAppSelector } from "hooks/common";
@@ -97,20 +95,12 @@ const TrustDepositPage = () => {
         "Please use  deposit_data file of trusted validator to deposit"
       );
     }
-    // console.log(
-    //   "validatorKey.withdrawal_credentials:",
-    //   validatorKey.withdrawal_credentials
-    // );
     if (
       validatorKey.withdrawal_credentials !== validatorWithdrawalCredentials
     ) {
-      // console.log(validatorWithdrawalCredentials);
-      // console.log(validatorKey.withdrawal_credentials);
-
       throw new Error(`Incorrect withdrawal_credentials value`);
     }
     const networkName = getEthereumNetworkName();
-    // console.log({ validatorKey });
     if (validatorKey.eth2_network_name !== networkName) {
       throw new Error(`Please use ${networkName} validator file to deposit`);
     }
@@ -144,8 +134,6 @@ const TrustDepositPage = () => {
       });
 
       const statusList = await Promise.all(statusRequests);
-
-      // console.log({ statusList });
 
       let hasRepeat = false;
       statusList.forEach((status, index) => {
@@ -379,7 +367,7 @@ const TrustDepositPage = () => {
                     return;
                   }
                   if (!isTrust) {
-                    openLink("https://www.google.com");
+                    openLink("https://forms.gle/RtFK7qo9GzabQTCfA");
                     return;
                   }
                   dispatch(

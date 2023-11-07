@@ -58,7 +58,7 @@ const ChooseTypePage = () => {
                     height=".48rem"
                     type="stroke"
                     onClick={() => {
-                      openLink("https://www.google.com");
+                      openLink("https://forms.gle/RtFK7qo9GzabQTCfA");
                     }}
                   >
                     Apply
@@ -101,7 +101,7 @@ const ChooseTypePage = () => {
                   height=".48rem"
                   type="stroke"
                   onClick={() => {
-                    openLink("https://www.google.com");
+                    openLink("https://docs.stafi.io/dvt/#ssv-integration");
                   }}
                 >
                   Instruction

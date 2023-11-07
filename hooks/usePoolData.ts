@@ -1,31 +1,30 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { RootState } from "redux/store";
-import Web3 from "web3";
-import { useAppSelector } from "./common";
-import { useAppSlice } from "./selector";
-import { getEthWeb3 } from "utils/web3Utils";
 import {
   getEthDepositContract,
   getLsdEthTokenContract,
-  getLsdEthTokenContractAbi,
   getNetworkWithdrawContract,
-  getNetworkWithdrawContractAbi,
-  getNodeDepositContract,
-  getNodeDepositContractAbi,
 } from "config/contract";
+import {
+  getLsdEthTokenContractAbi,
+  getNetworkWithdrawContractAbi,
+} from "config/contractAbi";
+import { RewardJsonResponse } from "interfaces/common";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { getEthWeb3 } from "utils/web3Utils";
+import Web3 from "web3";
+import { useAppSlice } from "./selector";
+import { usePoolPubkeyData } from "./usePoolPubkeyData";
 import { usePrice } from "./usePrice";
 
 export function usePoolData() {
+  const { updateFlag } = useAppSlice();
   const [depositedEth, setDepositedEth] = useState<string>();
   const [depositedEthValue, setDepositedEthValue] = useState<string>();
   const [mintedLsdToken, setMintedLsdToken] = useState<string>();
-  const [stakedToken, setStakedToken] = useState<string>();
   const [allEth, setAllEth] = useState<string>();
   const [allEthValue, setAllEthValue] = useState<string>();
   const [poolEth, setPoolEth] = useState<string>();
   const [poolEthValue, setPoolEthValue] = useState<string>();
   const [unmatchedEth, setUnmatchedEth] = useState<string>();
-  const [matchedValidators, setMatchedValidators] = useState<string>();
   const [stakeApr, setStakeApr] = useState<string>();
   const [validatorApr, setValidatorApr] = useState<string>();
 
@@ -33,6 +32,15 @@ export function usePoolData() {
   const [lsdRate, setLsdRate] = useState<string>();
 
   const { tokenPrice } = usePrice();
+
+  const { matchedValidators } = usePoolPubkeyData();
+
+  const stakedToken = useMemo(() => {
+    if (!matchedValidators) {
+      return undefined;
+    }
+    return Number(matchedValidators) * 32 + "";
+  }, [matchedValidators]);
 
   const mintedLsdTokenValue = useMemo(() => {
     if (
@@ -64,12 +72,27 @@ export function usePoolData() {
     try {
       const web3 = getEthWeb3();
 
+      const userDepositBalance = await web3.eth.getBalance(
+        getEthDepositContract()
+      );
+
+      const unmatchedEth = Web3.utils.fromWei(Number(userDepositBalance) + "");
+      setUnmatchedEth(unmatchedEth);
+    } catch {}
+  }, [updateFlag]);
+
+  useEffect(() => {
+    udpatePoolData();
+  }, [udpatePoolData]);
+
+  const updatePoolTokenData = useCallback(async () => {
+    try {
+      const web3 = getEthWeb3();
       const networkWithdrawContract = new web3.eth.Contract(
         getNetworkWithdrawContractAbi(),
         getNetworkWithdrawContract(),
         {}
       );
-
       const lsdTokenContract = new web3.eth.Contract(
         getLsdEthTokenContractAbi(),
         getLsdEthTokenContract(),
@@ -90,98 +113,77 @@ export function usePoolData() {
           console.log({ err });
         });
 
-      // console.log({ lsdTotalSupply });
-      // console.log({ lsdRate });
-
       setLsdTotalSupply(Web3.utils.fromWei(lsdTotalSupply));
       setLsdRate(Web3.utils.fromWei(lsdRate));
-
-      const userDepositBalance = await web3.eth.getBalance(
-        getEthDepositContract()
-      );
-
-      const totalMissingAmountForWithdraw =
-        await networkWithdrawContract.methods
-          .totalMissingAmountForWithdraw()
-          .call()
-          .catch((err: any) => {
-            console.log({ err });
-          });
-
-      const poolEth =
-        Number(Web3.utils.fromWei(lsdTotalSupply)) *
-        Number(Web3.utils.fromWei(lsdRate));
-      // console.log({ poolEth });
-
-      const unmatchedEth = Web3.utils.fromWei(
-        Number(userDepositBalance) - Number(totalMissingAmountForWithdraw) + ""
-      );
-
-      setPoolEth(poolEth + "");
-      setUnmatchedEth(unmatchedEth);
       setMintedLsdToken(Web3.utils.fromWei(lsdTotalSupply));
-    } catch {}
-  }, []);
 
-  const updateMatchedValidators = useCallback(async () => {
-    try {
-      const web3 = getEthWeb3();
+      const nodeRewardsFileCid = await networkWithdrawContract.methods
+        .nodeRewardsFileCid()
+        .call()
+        .catch((err: any) => {
+          console.log({ err });
+        });
+      const latestMerkleRootEpoch = await networkWithdrawContract.methods
+        .latestMerkleRootEpoch()
+        .call()
+        .catch((err: any) => {
+          console.log({ err });
+        });
 
-      const nodeDepositContract = new web3.eth.Contract(
-        getNodeDepositContractAbi(),
-        getNodeDepositContract(),
-        {}
+      const response = await fetch(
+        `https://${nodeRewardsFileCid}.ipfs.dweb.link/nodeRewards-${latestMerkleRootEpoch}.json`,
+        {
+          method: "GET",
+          headers: {},
+        }
       );
+      const resJson: RewardJsonResponse = await response.json();
 
-      const nodesLength = await nodeDepositContract.methods
-        .getNodesLength()
-        .call()
-        .catch((err: any) => {
-          console.log({ err });
-        });
+      let poolEth =
+        Number(lsdTotalSupply) * Number(Web3.utils.fromWei(lsdRate));
 
-      const nodes = await nodeDepositContract.methods
-        .getNodes(0, nodesLength)
-        .call()
-        .catch((err: any) => {
-          console.log({ err });
-        });
-
-      const requests = nodes?.map((nodeAddress: string) => {
+      const requests = resJson.List.map((data) => {
         return (async () => {
-          const pubkeys = await nodeDepositContract.methods
-            .getPubkeysOfNode(nodeAddress)
+          const totalClaimedRewardOfNode = await networkWithdrawContract.methods
+            .totalClaimedRewardOfNode(data.address)
             .call()
             .catch((err: any) => {
               console.log({ err });
             });
 
-          return pubkeys?.length;
+          const totalClaimedDepositOfNode =
+            await networkWithdrawContract.methods
+              .totalClaimedDepositOfNode(data.address)
+              .call()
+              .catch((err: any) => {
+                console.log({ err });
+              });
+
+          if (data.totalRewardAmount) {
+            poolEth = poolEth + Number(data.totalRewardAmount);
+          }
+          if (data.totalDepositAmount) {
+            poolEth = poolEth + Number(data.totalDepositAmount);
+          }
+
+          if (totalClaimedRewardOfNode) {
+            poolEth = poolEth - Number(totalClaimedRewardOfNode);
+          }
+          if (totalClaimedDepositOfNode) {
+            poolEth = poolEth - Number(totalClaimedDepositOfNode);
+          }
         })();
       });
 
-      const pubkeyLengthList = await Promise.all(requests);
-      let matchedValidators = 0;
-      pubkeyLengthList.forEach((length) => {
-        matchedValidators += Number(length);
-      });
+      await Promise.all(requests);
 
-      // console.log({ matchedValidators });
-      setMatchedValidators(matchedValidators + "");
-
-      setStakedToken(matchedValidators * 32 + "");
-    } catch (err: any) {
-      console.log({ err });
-    }
-  }, []);
+      setPoolEth(Web3.utils.fromWei(poolEth + ""));
+    } catch {}
+  }, [updateFlag]);
 
   useEffect(() => {
-    udpatePoolData();
-  }, [udpatePoolData]);
-
-  useEffect(() => {
-    updateMatchedValidators();
-  }, [updateMatchedValidators]);
+    updatePoolTokenData();
+  }, [updatePoolTokenData]);
 
   return {
     depositedEth,
@@ -195,8 +197,8 @@ export function usePoolData() {
     poolEth,
     poolEthValue,
     unmatchedEth,
-    matchedValidators,
     stakeApr,
     validatorApr,
+    matchedValidators,
   };
 }

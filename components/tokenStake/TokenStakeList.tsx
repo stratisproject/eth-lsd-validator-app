@@ -6,7 +6,7 @@ import { Icomoon } from "components/icon/Icomoon";
 import { getValidatorProfileUrl } from "config/explorer";
 import { robotoSemiBold } from "config/font";
 import { useAppSlice } from "hooks/selector";
-import { useNodePubkeysHome } from "hooks/useNodePubkeysHome";
+import { usePubkeysHome } from "hooks/usePubkeysHome";
 import { useWalletAccount } from "hooks/useWalletAccount";
 import { DisplayPubkeyStatus, PubkeyStatus } from "interfaces/common";
 import { useRouter } from "next/router";
@@ -48,7 +48,7 @@ export const TokenStakeList = () => {
     unmatchedCount,
     stakedCount,
     othersCount,
-  } = useNodePubkeysHome(metaMaskAccount, page, selectedStatus);
+  } = usePubkeysHome(metaMaskAccount, page, selectedStatus);
   // } = useNodePubkeys(
   //   "0x99C6a3B0d131C996D9f65275fB5a196a8B57B583",
   //   page,

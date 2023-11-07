@@ -14,11 +14,14 @@ import checkedIcon from "public/images/checked.svg";
 import { getLsdTokenName } from "utils/configUtils";
 import { bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
 import { IOSSwitch } from "components/common/CustomSwitch";
+import { useRewardUpdateHour } from "hooks/useRewardUpdateHour";
+import { DataLoading } from "components/common/DataLoading";
 
 export const MyDataHistory = () => {
   const { darkMode } = useAppSlice();
   const [types, setTypes] = useState<string[]>([]);
   const [toggleOn, setToggleOn] = useState<boolean>(false);
+  const { rewardUpdateHour } = useRewardUpdateHour();
 
   const typePopupState = usePopupState({
     variant: "popover",
@@ -84,8 +87,16 @@ export const MyDataHistory = () => {
             Reward History
           </div>
 
-          <div className="text-[.16rem] text-color-text2 ml-[.06rem]">
-            (Updates every 8 hours)
+          <div className="text-[.16rem] text-color-text2 ml-[.06rem] flex items-center">
+            (Updates every
+            <div className="mx-[.06rem]">
+              {rewardUpdateHour === undefined ? (
+                <DataLoading height=".16rem" />
+              ) : (
+                rewardUpdateHour
+              )}
+            </div>
+            hours)
           </div>
         </div>
       </div>

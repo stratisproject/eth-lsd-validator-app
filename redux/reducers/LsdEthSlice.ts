@@ -7,11 +7,13 @@ import {
 } from "utils/web3Utils";
 import {
   getLsdEthTokenContract,
-  getLsdEthTokenContractAbi,
   getNetworkBalanceContract,
-  getNetworkBalanceContractAbi,
 } from "config/contract";
 import { getDefaultApr } from "utils/configUtils";
+import {
+  getLsdEthTokenContractAbi,
+  getNetworkBalanceContractAbi,
+} from "config/contractAbi";
 
 export interface LsdEthState {
   balance: string | undefined; // balance of lsdETH
@@ -132,7 +134,6 @@ export const updateApr = (): AppThunk => async (dispatch, getState) => {
         endEvent.raw.data,
         endEvent.raw.topics
       );
-      // console.log({ beginValues, endValues });
       const beginRate = beginValues.totalEth / beginValues.lsdTokenSupply;
       const endRate = endValues.totalEth / endValues.lsdTokenSupply;
       if (

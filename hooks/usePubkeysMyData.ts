@@ -1,24 +1,19 @@
 import {
-  getNodeDepositContract,
-  getNodeDepositContractAbi,
-} from "config/contract";
-import {
   ChainPubkeyStatus,
   NodePubkeyInfo,
   PubkeyStatusType,
 } from "interfaces/common";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getPubkeyDisplayStatus } from "utils/commonUtils";
-import { getEthWeb3 } from "utils/web3Utils";
 import { useAppSlice } from "./selector";
 import { useUnmatchedToken } from "./useUnmatchedToken";
+import { useUserPubkeys } from "./useUserPubkeys";
 
-export const useNodePubkeys = (
+export const usePubkeysMyData = (
   nodeAddress: string | undefined,
   page: number,
   pubkeyStatusTypes?: PubkeyStatusType[]
 ) => {
-  const { updateFlag } = useAppSlice();
   const [totalCount, setTotalCount] = useState<number>();
 
   const [pendingCount, setPendingCount] = useState<number>();
@@ -26,17 +21,18 @@ export const useNodePubkeys = (
   const [exitedCount, setExitedCount] = useState<number>();
   const [othersCount, setOthersCount] = useState<number>();
 
-  const [nodePubkeyInfos, setNodePubkeyInfos] = useState<NodePubkeyInfo[]>([]);
+  const { nodePubkeys } = useUserPubkeys();
   const [displayPubkeyInfos, setDisplayPubkeyInfos] = useState<
     NodePubkeyInfo[]
   >([]);
 
-  const [requestFirstTime, setRequestFirstTime] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-
   const { unmatchedEth } = useUnmatchedToken();
 
   useEffect(() => {
+    if (!nodePubkeys) {
+      return;
+    }
+
     let remainingTokenAmount =
       !unmatchedEth || isNaN(Number(unmatchedEth)) ? 0 : Number(unmatchedEth);
 
@@ -47,7 +43,7 @@ export const useNodePubkeys = (
 
     const resList: NodePubkeyInfo[] = [];
 
-    nodePubkeyInfos.forEach((item) => {
+    nodePubkeys.forEach((item) => {
       const displayStatus = getPubkeyDisplayStatus(item, remainingTokenAmount);
       item.displayStatus === displayStatus;
       let canStake = false;
@@ -127,103 +123,16 @@ export const useNodePubkeys = (
     setPendingCount(pendingCount);
     setExitedCount(exitedCount);
     setOthersCount(othersCount);
-    setTotalCount(nodePubkeyInfos.length);
-  }, [nodePubkeyInfos, pubkeyStatusTypes, unmatchedEth]);
+    setTotalCount(nodePubkeys.length);
+  }, [nodePubkeys, pubkeyStatusTypes, unmatchedEth]);
 
   const showLoading = useMemo(() => {
-    return (
-      requestFirstTime &&
-      // || (refreshing && nodePubkeyInfos.length === 0)
-      nodeAddress
-    );
-  }, [requestFirstTime, nodeAddress, refreshing, displayPubkeyInfos]);
+    return nodePubkeys === undefined;
+  }, [nodePubkeys]);
 
   const showEmptyContent = useMemo(() => {
     return displayPubkeyInfos.length === 0 && !showLoading;
   }, [showLoading, displayPubkeyInfos]);
-
-  const updateData = useCallback(async () => {
-    if (!nodeAddress) {
-      setTotalCount(undefined);
-      setActiveCount(undefined);
-      setPendingCount(undefined);
-      setExitedCount(undefined);
-      setOthersCount(undefined);
-      setNodePubkeyInfos([]);
-      return;
-    }
-
-    try {
-      setRefreshing(true);
-      const web3 = getEthWeb3();
-
-      const nodeDepositContract = new web3.eth.Contract(
-        getNodeDepositContractAbi(),
-        getNodeDepositContract(),
-        {
-          from: nodeAddress,
-        }
-      );
-
-      const pubkeysOfNode = await nodeDepositContract.methods
-        .getPubkeysOfNode(nodeAddress)
-        .call()
-        .catch((err: any) => {
-          console.log({ err });
-        });
-
-      const requests = pubkeysOfNode?.map((pubkeyAddress: string) => {
-        return (async () => {
-          const pubkeyInfo = await nodeDepositContract.methods
-            .pubkeyInfoOf(pubkeyAddress)
-            .call()
-            .catch((err: any) => {
-              console.log({ err });
-            });
-
-          return pubkeyInfo;
-        })();
-      });
-
-      const pubkeyInfos = await Promise.all(requests);
-      // console.log({ pubkeyInfos });
-
-      const beaconStatusResponse = await fetch(
-        `/api/pubkeyStatus?id=${pubkeysOfNode.join(",")}`,
-        {
-          method: "GET",
-        }
-      );
-      const beaconStatusResJson = await beaconStatusResponse.json();
-      // console.log({ beaconStatusResJson });
-
-      const nodePubkeyInfos: NodePubkeyInfo[] = pubkeyInfos.map(
-        (item, index) => {
-          const matchedBeaconData = beaconStatusResJson.data?.find(
-            (item: any) => item.validator?.pubkey === pubkeysOfNode[index]
-          );
-          return {
-            pubkeyAddress: pubkeysOfNode[index],
-            beaconApiStatus:
-              matchedBeaconData?.status?.toUpperCase() || undefined,
-            ...item,
-          };
-        }
-      );
-
-      setNodePubkeyInfos(nodePubkeyInfos);
-      setRefreshing(false);
-      setRequestFirstTime(false);
-    } catch (err: any) {
-      setRefreshing(false);
-      setRequestFirstTime(false);
-      console.log({ err });
-    }
-  }, [nodeAddress, updateFlag]);
-
-  useEffect(() => {
-    updateData();
-  }, [updateData]);
 
   return {
     showLoading,

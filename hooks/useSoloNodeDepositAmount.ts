@@ -1,7 +1,5 @@
-import {
-  getNodeDepositContract,
-  getNodeDepositContractAbi,
-} from "config/contract";
+import { getNodeDepositContract } from "config/contract";
+import { getNodeDepositContractAbi } from "config/contractAbi";
 import { useCallback, useEffect, useState } from "react";
 import { getEthWeb3 } from "utils/web3Utils";
 import Web3 from "web3";
@@ -24,7 +22,6 @@ export function useSoloNodeDepositAmount() {
         .catch((err: any) => {
           console.log({ err });
         });
-      console.log({ soloNodeDepositAmount });
 
       setSoloNodeDepositAmount(Web3.utils.fromWei(soloNodeDepositAmount));
     } catch (err: any) {

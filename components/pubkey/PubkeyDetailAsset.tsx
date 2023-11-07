@@ -4,6 +4,7 @@ import { DataLoading } from "components/common/DataLoading";
 import { Icomoon } from "components/icon/Icomoon";
 import { getLsdAppUrl } from "config/env";
 import { usePubkeyDetail } from "hooks/usePubkeyDetail";
+import { NodePubkeyInfo } from "interfaces/common";
 import Image from "next/image";
 import lsdTokenLogo from "public/images/token/lsdETH.svg";
 import { useMemo } from "react";
@@ -14,8 +15,9 @@ import Web3 from "web3";
 
 export const PubkeyDetailAsset = (props: {
   pubkeyAddress: string | undefined;
+  pubkeyInfo: NodePubkeyInfo | undefined;
 }) => {
-  const { pubkeyInfo } = usePubkeyDetail(props.pubkeyAddress);
+  const { pubkeyInfo } = props;
 
   return (
     <div className="mt-[.24rem] bg-color-bg2 border-[0.01rem] border-color-border1 rounded-[.3rem]">
@@ -26,15 +28,19 @@ export const PubkeyDetailAsset = (props: {
         }}
       >
         <div className="flex items-center justify-center text-[.16rem] text-color-text2"></div>
+
         <div className="flex items-center justify-center text-[.16rem] text-color-text2">
           Current ETH
         </div>
+
         <div className="flex items-center justify-center text-[.16rem] text-color-text2">
           Deposit ETH
         </div>
+
         <div className="flex items-center justify-center text-[.16rem] text-color-text2">
           My Reward ETH
         </div>
+
         <div className="flex items-center justify-center text-[.16rem] text-color-text2">
           Slashed ETH
         </div>
@@ -73,7 +79,13 @@ export const PubkeyDetailAsset = (props: {
         </div>
 
         <div className="flex items-center justify-center text-[.16rem] text-color-text1">
-          --
+          {pubkeyInfo === undefined ? (
+            <DataLoading height=".16rem" />
+          ) : (
+            formatNumber(pubkeyInfo.currentTokenAmount, {
+              hideDecimalsForZero: true,
+            })
+          )}
         </div>
 
         <div className="flex items-center justify-center text-[.16rem] text-color-text1">
