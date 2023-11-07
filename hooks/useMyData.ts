@@ -34,13 +34,16 @@ export function useMyData() {
       return;
     }
 
+    const userAddress = metaMaskAccount;
+    // const userAddress = "0xD3FaA2F7B452Ade554786d94b57eb9CC62139b09";
+
     try {
       const web3 = getEthWeb3();
       const networkWithdrawContract = new web3.eth.Contract(
         getNetworkWithdrawContractAbi(),
         getNetworkWithdrawContract(),
         {
-          from: metaMaskAccount,
+          from: userAddress,
         }
       );
 
@@ -57,13 +60,13 @@ export function useMyData() {
           console.log({ err });
         });
       const totalClaimedRewardOfNode = await networkWithdrawContract.methods
-        .totalClaimedRewardOfNode(metaMaskAccount)
+        .totalClaimedRewardOfNode(userAddress)
         .call()
         .catch((err: any) => {
           console.log({ err });
         });
       const totalClaimedDepositOfNode = await networkWithdrawContract.methods
-        .totalClaimedDepositOfNode(metaMaskAccount)
+        .totalClaimedDepositOfNode(userAddress)
         .call()
         .catch((err: any) => {
           console.log({ err });
@@ -85,28 +88,29 @@ export function useMyData() {
       // console.log({ resJson });
 
       const myRewardInfo = resJson.List?.find(
-        (item) => item.address === metaMaskAccount
+        (item) => item.address === userAddress
       );
       setIpfsMyRewardInfo(myRewardInfo);
 
       const myTotalRewardAmount = myRewardInfo?.totalRewardAmount || "0";
 
-      const availableExitDeposit =
-        Math.max(
-          0,
-          Number(myRewardInfo?.totalExitDepositAmount) -
-            Number(totalClaimedDepositOfNode)
-        ) + "";
+      const availableExitDeposit = !myRewardInfo
+        ? "0"
+        : Math.max(
+            0,
+            Number(myRewardInfo?.totalExitDepositAmount) -
+              Number(totalClaimedDepositOfNode)
+          ) + "";
+
       setAvailableExitDeposit(Web3.utils.fromWei(availableExitDeposit));
 
       const nodeDepositContract = new web3.eth.Contract(
         getNodeDepositContractAbi(),
         getNodeDepositContract(),
         {
-          from: metaMaskAccount,
+          from: userAddress,
         }
       );
-
       // const soloNodeDepositAmount = await nodeDepositContract.methods
       //   .soloNodeDepositAmount()
       //   .call()
@@ -114,7 +118,7 @@ export function useMyData() {
       //     console.log({ err });
       //   });
       const pubkeysOfNode = await nodeDepositContract.methods
-        .getPubkeysOfNode(metaMaskAccount)
+        .getPubkeysOfNode(userAddress)
         .call()
         .catch((err: any) => {
           console.log({ err });
@@ -154,9 +158,7 @@ export function useMyData() {
         const nodeDepositContract = new web3.eth.Contract(
           getNodeDepositContractAbi(),
           getNodeDepositContract(),
-          {
-            from: metaMaskAccount,
-          }
+          {}
         );
 
         const pubkeyInfo = await nodeDepositContract.methods
