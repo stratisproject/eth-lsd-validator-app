@@ -35,6 +35,13 @@ export function getEthereumRpc() {
   return appProdConfig.rpc;
 }
 
+export function getBeaconHost() {
+  if (isDev()) {
+    return appDevConfig.beaconHost;
+  }
+  return appProdConfig.beaconHost;
+}
+
 export function getLsdEthMetamaskParam() {
   return {
     tokenAddress: getLsdEthTokenContract(),

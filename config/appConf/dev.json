@@ -5,6 +5,7 @@
     "networkName": "holeSky"
   },
   "rpc": "https://ethereum-holesky.publicnode.com",
+  "beaconHost": "https://holesky-beacon.stafi.io",
   "contracts": {
     "lsdTokenContract": {
       "address": "0xe1A2391f4902f8bc1fd447192c4a165A7a05189b"

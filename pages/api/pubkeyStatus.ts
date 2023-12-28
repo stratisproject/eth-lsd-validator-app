@@ -1,3 +1,4 @@
+import { getBeaconHost } from "config/env";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type ResponseData = {
@@ -31,7 +32,9 @@ export default async function handler(
   res: NextApiResponse<ResponseData>
 ) {
   const response = await fetch(
-    `https://holesky-beacon.stafi.io/eth/v1/beacon/states/head/validators\?id=${req.query.id}`,
+    `${getBeaconHost()}/eth/v1/beacon/states/head/validators\?id=${
+      req.query.id
+    }`,
     {
       method: "GET",
     }
