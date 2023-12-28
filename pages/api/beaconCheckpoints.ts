@@ -31,7 +31,7 @@ export default async function handler(
   res: NextApiResponse<ResponseData>
 ) {
   const response = await fetch(
-    `https://beacon-lighthouse-goerli.stafi.io/eth/v1/beacon/states/head/finality_checkpoints`,
+    `https://beacon-lighthouse-holesky.stafi.io/eth/v1/beacon/states/head/finality_checkpoints`,
     {
       method: "GET",
     }

@@ -7,6 +7,7 @@ import { robotoSemiBold } from "config/font";
 import { useAppSlice } from "hooks/selector";
 import { usePoolData } from "hooks/usePoolData";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import lsdTokenLogo from "public/images/token/lsdETH.svg";
 import { useMemo } from "react";
 import { openLink } from "utils/commonUtils";
@@ -18,6 +19,7 @@ import {
 import { formatNumber } from "utils/numberUtils";
 
 export const PoolAssets = () => {
+  const router = useRouter();
   const { darkMode } = useAppSlice();
   const {
     poolEth,
@@ -184,7 +186,7 @@ export const PoolAssets = () => {
             <div
               className="flex items-center mt-[.24rem] cursor-pointer"
               onClick={() => {
-                openLink("https://www.google.com");
+                router.push("/tokenStake/chooseType");
               }}
             >
               <div className="mr-[.06rem]">Apply For Validator</div>

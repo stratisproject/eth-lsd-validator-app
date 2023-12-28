@@ -138,6 +138,11 @@ export const updateNodePubkeys = (): AppThunk => async (dispatch, getState) => {
         console.log({ err });
       });
 
+    if (pubkeysOfNode.length === 0) {
+      dispatch(setNodePubkeys([]));
+      return;
+    }
+
     const requests = pubkeysOfNode?.map((pubkeyAddress: string) => {
       return (async () => {
         const pubkeyInfo = await nodeDepositContract.methods
