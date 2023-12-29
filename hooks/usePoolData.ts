@@ -131,7 +131,7 @@ export function usePoolData() {
         });
 
       const response = await fetch(
-        `https://${nodeRewardsFileCid}.ipfs.dweb.link/nodeRewards-${latestMerkleRootEpoch}.json`,
+        `https://${nodeRewardsFileCid}.ipfs.dweb.link/${getLsdEthTokenContract()}-nodeRewards-${latestMerkleRootEpoch}.json`,
         {
           method: "GET",
           headers: {},

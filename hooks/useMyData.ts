@@ -1,4 +1,5 @@
 import {
+  getLsdEthTokenContract,
   getNetworkWithdrawContract,
   getNodeDepositContract,
 } from "config/contract";
@@ -96,7 +97,7 @@ export function useMyData() {
         });
 
       const response = await fetch(
-        `https://${nodeRewardsFileCid}.ipfs.dweb.link/nodeRewards-${latestMerkleRootEpoch}.json`,
+        `https://${nodeRewardsFileCid}.ipfs.dweb.link/${getLsdEthTokenContract()}-nodeRewards-${latestMerkleRootEpoch}.json`,
         {
           method: "GET",
           headers: {},
