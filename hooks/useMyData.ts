@@ -97,7 +97,7 @@ export function useMyData() {
         });
 
       const response = await fetch(
-        `https://${nodeRewardsFileCid}.ipfs.dweb.link/${getLsdEthTokenContract()}-nodeRewards-${latestMerkleRootEpoch}.json`,
+        `https://${nodeRewardsFileCid}.ipfs.dweb.link/${getLsdEthTokenContract().toLowerCase()}-nodeRewards-${latestMerkleRootEpoch}.json`,
         {
           method: "GET",
           headers: {},
