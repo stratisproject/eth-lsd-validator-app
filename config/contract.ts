@@ -23,16 +23,6 @@ export function getEthDepositContract() {
 }
 
 /**
- * get ETH withdraw contract address
- */
-export function getEthWithdrawContract() {
-  if (isDev()) {
-    return appDevConfig.contracts.withdrawContract.address;
-  }
-  return appProdConfig.contracts.withdrawContract.address;
-}
-
-/**
  * get networkBalance contract address
  */
 export function getNetworkBalanceContract() {
