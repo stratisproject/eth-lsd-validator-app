@@ -18,6 +18,7 @@ import {
   getNodeDepositContractAbi,
 } from "config/contractAbi";
 import { useUserPubkeys } from "./useUserPubkeys";
+import { getEthereumChainId } from "config/env";
 
 export function useMyData() {
   const { updateFlag } = useAppSlice();
@@ -97,12 +98,13 @@ export function useMyData() {
         });
 
       const response = await fetch(
-        `https://${nodeRewardsFileCid}.ipfs.dweb.link/${getLsdEthTokenContract().toLowerCase()}-nodeRewards-${latestMerkleRootEpoch}.json`,
+        `https://${nodeRewardsFileCid}.ipfs.dweb.link/${getLsdEthTokenContract().toLowerCase()}-rewards-${getEthereumChainId()}-${latestMerkleRootEpoch}.json`,
         {
           method: "GET",
           headers: {},
         }
       );
+
       const resJson: RewardJsonResponse = await response.json();
 
       const myRewardInfo = resJson.List?.find(
