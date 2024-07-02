@@ -7,6 +7,7 @@
   "rpc": "https://ethereum-holesky.publicnode.com",
   "beaconHost": "https://holesky-beacon.stafi.io",
   "validatorDepositAmount": 32,
+  "blockSeconds": 12,
   "contracts": {
     "lsdTokenContract": {
       "address": "0x85F7c01009B1bf540699C4FDDf3589DDE60BCb14"

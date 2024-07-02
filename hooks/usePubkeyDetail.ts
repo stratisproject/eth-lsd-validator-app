@@ -13,7 +13,7 @@ import {
   getNodeDepositContractAbi,
 } from "config/contractAbi";
 import Web3 from "web3";
-import { getValidatorDepositAmount } from "config/env";
+import { getBlockSeconds, getValidatorDepositAmount } from "config/env";
 
 export function usePubkeyDetail(pubkeyAddress: string | undefined) {
   const { metaMaskAccount } = useWalletAccount();
@@ -80,8 +80,8 @@ export function usePubkeyDetail(pubkeyAddress: string | undefined) {
       const days =
         ((Number(currentEpoch) -
           Number(matchedBeaconData?.validator?.activation_epoch)) *
-          getValidatorDepositAmount() *
-          12) /
+          32 *
+          getBlockSeconds()) /
         (24 * 60 * 60);
 
       const newPubkeyInfo = {

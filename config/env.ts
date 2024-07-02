@@ -64,3 +64,10 @@ export function getValidatorDepositAmount() {
   }
   return appProdConfig.validatorDepositAmount;
 }
+
+export function getBlockSeconds() {
+  if (isDev()) {
+    return appDevConfig.blockSeconds;
+  }
+  return appProdConfig.blockSeconds;
+}
