@@ -8,14 +8,10 @@ import { robotoSemiBold } from "config/font";
 import { useAppSlice } from "hooks/selector";
 import { usePubkeysHome } from "hooks/usePubkeysHome";
 import { useWalletAccount } from "hooks/useWalletAccount";
-import { DisplayPubkeyStatus, PubkeyStatus } from "interfaces/common";
+import { PubkeyStatus } from "interfaces/common";
 import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
-import {
-  getDisplayPubkeyStatusFromBeaconStatus,
-  isPubkeyStakeable,
-  openLink,
-} from "utils/commonUtils";
+import { isPubkeyStakeable, openLink } from "utils/commonUtils";
 import snackbarUtil from "utils/snackbarUtils";
 import { getShortAddress } from "utils/stringUtils";
 import { TokenStakeListTabs } from "./TokenStakeListTabs";

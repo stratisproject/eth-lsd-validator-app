@@ -44,15 +44,16 @@ export const ChooseTypeGuide = () => {
             <>
               Deposit{" "}
               <span className={robotoBold.className}>
-                {soloNodeDepositAmount} ETH
+                {soloNodeDepositAmount} {getTokenName()}
               </span>{" "}
               to register as a delegated validator on StaFi;
               <div className="mt-[.1rem]" />
               StaFi will match{" "}
               <span className={robotoBold.className}>
-                {32 - Number(soloNodeDepositAmount)} ETH
+                {32 - Number(soloNodeDepositAmount)} {getTokenName()}
               </span>{" "}
-              to your node so that it can meet the validator conditions of ETH
+              to your node so that it can meet the validator conditions of{" "}
+              {getTokenName()}
               2.0.
               <div className="mt-[.1rem]" />
             </>

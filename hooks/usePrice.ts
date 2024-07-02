@@ -1,26 +1,24 @@
 import { useCallback, useEffect, useState } from "react";
-import { getGasPriceUrl } from "utils/configUtils";
 import { useAppSlice } from "./selector";
+import { getTokenPriceUrl } from "utils/configUtils";
 
 export function usePrice() {
   const { updateFlag } = useAppSlice();
 
-  const [gasPrice, setGasPrice] = useState(0);
   const [tokenPrice, setTokenPrice] = useState(0);
 
   const fetchGasPrice = useCallback(async () => {
     try {
-      const response = await fetch(getGasPriceUrl(), {
+      const response = await fetch(getTokenPriceUrl(), {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
       });
       const resJson = await response.json();
-      if (resJson && resJson.code === 200) {
-        const { standard, priceUSD } = resJson.data;
-        setGasPrice(standard);
-        setTokenPrice(priceUSD);
+      if (resJson) {
+        const { usd } = resJson["ethereum"];
+        setTokenPrice(usd);
       }
     } catch (err: any) {}
   }, []);
@@ -30,7 +28,6 @@ export function usePrice() {
   }, [updateFlag]);
 
   return {
-    gasPrice,
     tokenPrice,
   };
 }

@@ -12,7 +12,7 @@ import { useMemo, useState } from "react";
 import { withdrawValidatorEth } from "redux/reducers/ValidatorSlice";
 import { RootState } from "redux/store";
 import { openLink } from "utils/commonUtils";
-import { getLsdTokenName } from "utils/configUtils";
+import { getLsdTokenName, getTokenName } from "utils/configUtils";
 import { formatNumber } from "utils/numberUtils";
 
 export const MyDataAssets = () => {
@@ -51,16 +51,16 @@ export const MyDataAssets = () => {
       >
         <div className="flex items-center justify-center text-[.16rem] text-color-text2"></div>
         <div className="flex items-center justify-center text-[.16rem] text-color-text2">
-          Self-deposited ETH
+          Self-deposited {getTokenName()}
         </div>
         <div className="flex items-center justify-center text-[.16rem] text-color-text2">
-          Total Managed ETH
+          Total Managed {getTokenName()}
         </div>
         <div className="flex items-center justify-center text-[.16rem] text-color-text2">
-          My Reward ETH
+          My Reward {getTokenName()}
         </div>
         <div className="flex items-center justify-center text-[.16rem] text-color-text2">
-          Slashed ETH
+          Slashed {getTokenName()}
         </div>
       </div>
 

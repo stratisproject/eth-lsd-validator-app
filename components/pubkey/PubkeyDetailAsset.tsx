@@ -9,7 +9,7 @@ import Image from "next/image";
 import lsdTokenLogo from "public/images/token/lsdETH.svg";
 import { useMemo } from "react";
 import { openLink } from "utils/commonUtils";
-import { getLsdTokenName } from "utils/configUtils";
+import { getLsdTokenName, getTokenName } from "utils/configUtils";
 import { formatNumber } from "utils/numberUtils";
 import Web3 from "web3";
 
@@ -30,19 +30,19 @@ export const PubkeyDetailAsset = (props: {
         <div className="flex items-center justify-center text-[.16rem] text-color-text2"></div>
 
         <div className="flex items-center justify-center text-[.16rem] text-color-text2">
-          Current ETH
+          Current {getTokenName()}
         </div>
 
         <div className="flex items-center justify-center text-[.16rem] text-color-text2">
-          Deposit ETH
+          Deposit {getTokenName()}
         </div>
 
         <div className="flex items-center justify-center text-[.16rem] text-color-text2">
-          My Reward ETH
+          My Reward {getTokenName()}
         </div>
 
         <div className="flex items-center justify-center text-[.16rem] text-color-text2">
-          Slashed ETH
+          Slashed {getTokenName()}
         </div>
       </div>
 

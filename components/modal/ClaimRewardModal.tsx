@@ -108,7 +108,7 @@ export const ClaimRewardModal = (props: ClaimRewardModalProps) => {
 
           <div className="mt-[.25rem] self-stretch flex items-center justify-between px-[.32rem]">
             <div className="text-[.14rem] text-color-text2">
-              Total Staked ETH
+              Total Staked {getTokenName()}
             </div>
 
             <div

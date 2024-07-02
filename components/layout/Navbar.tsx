@@ -33,6 +33,7 @@ import {
 } from "redux/reducers/AppSlice";
 import { connectMetaMask, disconnectWallet } from "redux/reducers/WalletSlice";
 import { RootState } from "redux/store";
+import { getLsdTokenName } from "utils/configUtils";
 import snackbarUtil from "utils/snackbarUtils";
 import { getShortAddress } from "utils/stringUtils";
 
@@ -156,7 +157,7 @@ export const Navbar = () => {
                     : "text-color-text1"
                 )}
               >
-                rETH Pool
+                {getLsdTokenName()} Pool
               </div>
             </Link>
           </div>

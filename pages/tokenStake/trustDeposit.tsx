@@ -414,7 +414,7 @@ const TrustDepositPage = () => {
                   ? "Depositing, please wait for a moment..."
                   : !isNaN(Number(unmatchedEth)) &&
                     Number(unmatchedEth) < validatorKeys.length
-                  ? "Insufficient ETH in pool"
+                  ? `Insufficient ${getTokenName()} in pool`
                   : "Deposit"}
               </CustomButton>
             </div>

@@ -10,6 +10,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import tokenStakeIcon from "public/images/token_stake.svg";
 import { useMemo, useState } from "react";
+import { getTokenName } from "utils/configUtils";
 
 const MyDataPage = () => {
   const router = useRouter();
@@ -101,7 +102,9 @@ const MyDataPage = () => {
               </a>
             </FaqItem>
 
-            <FaqItem text="What are the commissions and fees associated with staking ETH?">
+            <FaqItem
+              text={`What are the commissions and fees associated with staking ${getTokenName()}?`}
+            >
               Staking Reward Commission: 10% of your staking reward. 5% will be
               allocated to the StaFi DAO, 5% will be allocated to validators.
             </FaqItem>

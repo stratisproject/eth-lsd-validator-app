@@ -61,7 +61,7 @@ export const NoticeItem = (props: {
 
       if (notice.type === "Validator Stake") {
         data = notice.data as NoticeValidatorDepositData;
-        return `Stake ${formatNumber(data.amount)} ETH as ${
+        return `Stake ${formatNumber(data.amount)} ${getTokenName()} as ${
           data.type
         } validator, with ${data.pubkeys.length} ${
           data.pubkeys.length === 1 ? "public key" : "public keys"

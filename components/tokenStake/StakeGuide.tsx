@@ -58,15 +58,16 @@ export const StakeGuide = () => {
             <>
               Deposit{" "}
               <span className={robotoBold.className}>
-                {soloNodeDepositAmount} ETH
+                {soloNodeDepositAmount} {getTokenName()}
               </span>{" "}
               to register as a delegated validator on StaFi;
               <div className="mt-[.1rem]" />
               StaFi will match{" "}
               <span className={robotoBold.className}>
-                {32 - Number(soloNodeDepositAmount)} ETH
+                {32 - Number(soloNodeDepositAmount)} {getTokenName()}
               </span>{" "}
-              to your node so that it can meet the validator conditions of ETH
+              to your node so that it can meet the validator conditions of{" "}
+              {getTokenName()}
               2.0.
               <div className="mt-[.1rem]" />
             </>
@@ -109,12 +110,14 @@ export const StakeGuide = () => {
           style={{}}
         >
           Once your node reaches{" "}
-          <span className={robotoBold.className}>32 ETH</span>, you can deposit{" "}
-          <span className={robotoBold.className}>32 ETH</span> to the deposit
-          contract of <span className={robotoBold.className}>ETH 1.0</span>.
+          <span className={robotoBold.className}>32 {getTokenName()}</span>, you
+          can deposit{" "}
+          <span className={robotoBold.className}>32 {getTokenName()}</span> to
+          the deposit contract of{" "}
+          <span className={robotoBold.className}>{getTokenName()} 1.0</span>.
           <div className="mt-[.1rem]" />
           After that, please wait for validating progress on{" "}
-          <span className={robotoBold.className}>ETH 2.0</span>.
+          <span className={robotoBold.className}>{getTokenName()} 2.0</span>.
         </div>
 
         <div className="ml-[.05rem] mt-[-0.04rem]">

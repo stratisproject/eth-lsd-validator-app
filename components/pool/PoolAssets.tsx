@@ -170,7 +170,9 @@ export const PoolAssets = () => {
                 formatNumber(unmatchedEth, { hideDecimalsForZero: true })
               )}
             </div>
-            <div className="text-color-text2 mt-[.24rem]">32 ETH / Pool</div>
+            <div className="text-color-text2 mt-[.24rem]">
+              32 {getTokenName()} / Pool
+            </div>
           </div>
         </div>
 

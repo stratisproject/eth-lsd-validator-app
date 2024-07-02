@@ -30,16 +30,16 @@ export function getFaqList(): IFaqItem[] {
   return appConfig.faqList;
 }
 
-export function getGasPriceUrl() {
-  return appConfig.gasPriceUrl;
-}
-
 export function isSupportTokenPrice() {
-  return !!appConfig.gasPriceUrl;
+  return true;
 }
 
 export function getDefaultApr() {
   return appConfig.apr;
+}
+
+export function getTokenPriceUrl() {
+  return appConfig.tokenPriceUrl;
 }
 
 export function getContactList() {

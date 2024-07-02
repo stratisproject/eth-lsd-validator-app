@@ -59,19 +59,20 @@ export const DepositGuide = () => {
               Begin as a delegated validator with the StaFi rToken App by
               depositing{" "}
               <span className={robotoBold.className}>
-                {soloNodeDepositAmount} ETH
+                {soloNodeDepositAmount} {getTokenName()}
               </span>
               . StaFi will contribute an additional{" "}
               <span className={robotoBold.className}>
-                {32 - Number(soloNodeDepositAmount)} ETH
+                {32 - Number(soloNodeDepositAmount)} {getTokenName()}
               </span>
               , ensuring your node fulfills the validator requirements for{" "}
-              <span className={robotoBold.className}>ETH 2.0</span>.
+              <span className={robotoBold.className}>{getTokenName()} 2.0</span>
+              .
               <div className="mt-[.1rem]" />
             </>
           )}
           Note: <span className={robotoBold.className}>Trusted validators</span>{" "}
-          do not need to deposit ETH.
+          do not need to deposit {getTokenName()}.
         </div>
 
         <div className="ml-[.05rem] mt-[-0.04rem]">
@@ -107,14 +108,14 @@ export const DepositGuide = () => {
           style={{}}
         >
           Once your node balance reaches{" "}
-          <span className={robotoBold.className}>32 ETH</span>, you may proceed
-          to deploy a pool contract. This action allocates{" "}
-          <span className={robotoBold.className}>32 ETH</span> to the{" "}
-          <span className={robotoBold.className}>ETH 2.0</span> deposit
-          contract.
+          <span className={robotoBold.className}>32 {getTokenName()}</span>, you
+          may proceed to deploy a pool contract. This action allocates{" "}
+          <span className={robotoBold.className}>32 {getTokenName()}</span> to
+          the <span className={robotoBold.className}>{getTokenName()} 2.0</span>{" "}
+          deposit contract.
           <div className="mt-[.1rem]" />
           Subsequently, you will need to await the validation progress on{" "}
-          <span className={robotoBold.className}>ETH 2.0</span>.
+          <span className={robotoBold.className}>{getTokenName()} 2.0</span>.
         </div>
 
         <div className="ml-[.05rem] mt-[-0.04rem] opacity-30">

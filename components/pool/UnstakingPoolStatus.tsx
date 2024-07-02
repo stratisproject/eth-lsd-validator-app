@@ -34,7 +34,7 @@ export const UnstakingPoolStatus = () => {
           ) : (
             formatNumber(unstakedTokenOfDay, { hideDecimalsForZero: true })
           )}
-          <div className="ml-[.06rem]">ETH Unstaked today</div>
+          <div className="ml-[.06rem]">{getTokenName()} Unstaked today</div>
         </div>
       </div>
 
