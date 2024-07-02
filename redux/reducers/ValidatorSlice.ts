@@ -40,6 +40,7 @@ import {
   getNetworkWithdrawContractAbi,
   getNodeDepositContractAbi,
 } from "config/contractAbi";
+import { getValidatorDepositAmount } from "config/env";
 
 export interface ValidatorState {
   validatorWithdrawalCredentials: string;
@@ -364,7 +365,7 @@ export const handleEthValidatorStake =
         setValidatorStakeLoadingParams({
           modalVisible: true,
           status: "loading",
-          stakeAmount: 32 * validatorKeys.length + "",
+          stakeAmount: getValidatorDepositAmount() * validatorKeys.length + "",
         })
       );
 
@@ -392,7 +393,7 @@ export const handleEthValidatorStake =
             },
             data: {
               type,
-              amount: 32 * pubkeys.length + "",
+              amount: getValidatorDepositAmount() * pubkeys.length + "",
               pubkeys,
             },
             scanUrl: getEtherScanTxUrl(result.transactionHash),

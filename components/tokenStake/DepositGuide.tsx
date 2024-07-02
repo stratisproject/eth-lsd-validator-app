@@ -1,10 +1,13 @@
 import classNames from "classnames";
 import { Icomoon } from "components/icon/Icomoon";
+import { getValidatorDepositAmount } from "config/env";
 import { robotoBold } from "config/font";
 import { useAppSlice } from "hooks/selector";
 import { useSoloNodeDepositAmount } from "hooks/useSoloNodeDepositAmount";
 import { useRouter } from "next/router";
+import { formatValidatorDespositAmount } from "utils/commonUtils";
 import { getTokenName } from "utils/configUtils";
+import { formatNumber } from "utils/numberUtils";
 
 export const DepositGuide = () => {
   const { darkMode } = useAppSlice();
@@ -63,7 +66,11 @@ export const DepositGuide = () => {
               </span>
               . StaFi will contribute an additional{" "}
               <span className={robotoBold.className}>
-                {32 - Number(soloNodeDepositAmount)} {getTokenName()}
+                {formatNumber(
+                  getValidatorDepositAmount() - Number(soloNodeDepositAmount),
+                  { fixedDecimals: false }
+                )}{" "}
+                {getTokenName()}
               </span>
               , ensuring your node fulfills the validator requirements for{" "}
               <span className={robotoBold.className}>{getTokenName()} 2.0</span>
@@ -108,10 +115,15 @@ export const DepositGuide = () => {
           style={{}}
         >
           Once your node balance reaches{" "}
-          <span className={robotoBold.className}>32 {getTokenName()}</span>, you
-          may proceed to deploy a pool contract. This action allocates{" "}
-          <span className={robotoBold.className}>32 {getTokenName()}</span> to
-          the <span className={robotoBold.className}>{getTokenName()} 2.0</span>{" "}
+          <span className={robotoBold.className}>
+            {formatValidatorDespositAmount} {getTokenName()}
+          </span>
+          , you may proceed to deploy a pool contract. This action allocates{" "}
+          <span className={robotoBold.className}>
+            {formatValidatorDespositAmount} {getTokenName()}
+          </span>{" "}
+          to the{" "}
+          <span className={robotoBold.className}>{getTokenName()} 2.0</span>{" "}
           deposit contract.
           <div className="mt-[.1rem]" />
           Subsequently, you will need to await the validation progress on{" "}

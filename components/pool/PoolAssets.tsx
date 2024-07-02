@@ -10,7 +10,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import lsdTokenLogo from "public/images/token/lsdETH.svg";
 import { useMemo } from "react";
-import { openLink } from "utils/commonUtils";
+import { formatValidatorDespositAmount, openLink } from "utils/commonUtils";
 import {
   getLsdTokenName,
   getTokenName,
@@ -171,7 +171,7 @@ export const PoolAssets = () => {
               )}
             </div>
             <div className="text-color-text2 mt-[.24rem]">
-              32 {getTokenName()} / Pool
+              {formatValidatorDespositAmount} {getTokenName()} / Pool
             </div>
           </div>
         </div>

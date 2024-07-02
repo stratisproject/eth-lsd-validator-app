@@ -1,10 +1,13 @@
 import classNames from "classnames";
 import { Icomoon } from "components/icon/Icomoon";
+import { getValidatorDepositAmount } from "config/env";
 import { robotoBold } from "config/font";
 import { useAppSlice } from "hooks/selector";
 import { useSoloNodeDepositAmount } from "hooks/useSoloNodeDepositAmount";
 import { useRouter } from "next/router";
+import { formatValidatorDespositAmount } from "utils/commonUtils";
 import { getTokenName } from "utils/configUtils";
+import { formatNumber } from "utils/numberUtils";
 
 export const StakeGuide = () => {
   const { darkMode } = useAppSlice();
@@ -64,7 +67,11 @@ export const StakeGuide = () => {
               <div className="mt-[.1rem]" />
               StaFi will match{" "}
               <span className={robotoBold.className}>
-                {32 - Number(soloNodeDepositAmount)} {getTokenName()}
+                {formatNumber(
+                  getValidatorDepositAmount() - Number(soloNodeDepositAmount),
+                  { fixedDecimals: false }
+                )}{" "}
+                {getTokenName()}
               </span>{" "}
               to your node so that it can meet the validator conditions of{" "}
               {getTokenName()}
@@ -110,10 +117,14 @@ export const StakeGuide = () => {
           style={{}}
         >
           Once your node reaches{" "}
-          <span className={robotoBold.className}>32 {getTokenName()}</span>, you
-          can deposit{" "}
-          <span className={robotoBold.className}>32 {getTokenName()}</span> to
-          the deposit contract of{" "}
+          <span className={robotoBold.className}>
+            {formatValidatorDespositAmount} {getTokenName()}
+          </span>
+          , you can deposit{" "}
+          <span className={robotoBold.className}>
+            {formatValidatorDespositAmount} {getTokenName()}
+          </span>{" "}
+          to the deposit contract of{" "}
           <span className={robotoBold.className}>{getTokenName()} 1.0</span>.
           <div className="mt-[.1rem]" />
           After that, please wait for validating progress on{" "}

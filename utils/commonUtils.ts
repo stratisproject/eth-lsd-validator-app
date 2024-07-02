@@ -8,6 +8,8 @@ import {
   NodePubkeyInfo,
   PubkeyStatus,
 } from "interfaces/common";
+import { formatNumber } from "./numberUtils";
+import { getValidatorDepositAmount } from "config/env";
 
 /**
  * create uuid
@@ -259,3 +261,8 @@ export const getPubkeyDisplayStatus = (
 
   return "Unknown";
 };
+
+export const formatValidatorDespositAmount = formatNumber(
+  getValidatorDepositAmount(),
+  { fixedDecimals: false }
+);

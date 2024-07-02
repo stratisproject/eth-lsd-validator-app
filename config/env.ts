@@ -57,3 +57,10 @@ export function getLsdAppUrl() {
   }
   return appProdConfig.lsdAppUrl;
 }
+
+export function getValidatorDepositAmount() {
+  if (isDev()) {
+    return appDevConfig.validatorDepositAmount;
+  }
+  return appProdConfig.validatorDepositAmount;
+}
