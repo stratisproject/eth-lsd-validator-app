@@ -4,6 +4,7 @@ import {
 } from "config/contract";
 import { getNetworkWithdrawContractAbi } from "config/contractAbi";
 import { useCallback, useEffect, useState } from "react";
+import { formatScientificNumber } from "utils/numberUtils";
 import { getEthWeb3 } from "utils/web3Utils";
 import Web3 from "web3";
 
@@ -33,7 +34,9 @@ export function useUnmatchedToken() {
           });
 
       const unmatchedEth = Web3.utils.fromWei(
-        Number(userDepositBalance) - Number(totalMissingAmountForWithdraw) + ""
+        formatScientificNumber(
+          Number(userDepositBalance) - Number(totalMissingAmountForWithdraw)
+        )
       );
 
       setUnmatchedEth(unmatchedEth);

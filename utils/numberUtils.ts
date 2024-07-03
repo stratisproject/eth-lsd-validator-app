@@ -96,3 +96,7 @@ export function chainAmountToHuman(num: string | number) {
 
   return Number(num) / Number(factor) + "";
 }
+
+export function formatScientificNumber(n: number) {
+  return n.toLocaleString("fullwide", { useGrouping: false });
+}

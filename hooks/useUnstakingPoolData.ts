@@ -8,6 +8,7 @@ import {
   getNetworkWithdrawContractAbi,
 } from "config/contractAbi";
 import { useCallback, useEffect, useState } from "react";
+import { formatScientificNumber } from "utils/numberUtils";
 import { getEthWeb3 } from "utils/web3Utils";
 import Web3 from "web3";
 
@@ -60,7 +61,9 @@ export function useUnstakingPoolData() {
           });
 
       const poolEth = Web3.utils.fromWei(
-        Number(userDepositBalance) - Number(totalMissingAmountForWithdraw) + ""
+        formatScientificNumber(
+          Number(userDepositBalance) - Number(totalMissingAmountForWithdraw)
+        ) + ""
       );
       setPoolEth(poolEth);
 

@@ -122,12 +122,11 @@ export const DepositGuide = () => {
           <span className={robotoBold.className}>
             {formatValidatorDespositAmount} {getTokenName()}
           </span>{" "}
-          to the{" "}
-          <span className={robotoBold.className}>{getTokenName()} 2.0</span>{" "}
+          to the <span className={robotoBold.className}>{getTokenName()}</span>{" "}
           deposit contract.
           <div className="mt-[.1rem]" />
           Subsequently, you will need to await the validation progress on{" "}
-          <span className={robotoBold.className}>{getTokenName()} 2.0</span>.
+          <span className={robotoBold.className}>{getTokenName()}</span>.
         </div>
 
         <div className="ml-[.05rem] mt-[-0.04rem] opacity-30">

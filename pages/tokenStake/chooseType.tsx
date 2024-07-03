@@ -76,7 +76,7 @@ const ChooseTypePage = () => {
               </div>
             </div>
 
-            <div className="ml-[.27rem] w-[1.88rem] h-[2.11rem] rounded-[.16rem] bg-color-bgPage flex flex-col items-center justify-between">
+            <div className="ml-[.27rem] w-[1.88rem] h-[2.11rem] rounded-[.16rem] bg-color-bgPage hidden flex-col items-center justify-between">
               <div className="mt-[.32rem] flex flex-col items-center mx-[.16rem]">
                 <div
                   className={classNames(

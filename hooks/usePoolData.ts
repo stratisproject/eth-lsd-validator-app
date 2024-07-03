@@ -77,7 +77,7 @@ export function usePoolData() {
         getEthDepositContract()
       );
 
-      const unmatchedEth = Web3.utils.fromWei(Number(userDepositBalance) + "");
+      const unmatchedEth = Web3.utils.fromWei(userDepositBalance);
       setUnmatchedEth(unmatchedEth);
     } catch {}
   }, [updateFlag]);
@@ -132,7 +132,8 @@ export function usePoolData() {
         });
 
       const response = await fetch(
-        `https://${nodeRewardsFileCid}.ipfs.dweb.link/${getLsdEthTokenContract().toLowerCase()}-rewards-${getEthereumChainId()}-${latestMerkleRootEpoch}.json`,
+        // `https://${nodeRewardsFileCid}.ipfs.dweb.link/${getLsdEthTokenContract().toLowerCase()}-rewards-${getEthereumChainId()}-${latestMerkleRootEpoch}.json`,
+        `https://${nodeRewardsFileCid}.ipfs.dweb.link/${getLsdEthTokenContract().toLowerCase()}-nodeRewards-${latestMerkleRootEpoch}.json`,
         {
           method: "GET",
           headers: {},
@@ -140,6 +141,7 @@ export function usePoolData() {
       );
 
       const resJson: RewardJsonResponse = await response.json();
+      // const resJson = { List: [] };
 
       let poolEth =
         Number(lsdTotalSupply) * Number(Web3.utils.fromWei(lsdRate));
@@ -180,7 +182,9 @@ export function usePoolData() {
       await Promise.all(requests);
 
       setPoolEth(Web3.utils.fromWei(poolEth + ""));
-    } catch {}
+    } catch {
+      setPoolEth("--");
+    }
   }, [updateFlag]);
 
   useEffect(() => {

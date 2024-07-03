@@ -32,7 +32,9 @@ export const UnstakingPoolStatus = () => {
           {unstakedTokenOfDay === undefined ? (
             <DataLoading height=".16rem" />
           ) : (
-            formatNumber(unstakedTokenOfDay, { hideDecimalsForZero: true })
+            formatNumber(unstakedTokenOfDay, {
+              hideDecimalsForZero: true,
+            })
           )}
           <div className="ml-[.06rem]">{getTokenName()} Unstaked today</div>
         </div>
@@ -75,7 +77,9 @@ export const UnstakingPoolStatus = () => {
             {poolEth === undefined ? (
               <DataLoading height=".16rem" />
             ) : (
-              formatNumber(poolEth, { hideDecimalsForZero: true })
+              formatNumber(poolEth, {
+                hideDecimalsForZero: true,
+              })
             )}
           </div>
 
