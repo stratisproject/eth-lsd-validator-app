@@ -12,6 +12,9 @@ import { SnackbarUtilsConfigurator } from "utils/snackbarUtils";
 import "styles/globals.css";
 
 import { MaterialDesignContent } from "notistack";
+import { WagmiConfig } from "wagmi";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { wagmiConfig } from "config/wagmi";
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -48,6 +51,8 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
 }
 
 export default MyApp;
+
+const queryClient = new QueryClient();
 
 const MyAppWrapper = ({ Component, pageProps }: any) => {
   // Use the layout defined at the page level, if available
@@ -94,8 +99,12 @@ const MyAppWrapper = ({ Component, pageProps }: any) => {
           warning: StyledMaterialDesignContent,
         }}
       >
-        <SnackbarUtilsConfigurator />
-        <Layout>{getLayout(<Component {...pageProps} />)}</Layout>
+        <WagmiConfig config={wagmiConfig}>
+          <QueryClientProvider client={queryClient}>
+            <SnackbarUtilsConfigurator />
+            <Layout>{getLayout(<Component {...pageProps} />)}</Layout>
+          </QueryClientProvider>
+        </WagmiConfig>
       </SnackbarProvider>
     </ThemeProvider>
   );

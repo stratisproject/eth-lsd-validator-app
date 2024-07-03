@@ -19,7 +19,6 @@ import { robotoBold } from "config/font";
 import { useAppDispatch, useAppSelector } from "hooks/common";
 import { useAppSlice } from "hooks/selector";
 import { useIsTrustedValidator } from "hooks/useIsTrustedValidator";
-import { usePoolData } from "hooks/usePoolData";
 import { useUnmatchedToken } from "hooks/useUnmatchedToken";
 import { useWalletAccount } from "hooks/useWalletAccount";
 import Image from "next/image";
@@ -31,12 +30,12 @@ import uploadIcon from "public/images/upload.svg";
 import { useMemo, useState } from "react";
 import { updateEthBalance } from "redux/reducers/EthSlice";
 import { handleEthValidatorDeposit } from "redux/reducers/ValidatorSlice";
-import { connectMetaMask } from "redux/reducers/WalletSlice";
 import { RootState } from "redux/store";
 import { openLink } from "utils/commonUtils";
 import { getTokenName } from "utils/configUtils";
 import { formatNumber } from "utils/numberUtils";
 import { getEthWeb3 } from "utils/web3Utils";
+import { useConnect, useSwitchNetwork } from "wagmi";
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 6,
@@ -65,6 +64,9 @@ const TrustDepositPage = () => {
   const { unmatchedEth } = useUnmatchedToken();
 
   const { metaMaskAccount, metaMaskChainId } = useWalletAccount();
+  const { switchNetworkAsync } = useSwitchNetwork();
+  const { connectAsync, connectors } = useConnect();
+
   const { validatorWithdrawalCredentials, ethTxLoading } = useAppSelector(
     (state: RootState) => {
       return {
@@ -361,11 +363,32 @@ const TrustDepositPage = () => {
                     ? "secondary"
                     : "primary"
                 }
-                onClick={() => {
-                  if (!metaMaskAccount || isWrongMetaMaskNetwork) {
-                    dispatch(connectMetaMask(getEthereumChainId()));
+                onClick={async () => {
+                  if (isWrongMetaMaskNetwork) {
+                    await (switchNetworkAsync &&
+                      switchNetworkAsync(getEthereumChainId()));
+                    return;
+                  } else if (!metaMaskAccount) {
+                    const metamaskConnector = connectors.find(
+                      (c) => c.name === "MetaMask"
+                    );
+                    if (!metamaskConnector) {
+                      return;
+                    }
+                    try {
+                      await connectAsync({
+                        chainId: getEthereumChainId(),
+                        connector: metamaskConnector,
+                      });
+                    } catch (err: any) {
+                      if (err.code === 4001) {
+                      } else {
+                        console.error(err);
+                      }
+                    }
                     return;
                   }
+
                   if (!isTrust) {
                     openLink("https://forms.gle/RtFK7qo9GzabQTCfA");
                     return;

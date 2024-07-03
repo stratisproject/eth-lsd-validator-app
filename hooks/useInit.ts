@@ -30,6 +30,7 @@ import {
   updateNodePubkeys,
   updateValidatorWithdrawalCredentials,
 } from "redux/reducers/ValidatorSlice";
+import { useAccount } from "wagmi";
 
 declare const window: { ethereum: any };
 declare const ethereum: any;
@@ -38,8 +39,7 @@ export function useInit() {
   const dispatch = useAppDispatch();
   const { updateFlag, darkMode } = useAppSlice();
 
-  const { useAccount: useMetaMaskAccount } = hooks;
-  const metaMaskAccount = useMetaMaskAccount();
+  const { address: metaMaskAccount } = useAccount();
   const { metaMaskAccount: walletMetaMaskAccount, metaMaskChainId } =
     useWalletAccount();
 

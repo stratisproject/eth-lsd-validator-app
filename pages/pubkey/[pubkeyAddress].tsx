@@ -10,8 +10,8 @@ import { useAppSlice } from "hooks/selector";
 import { usePubkeyDetail } from "hooks/usePubkeyDetail";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import tokenStakeIcon from "public/images/token/lsdETH.svg";
 import { useMemo } from "react";
+import { getLsdTokenIcon } from "utils/iconUtils";
 import snackbarUtil from "utils/snackbarUtils";
 import { getShortAddress } from "utils/stringUtils";
 
@@ -44,7 +44,7 @@ const PubkeyDetailPage = () => {
         <div className="h-full flex items-center justify-between w-smallContentW xl:w-contentW 2xl:w-largeContentW">
           <div className="flex items-center">
             <div className="w-[.68rem] h-[.68rem] relative">
-              <Image src={tokenStakeIcon} layout="fill" alt="icon" />
+              <Image src={getLsdTokenIcon()} layout="fill" alt="icon" />
             </div>
 
             <div>

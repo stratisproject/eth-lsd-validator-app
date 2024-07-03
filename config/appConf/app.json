@@ -1,11 +1,12 @@
 {
   "appTitle": "ETH Validator App",
+  "chainIcon": "/images/chain/ethereum.png",
   "token": {
     "tokenName": "ETH",
     "lsdTokenName": "rETH",
     "lsdTokenIconUri": "https://cdn.stafi.io/rtoken/logo/rETH.png",
-    "ETHImg": "/images/token/ETH_green.svg",
-    "lsdETHImg": "/images/token/lsdETH.svg"
+    "tokenIcon": "/images/token/ETH.svg",
+    "lsdTokenIcon": "/images/token/rETH.svg"
   },
   "supportRestApi": true,
   "apr": 3.1,

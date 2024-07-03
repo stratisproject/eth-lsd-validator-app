@@ -35,6 +35,20 @@ export function getEthereumRpc() {
   return appProdConfig.rpc;
 }
 
+export function getExplorerUrl() {
+  if (isDev()) {
+    return appDevConfig.explorer;
+  }
+  return appProdConfig.explorer;
+}
+
+export function getValidatorExplorerUrl() {
+  if (isDev()) {
+    return appDevConfig.validatorExplorer;
+  }
+  return appProdConfig.validatorExplorer;
+}
+
 export function getBeaconHost() {
   if (isDev()) {
     return appDevConfig.beaconHost;
@@ -70,4 +84,37 @@ export function getBlockSeconds() {
     return appDevConfig.blockSeconds;
   }
   return appProdConfig.blockSeconds;
+}
+
+export function getWagmiChainConfig() {
+  return {
+    id: getEthereumChainId(),
+    name: getEthereumChainName(),
+    network: getEthereumChainName(),
+    nativeCurrency: {
+      decimals: 18,
+      name: "ETH",
+      symbol: "ETH",
+    },
+    rpcUrls: {
+      default: {
+        http: [getEthereumRpc()],
+      },
+      public: {
+        http: [getEthereumRpc()],
+      },
+    },
+    blockExplorers: {
+      etherscan: {
+        name: "",
+        url: getExplorerUrl(),
+      },
+      default: {
+        name: "",
+        url: getExplorerUrl(),
+      },
+    },
+    contracts: {},
+    testnet: isDev(),
+  };
 }

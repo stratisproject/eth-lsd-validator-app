@@ -4,7 +4,7 @@ import { CustomButton } from "components/common/CustomButton";
 import { NoticeDrawer } from "components/drawer/NoticeDrawer";
 import { SettingsDrawer } from "components/drawer/SettingsDrawer";
 import { Icomoon } from "components/icon/Icomoon";
-import { getEthereumChainId, isDev } from "config/env";
+import { getEthereumChainId } from "config/env";
 import { useAppDispatch, useAppSelector } from "hooks/common";
 import { useAppSlice } from "hooks/selector";
 import { useWalletAccount } from "hooks/useWalletAccount";
@@ -22,7 +22,6 @@ import blockSedDarkIcon from "public/images/audit/block_sec_dark.svg";
 import peckShieldIcon from "public/images/audit/peck_shield.svg";
 import peckShieldDarkIcon from "public/images/audit/peck_shield_dark.svg";
 import defaultAvatar from "public/images/default_avatar.png";
-import ethereumLogo from "public/images/ethereum.png";
 import noticeIcon from "public/images/notice.png";
 import appLogo from "public/images/stafi_logo.png";
 import appLogoLight from "public/images/stafi_logo_lightmode.png";
@@ -31,11 +30,13 @@ import {
   setNoticeDrawerOpen,
   setSettingsDrawerOpen,
 } from "redux/reducers/AppSlice";
-import { connectMetaMask, disconnectWallet } from "redux/reducers/WalletSlice";
+import { disconnectWallet } from "redux/reducers/WalletSlice";
 import { RootState } from "redux/store";
 import { getLsdTokenName } from "utils/configUtils";
+import { getChainIcon } from "utils/iconUtils";
 import snackbarUtil from "utils/snackbarUtils";
 import { getShortAddress } from "utils/stringUtils";
+import { useConnect } from "wagmi";
 
 export const Navbar = () => {
   const router = useRouter();
@@ -268,10 +269,6 @@ const UserInfo = (props: { auditExpand: boolean }) => {
     popupId: "net",
   });
 
-  const getLogo = () => {
-    return ethereumLogo;
-  };
-
   // useEffect(() => {
   //   if (appEnv === AppEnv.Polkadot) {
   //     dispatch(setAppNet(NetName.Polkadot_StaFi));
@@ -294,7 +291,7 @@ const UserInfo = (props: { auditExpand: boolean }) => {
       >
         <div className="w-[.34rem] h-[.34rem] relative">
           <Image
-            src={getLogo()}
+            src={getChainIcon()}
             alt="logo"
             className="rounded-full  overflow-hidden"
             layout="fill"
@@ -421,11 +418,27 @@ const UserInfo = (props: { auditExpand: boolean }) => {
 const ConnectButton = () => {
   const dispatch = useAppDispatch();
   const { darkMode } = useAppSlice();
+  const { connectAsync, connectors } = useConnect();
 
-  const clickConnectWallet = () => {
+  const clickConnectWallet = async () => {
     dispatch(setNoticeDrawerOpen(false));
     dispatch(setSettingsDrawerOpen(false));
-    dispatch(connectMetaMask(getEthereumChainId()));
+
+    const metamaskConnector = connectors.find((c) => c.name === "MetaMask");
+    if (!metamaskConnector) {
+      return;
+    }
+    try {
+      await connectAsync({
+        chainId: getEthereumChainId(),
+        connector: metamaskConnector,
+      });
+    } catch (err: any) {
+      if (err.code === 4001) {
+      } else {
+        console.error(err);
+      }
+    }
   };
 
   return (

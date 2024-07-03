@@ -8,7 +8,7 @@ import { StakeGuide } from "components/tokenStake/StakeGuide";
 import { ValidatorKeyUpload } from "components/tokenStake/ValidatorKeyUpload";
 import { ValidatorStakeLoading } from "components/tokenStake/ValidatorStakeLoading";
 import { getEthereumChainId, getEthereumNetworkName } from "config/env";
-import { robotoBold, robotoSemiBold } from "config/font";
+import { robotoSemiBold } from "config/font";
 import { useAppDispatch, useAppSelector } from "hooks/common";
 import { useAppSlice } from "hooks/selector";
 import { useIsTrustedValidator } from "hooks/useIsTrustedValidator";
@@ -21,11 +21,10 @@ import uploadIcon from "public/images/upload.svg";
 import { useEffect, useMemo, useState } from "react";
 import { updateEthBalance } from "redux/reducers/EthSlice";
 import { handleEthValidatorStake } from "redux/reducers/ValidatorSlice";
-import { connectMetaMask } from "redux/reducers/WalletSlice";
 import { RootState } from "redux/store";
 import { openLink } from "utils/commonUtils";
-import snackbarUtil from "utils/snackbarUtils";
 import { getShortAddress } from "utils/stringUtils";
+import { useConnect, useSwitchNetwork } from "wagmi";
 
 const StakePage = () => {
   const router = useRouter();
@@ -34,6 +33,8 @@ const StakePage = () => {
   const [validatorKeys, setValidatorKeys] = useState<any[]>([]);
 
   const { metaMaskAccount, metaMaskChainId } = useWalletAccount();
+  const { switchNetworkAsync } = useSwitchNetwork();
+  const { connectAsync, connectors } = useConnect();
 
   const [deleteConfirmModalVisible, setDeleteConfirmModalVisible] =
     useState(false);
@@ -379,9 +380,29 @@ const StakePage = () => {
                     isTrust &&
                     validatorKeys.length < stakePubkeyAddressList.length
                   }
-                  onClick={() => {
-                    if (!metaMaskAccount || isWrongMetaMaskNetwork) {
-                      dispatch(connectMetaMask(getEthereumChainId()));
+                  onClick={async () => {
+                    if (isWrongMetaMaskNetwork) {
+                      await (switchNetworkAsync &&
+                        switchNetworkAsync(getEthereumChainId()));
+                      return;
+                    } else if (!metaMaskAccount) {
+                      const metamaskConnector = connectors.find(
+                        (c) => c.name === "MetaMask"
+                      );
+                      if (!metamaskConnector) {
+                        return;
+                      }
+                      try {
+                        await connectAsync({
+                          chainId: getEthereumChainId(),
+                          connector: metamaskConnector,
+                        });
+                      } catch (err: any) {
+                        if (err.code === 4001) {
+                        } else {
+                          console.error(err);
+                        }
+                      }
                       return;
                     }
 

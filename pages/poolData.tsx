@@ -11,8 +11,8 @@ import { useAppSlice } from "hooks/selector";
 import { useApr } from "hooks/useApr";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import lsdTokenIcon from "public/images/token/lsdETH.svg";
 import { getLsdTokenName } from "utils/configUtils";
+import { getLsdTokenIcon } from "utils/iconUtils";
 import { formatNumber } from "utils/numberUtils";
 
 const PoolDataPage = () => {
@@ -26,7 +26,7 @@ const PoolDataPage = () => {
       <PageTitleContainer>
         <div className="h-full flex items-center w-smallContentW xl:w-contentW 2xl:w-largeContentW">
           <div className="w-[.68rem] h-[.68rem] relative">
-            <Image src={lsdTokenIcon} layout="fill" alt="icon" />
+            <Image src={getLsdTokenIcon()} layout="fill" alt="icon" />
           </div>
 
           <div>

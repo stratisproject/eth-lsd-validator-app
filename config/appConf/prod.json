@@ -6,6 +6,8 @@
   },
   "rpc": "https://mainnet.infura.io/v3/b3611f564322439ab2491e04ddd55b39",
   "beaconHost": "",
+  "explorer": "https://etherscan.io",
+  "validatorExplorer": "https://beaconcha.in",
   "validatorDepositAmount": 32,
   "blockSeconds": 12,
   "contracts": {

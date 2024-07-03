@@ -7,7 +7,6 @@ import { useAppSlice } from "hooks/selector";
 import _ from "lodash";
 import { bindPopover } from "material-ui-popup-state";
 import Image from "next/image";
-import lsdTokenLogo from "public/images/token/lsdETH.svg";
 import { useMemo, useState } from "react";
 import { openLink } from "utils/commonUtils";
 import checkedIcon from "public/images/checked.svg";
@@ -16,6 +15,7 @@ import { bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
 import { IOSSwitch } from "components/common/CustomSwitch";
 import { useRewardUpdateHour } from "hooks/useRewardUpdateHour";
 import { DataLoading } from "components/common/DataLoading";
+import { getLsdTokenIcon } from "utils/iconUtils";
 
 export const MyDataHistory = () => {
   const { darkMode } = useAppSlice();
@@ -183,7 +183,7 @@ const MyDataHistoryItem = (props: MyDataHistoryItemProps) => {
         >
           <div className="flex items-center">
             <div className="w-[.34rem] h-[.34rem] min-w-[.34rem] relative ml-[.04rem]">
-              <Image src={lsdTokenLogo} alt="logo" layout="fill" />
+              <Image src={getLsdTokenIcon()} alt="logo" layout="fill" />
             </div>
 
             <div className="ml-[.08rem] text-[.16rem] text-color-text1">

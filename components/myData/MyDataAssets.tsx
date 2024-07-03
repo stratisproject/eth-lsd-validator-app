@@ -7,12 +7,12 @@ import { getLsdAppUrl } from "config/env";
 import { useAppDispatch, useAppSelector } from "hooks/common";
 import { useMyData } from "hooks/useMyData";
 import Image from "next/image";
-import lsdTokenLogo from "public/images/token/lsdETH.svg";
 import { useMemo, useState } from "react";
 import { withdrawValidatorEth } from "redux/reducers/ValidatorSlice";
 import { RootState } from "redux/store";
 import { openLink } from "utils/commonUtils";
 import { getLsdTokenName, getTokenName } from "utils/configUtils";
+import { getLsdTokenIcon } from "utils/iconUtils";
 import { formatNumber } from "utils/numberUtils";
 
 export const MyDataAssets = () => {
@@ -82,7 +82,7 @@ export const MyDataAssets = () => {
           >
             <div className="flex items-center">
               <div className="w-[.34rem] h-[.34rem] min-w-[.34rem] relative ml-[.04rem]">
-                <Image src={lsdTokenLogo} alt="logo" layout="fill" />
+                <Image src={getLsdTokenIcon()} alt="logo" layout="fill" />
               </div>
 
               <div className="ml-[.08rem] text-[.16rem] text-color-text1">

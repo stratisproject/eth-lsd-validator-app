@@ -6,6 +6,8 @@
   },
   "rpc": "https://ethereum-holesky.publicnode.com",
   "beaconHost": "https://holesky-beacon.stafi.io",
+  "explorer": "https://holesky.etherscan.io",
+  "validatorExplorer": "https://holesky.beaconcha.in",
   "validatorDepositAmount": 32,
   "blockSeconds": 12,
   "contracts": {

@@ -8,7 +8,6 @@ import { useAppSlice } from "hooks/selector";
 import { usePoolData } from "hooks/usePoolData";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import lsdTokenLogo from "public/images/token/lsdETH.svg";
 import { useMemo } from "react";
 import { formatValidatorDespositAmount, openLink } from "utils/commonUtils";
 import {
@@ -16,6 +15,7 @@ import {
   getTokenName,
   isSupportTokenPrice,
 } from "utils/configUtils";
+import { getLsdTokenIcon } from "utils/iconUtils";
 import { formatNumber } from "utils/numberUtils";
 
 export const PoolAssets = () => {
@@ -75,7 +75,7 @@ export const PoolAssets = () => {
           >
             <div className="flex items-center">
               <div className="w-[.34rem] h-[.34rem] min-w-[.34rem] relative ml-[.04rem]">
-                <Image src={lsdTokenLogo} alt="logo" layout="fill" />
+                <Image src={getLsdTokenIcon()} alt="logo" layout="fill" />
               </div>
 
               <div className="ml-[.08rem] text-[.16rem] text-color-text1">
