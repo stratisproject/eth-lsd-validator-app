@@ -41,6 +41,7 @@ import {
   getNodeDepositContractAbi,
 } from "config/contractAbi";
 import { getValidatorDepositAmount } from "config/env";
+import { fetchPubkeyStatus } from "utils/apiUtils";
 
 export interface ValidatorState {
   validatorWithdrawalCredentials: string;
@@ -159,13 +160,16 @@ export const updateNodePubkeys = (): AppThunk => async (dispatch, getState) => {
 
     const pubkeyInfos = await Promise.all(requests);
 
-    const beaconStatusResponse = await fetch(
-      `/api/pubkeyStatus?id=${pubkeysOfNode.join(",")}`,
-      {
-        method: "GET",
-      }
+    // const beaconStatusResponse = await fetch(
+    //   `/api/pubkeyStatus?id=${pubkeysOfNode.join(",")}`,
+    //   {
+    //     method: "GET",
+    //   }
+    // );
+    // const beaconStatusResJson = await beaconStatusResponse.json();
+    const beaconStatusResJson = await fetchPubkeyStatus(
+      pubkeysOfNode.join(",")
     );
-    const beaconStatusResJson = await beaconStatusResponse.json();
 
     const nodePubkeyInfos: NodePubkeyInfo[] = pubkeyInfos.map((item, index) => {
       const matchedBeaconData = beaconStatusResJson.data?.find(
