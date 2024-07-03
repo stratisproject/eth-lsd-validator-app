@@ -118,7 +118,7 @@ export const updateNodePubkeys = (): AppThunk => async (dispatch, getState) => {
     const nodeAddress = getState().wallet.metaMaskAccount;
 
     if (!nodeAddress) {
-      // dispatch(setNodePubkeys([]));
+      dispatch(setNodePubkeys([]));
       return;
     }
 

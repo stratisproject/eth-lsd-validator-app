@@ -139,7 +139,9 @@ export const MyDataAssets = () => {
           <CustomButton
             type="stroke"
             onClick={() => {
-              openLink("https://www.google.com");
+              openLink(
+                "https://lsaas-docs.stafi.io/docs/developethlsd/validator.html"
+              );
             }}
           >
             Exit Staking

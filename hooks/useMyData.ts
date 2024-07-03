@@ -57,6 +57,8 @@ export function useMyData() {
 
   const updateData = useCallback(async () => {
     if (!metaMaskAccount) {
+      setSelfDepositedToken("--");
+      setMyRewardTokenAmount("--");
       return;
     }
 

@@ -18,7 +18,7 @@ export const ChooseTypeGuide = () => {
     <div className="">
       <a
         className="text-[.24rem] text-color-text1 inline-flex items-center"
-        href="https://www.google.com"
+        href="https://lsaas-docs.stafi.io/docs/developethlsd/validator.html"
         target="_blank"
         rel="noreferrer"
       >
