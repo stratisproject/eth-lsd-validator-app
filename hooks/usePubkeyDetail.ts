@@ -14,6 +14,7 @@ import {
 } from "config/contractAbi";
 import Web3 from "web3";
 import { getBlockSeconds, getValidatorDepositAmount } from "config/env";
+import { fetchBeaconCheckpoints, fetchPubkeyStatus } from "utils/apiUtils";
 
 export function usePubkeyDetail(pubkeyAddress: string | undefined) {
   const { metaMaskAccount } = useWalletAccount();
@@ -54,13 +55,14 @@ export function usePubkeyDetail(pubkeyAddress: string | undefined) {
           console.log({ err });
         });
 
-      const beaconStatusResponse = await fetch(
-        `/api/pubkeyStatus?id=${pubkeyAddress}`,
-        {
-          method: "GET",
-        }
-      );
-      const beaconStatusResJson = await beaconStatusResponse.json();
+      // const beaconStatusResponse = await fetch(
+      //   `/api/pubkeyStatus?id=${pubkeyAddress}`,
+      //   {
+      //     method: "GET",
+      //   }
+      // );
+      // const beaconStatusResJson = await beaconStatusResponse.json();
+      const beaconStatusResJson = await fetchPubkeyStatus(pubkeyAddress);
 
       const matchedBeaconData = beaconStatusResJson.data?.find(
         (item: any) => item.validator?.pubkey === pubkeyAddress
@@ -71,10 +73,12 @@ export function usePubkeyDetail(pubkeyAddress: string | undefined) {
       const eligibilityEpoch =
         matchedBeaconData?.validator?.activation_eligibility_epoch || "--";
 
-      const beaconCheckpointsResponse = await fetch(`/api/beaconCheckpoints`, {
-        method: "GET",
-      });
-      const beaconCheckpointsResJson = await beaconCheckpointsResponse.json();
+      // const beaconCheckpointsResponse = await fetch(`/api/beaconCheckpoints`, {
+      //   method: "GET",
+      // });
+      // const beaconCheckpointsResJson = await beaconCheckpointsResponse.json();
+      const beaconCheckpointsResJson = await fetchBeaconCheckpoints();
+
       const currentEpoch = beaconCheckpointsResJson?.data?.finalized?.epoch;
 
       const days =
