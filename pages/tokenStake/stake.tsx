@@ -7,7 +7,7 @@ import { ConfirmModal } from "components/modal/ConfirmModal";
 import { StakeGuide } from "components/tokenStake/StakeGuide";
 import { ValidatorKeyUpload } from "components/tokenStake/ValidatorKeyUpload";
 import { ValidatorStakeLoading } from "components/tokenStake/ValidatorStakeLoading";
-import { getEthereumChainId, getEthereumNetworkName } from "config/env";
+import { getEthereumChainId, getNetworkName } from "config/env";
 import { robotoSemiBold } from "config/font";
 import { useAppDispatch, useAppSelector } from "hooks/common";
 import { useAppSlice } from "hooks/selector";
@@ -101,7 +101,7 @@ const StakePage = () => {
     ) {
       throw new Error(`Incorrect withdrawal_credentials value`);
     }
-    const networkName = getEthereumNetworkName();
+    const networkName = getNetworkName();
     if (validatorKey.eth2_network_name !== networkName) {
       throw new Error(`Please use ${networkName} validator file to stake`);
     }

@@ -4,7 +4,11 @@ import { CustomButton } from "components/common/CustomButton";
 import { NoticeDrawer } from "components/drawer/NoticeDrawer";
 import { SettingsDrawer } from "components/drawer/SettingsDrawer";
 import { Icomoon } from "components/icon/Icomoon";
-import { getEthereumChainId } from "config/env";
+import {
+  getEthereumChainId,
+  getEthereumChainName,
+  getNetworkName,
+} from "config/env";
 import { useAppDispatch, useAppSelector } from "hooks/common";
 import { useAppSlice } from "hooks/selector";
 import { useWalletAccount } from "hooks/useWalletAccount";
@@ -304,7 +308,7 @@ const UserInfo = (props: { auditExpand: boolean }) => {
             netPopupState.isOpen ? "text-text1 " : "text-color-text1"
           )}
         >
-          Ethereum
+          {getEthereumChainName()}
         </div>
 
         {/* <div className="ml-[.12rem]">

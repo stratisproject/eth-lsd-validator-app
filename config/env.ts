@@ -21,7 +21,7 @@ export function getEthereumChainName() {
   return appProdConfig.chain.name;
 }
 
-export function getEthereumNetworkName() {
+export function getNetworkName() {
   if (isDev()) {
     return appDevConfig.chain.networkName;
   }

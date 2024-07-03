@@ -1,12 +1,12 @@
 {
-  "appTitle": "ETH Validator App",
-  "chainIcon": "/images/chain/ethereum.png",
+  "appTitle": "Pulse Validator App",
+  "chainIcon": "/images/chain/pulse.png",
   "token": {
-    "tokenName": "ETH",
-    "lsdTokenName": "rETH",
-    "lsdTokenIconUri": "https://cdn.stafi.io/rtoken/logo/rETH.png",
-    "tokenIcon": "/images/token/ETH.svg",
-    "lsdTokenIcon": "/images/token/rETH.svg"
+    "tokenName": "PLS",
+    "lsdTokenName": "rPLS",
+    "lsdTokenIconUri": "https://cdn.stafi.io/rtoken/logo/rPLS.png",
+    "tokenIcon": "/images/token/PLS.svg",
+    "lsdTokenIcon": "/images/token/rPLS.svg"
   },
   "supportRestApi": true,
   "apr": 3.1,
