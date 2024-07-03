@@ -27,7 +27,7 @@ export function usePrice() {
   });
 
   return {
-    ethPrice: tokenPriceResult.data,
+    tokenPrice: tokenPriceResult.data,
     lsdEthPrice: 0,
   };
 }
