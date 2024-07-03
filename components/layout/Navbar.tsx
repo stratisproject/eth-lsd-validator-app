@@ -30,7 +30,10 @@ import {
   setNoticeDrawerOpen,
   setSettingsDrawerOpen,
 } from "redux/reducers/AppSlice";
-import { disconnectWallet } from "redux/reducers/WalletSlice";
+import {
+  disconnectWallet,
+  setMetaMaskDisconnected,
+} from "redux/reducers/WalletSlice";
 import { RootState } from "redux/store";
 import { getLsdTokenName } from "utils/configUtils";
 import { getChainIcon } from "utils/iconUtils";
@@ -429,10 +432,12 @@ const ConnectButton = () => {
       return;
     }
     try {
+      dispatch(setMetaMaskDisconnected(false));
       await connectAsync({
         chainId: getEthereumChainId(),
         connector: metamaskConnector,
       });
+      dispatch(setMetaMaskDisconnected(false));
     } catch (err: any) {
       if (err.code === 4001) {
       } else {

@@ -30,6 +30,7 @@ import uploadIcon from "public/images/upload.svg";
 import { useMemo, useState } from "react";
 import { updateEthBalance } from "redux/reducers/EthSlice";
 import { handleEthValidatorDeposit } from "redux/reducers/ValidatorSlice";
+import { setMetaMaskDisconnected } from "redux/reducers/WalletSlice";
 import { RootState } from "redux/store";
 import { openLink } from "utils/commonUtils";
 import { getTokenName } from "utils/configUtils";
@@ -376,6 +377,7 @@ const TrustDepositPage = () => {
                       return;
                     }
                     try {
+                      dispatch(setMetaMaskDisconnected(false));
                       await connectAsync({
                         chainId: getEthereumChainId(),
                         connector: metamaskConnector,

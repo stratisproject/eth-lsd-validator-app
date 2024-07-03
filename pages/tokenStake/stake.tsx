@@ -21,6 +21,7 @@ import uploadIcon from "public/images/upload.svg";
 import { useEffect, useMemo, useState } from "react";
 import { updateEthBalance } from "redux/reducers/EthSlice";
 import { handleEthValidatorStake } from "redux/reducers/ValidatorSlice";
+import { setMetaMaskDisconnected } from "redux/reducers/WalletSlice";
 import { RootState } from "redux/store";
 import { openLink } from "utils/commonUtils";
 import { getShortAddress } from "utils/stringUtils";
@@ -393,6 +394,7 @@ const StakePage = () => {
                         return;
                       }
                       try {
+                        dispatch(setMetaMaskDisconnected(false));
                         await connectAsync({
                           chainId: getEthereumChainId(),
                           connector: metamaskConnector,

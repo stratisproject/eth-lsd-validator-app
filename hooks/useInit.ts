@@ -1,4 +1,4 @@
-import { hooks, metaMask } from "connectors/metaMask";
+import { metaMask } from "connectors/metaMask";
 import dayjs from "dayjs";
 import { useEffect } from "react";
 import {
@@ -6,31 +6,31 @@ import {
   setUnreadNoticeFlag,
   setUpdateFlag,
 } from "redux/reducers/AppSlice";
+import {
+  updateEthBalance,
+  updateEthLatestBlockTimestamp,
+} from "redux/reducers/EthSlice";
 import { updateApr } from "redux/reducers/LsdEthSlice";
+import {
+  updateNodePubkeys,
+  updateValidatorWithdrawalCredentials,
+} from "redux/reducers/ValidatorSlice";
 import {
   setMetaMaskAccount,
   setMetaMaskChainId,
   setMetaMaskDisconnected,
 } from "redux/reducers/WalletSlice";
 import {
-  getStorage,
   STORAGE_KEY_DARK_MODE,
   STORAGE_KEY_DISCONNECT_METAMASK,
   STORAGE_KEY_UNREAD_NOTICE,
+  getStorage,
 } from "utils/storageUtils";
+import { useAccount } from "wagmi";
 import { useAppDispatch } from "./common";
 import { useAppSlice } from "./selector";
 import { useInterval } from "./useInterval";
-import {
-  updateEthBalance,
-  updateEthLatestBlockTimestamp,
-} from "redux/reducers/EthSlice";
 import { useWalletAccount } from "./useWalletAccount";
-import {
-  updateNodePubkeys,
-  updateValidatorWithdrawalCredentials,
-} from "redux/reducers/ValidatorSlice";
-import { useAccount } from "wagmi";
 
 declare const window: { ethereum: any };
 declare const ethereum: any;
