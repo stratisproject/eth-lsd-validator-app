@@ -1,33 +1,33 @@
-import { useCallback, useEffect, useState } from "react";
-import { useAppSlice } from "./selector";
+import { UseQueryResult, useQuery } from "@tanstack/react-query";
 import { getTokenPriceUrl } from "utils/configUtils";
 
 export function usePrice() {
-  const { updateFlag } = useAppSlice();
+  const tokenPriceResult: UseQueryResult<number> = useQuery({
+    queryKey: ["GetTokenPrice"],
+    staleTime: 60000,
+    initialData: 0,
+    queryFn: async () => {
+      try {
+        const response = await fetch(getTokenPriceUrl(), {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const resJson = await response.json();
+        if (resJson) {
+          const { usd } = resJson["pulsechain"];
+          console.log({ usd });
+          return usd;
+        }
+      } catch (err: any) {}
 
-  const [tokenPrice, setTokenPrice] = useState(0);
-
-  const fetchGasPrice = useCallback(async () => {
-    try {
-      const response = await fetch(getTokenPriceUrl(), {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const resJson = await response.json();
-      if (resJson) {
-        const { usd } = resJson["ethereum"];
-        setTokenPrice(usd);
-      }
-    } catch (err: any) {}
-  }, []);
-
-  useEffect(() => {
-    fetchGasPrice();
-  }, [updateFlag]);
+      return 0;
+    },
+  });
 
   return {
-    tokenPrice,
+    ethPrice: tokenPriceResult.data,
+    lsdEthPrice: 0,
   };
 }
