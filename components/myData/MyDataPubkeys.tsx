@@ -107,7 +107,9 @@ export const MyDataPubkeys = () => {
           height=".42rem"
           width="1.43rem"
           onClick={() => {
-            openLink("https://www.google.com");
+            openLink(
+              "https://lsaas-docs.stafi.io/docs/developethlsd/validator.html"
+            );
           }}
         >
           Run Nodes
