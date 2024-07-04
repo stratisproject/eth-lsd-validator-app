@@ -2,13 +2,12 @@
   "chain": {
     "id": 943,
     "name": "PulseChain Testnet v4",
-    "networkName": "PulseChain"
+    "networkName": "pulsechain-testnet-v4"
   },
   "rpc": "https://rpc.v4.testnet.pulsechain.com",
   "beaconHost": "https://rpc-testnet-pulsechain.g4mm4.io/beacon-api",
   "explorer": "https://scan.v4.testnet.pulsechain.com/#",
   "validatorExplorer": "https://holesky.beaconcha.in",
-  "validatorDepositAmount": 32000000,
   "blockSeconds": 10,
   "contracts": {
     "lsdTokenContract": {

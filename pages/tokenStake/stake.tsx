@@ -7,7 +7,13 @@ import { ConfirmModal } from "components/modal/ConfirmModal";
 import { StakeGuide } from "components/tokenStake/StakeGuide";
 import { ValidatorKeyUpload } from "components/tokenStake/ValidatorKeyUpload";
 import { ValidatorStakeLoading } from "components/tokenStake/ValidatorStakeLoading";
-import { getEthereumChainId, getNetworkName } from "config/env";
+import {
+  getEthereumChainId,
+  getNetworkName,
+  getNetworkNameKey,
+  getTrustValidatorDepositAmount,
+  getValidatorTotalDepositAmount,
+} from "config/env";
 import { robotoSemiBold } from "config/font";
 import { useAppDispatch, useAppSelector } from "hooks/common";
 import { useAppSlice } from "hooks/selector";
@@ -93,7 +99,15 @@ const StakePage = () => {
     ) {
       throw new Error("Miss deposit_data_root or signature or pubkey");
     }
-    if (BigInt(validatorKey.amount) !== parseEther("31000000", "gwei")) {
+    if (
+      BigInt(validatorKey.amount) !==
+      parseEther(
+        (getValidatorTotalDepositAmount() -
+          getTrustValidatorDepositAmount() +
+          "") as `${number}`,
+        "gwei"
+      )
+    ) {
       throw new Error(
         "Please use  stake_data file of trusted validator to stake"
       );
@@ -104,7 +118,7 @@ const StakePage = () => {
       throw new Error(`Incorrect withdrawal_credentials value`);
     }
     const networkName = getNetworkName();
-    if (validatorKey.eth2_network_name !== networkName) {
+    if (validatorKey[getNetworkNameKey()] !== networkName) {
       throw new Error(`Please use ${networkName} validator file to stake`);
     }
   };

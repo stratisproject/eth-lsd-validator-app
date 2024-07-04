@@ -10,6 +10,9 @@
   },
   "supportRestApi": true,
   "apr": 8.1,
+  "validatorTotalDepositAmount": 32000000,
+  "trustValidatorDepositAmount": 1000000,
+  "networkNameKey": "network_name",
   "detailedInfo": {},
   "faqList": [
     {

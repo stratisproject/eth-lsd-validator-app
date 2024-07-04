@@ -14,7 +14,7 @@ import Web3 from "web3";
 import { useAppSlice } from "./selector";
 import { usePoolPubkeyData } from "./usePoolPubkeyData";
 import { usePrice } from "./usePrice";
-import { getEthereumChainId, getValidatorDepositAmount } from "config/env";
+import { getEthereumChainId, getValidatorTotalDepositAmount } from "config/env";
 
 export function usePoolData() {
   const { updateFlag } = useAppSlice();
@@ -40,7 +40,7 @@ export function usePoolData() {
     if (!matchedValidators) {
       return undefined;
     }
-    return Number(matchedValidators) * getValidatorDepositAmount() + "";
+    return Number(matchedValidators) * getValidatorTotalDepositAmount() + "";
   }, [matchedValidators]);
 
   const mintedLsdTokenValue = useMemo(() => {

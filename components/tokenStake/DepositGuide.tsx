@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { Icomoon } from "components/icon/Icomoon";
-import { getValidatorDepositAmount } from "config/env";
+import { getValidatorTotalDepositAmount } from "config/env";
 import { robotoBold } from "config/font";
 import { useAppSlice } from "hooks/selector";
 import { useSoloNodeDepositAmount } from "hooks/useSoloNodeDepositAmount";
@@ -67,7 +67,8 @@ export const DepositGuide = () => {
               . StaFi will contribute an additional{" "}
               <span className={robotoBold.className}>
                 {formatNumber(
-                  getValidatorDepositAmount() - Number(soloNodeDepositAmount),
+                  getValidatorTotalDepositAmount() -
+                    Number(soloNodeDepositAmount),
                   { fixedDecimals: false }
                 )}{" "}
                 {getTokenName()}

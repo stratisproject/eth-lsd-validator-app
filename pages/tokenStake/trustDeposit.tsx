@@ -14,7 +14,12 @@ import { DepositGuide } from "components/tokenStake/DepositGuide";
 import { ValidatorKeyUpload } from "components/tokenStake/ValidatorKeyUpload";
 import { getNodeDepositContract } from "config/contract";
 import { getNodeDepositContractAbi } from "config/contractAbi";
-import { getEthereumChainId, getNetworkName } from "config/env";
+import {
+  getEthereumChainId,
+  getNetworkName,
+  getNetworkNameKey,
+  getTrustValidatorDepositAmount,
+} from "config/env";
 import { robotoBold } from "config/font";
 import { useAppDispatch, useAppSelector } from "hooks/common";
 import { useAppSlice } from "hooks/selector";
@@ -94,7 +99,10 @@ const TrustDepositPage = () => {
     ) {
       throw new Error("Miss deposit_data_root or signature or pubkey");
     }
-    if (BigInt(validatorKey.amount) !== parseEther("1000000", "gwei")) {
+    if (
+      BigInt(validatorKey.amount) !==
+      parseEther((getTrustValidatorDepositAmount() + "") as `${number}`, "gwei")
+    ) {
       throw new Error(
         "Please use deposit_data file of trusted validator to deposit"
       );
@@ -105,7 +113,7 @@ const TrustDepositPage = () => {
       throw new Error(`Incorrect withdrawal_credentials value`);
     }
     const networkName = getNetworkName();
-    if (validatorKey.eth2_network_name !== networkName) {
+    if (validatorKey[getNetworkNameKey()] !== networkName) {
       throw new Error(`Please use ${networkName} validator file to deposit`);
     }
   };

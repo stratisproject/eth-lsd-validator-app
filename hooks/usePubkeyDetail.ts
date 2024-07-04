@@ -2,19 +2,19 @@ import {
   getNetworkWithdrawContract,
   getNodeDepositContract,
 } from "config/contract";
-import { NodePubkeyInfo } from "interfaces/common";
-import { useCallback, useEffect, useState } from "react";
-import { getPubkeyDisplayStatus } from "utils/commonUtils";
-import { getEthWeb3 } from "utils/web3Utils";
-import { useUnmatchedToken } from "./useUnmatchedToken";
-import { useWalletAccount } from "./useWalletAccount";
 import {
   getNetworkWithdrawContractAbi,
   getNodeDepositContractAbi,
 } from "config/contractAbi";
-import Web3 from "web3";
-import { getBlockSeconds, getValidatorDepositAmount } from "config/env";
+import { getBlockSeconds } from "config/env";
+import { NodePubkeyInfo } from "interfaces/common";
+import { useCallback, useEffect, useState } from "react";
 import { fetchBeaconCheckpoints, fetchPubkeyStatus } from "utils/apiUtils";
+import { getPubkeyDisplayStatus } from "utils/commonUtils";
+import { getEthWeb3 } from "utils/web3Utils";
+import Web3 from "web3";
+import { useUnmatchedToken } from "./useUnmatchedToken";
+import { useWalletAccount } from "./useWalletAccount";
 
 export function usePubkeyDetail(pubkeyAddress: string | undefined) {
   const { metaMaskAccount } = useWalletAccount();
