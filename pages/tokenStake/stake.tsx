@@ -25,6 +25,7 @@ import { setMetaMaskDisconnected } from "redux/reducers/WalletSlice";
 import { RootState } from "redux/store";
 import { openLink } from "utils/commonUtils";
 import { getShortAddress } from "utils/stringUtils";
+import { parseEther } from "viem";
 import { useConnect, useSwitchNetwork } from "wagmi";
 
 const StakePage = () => {
@@ -92,7 +93,7 @@ const StakePage = () => {
     ) {
       throw new Error("Miss deposit_data_root or signature or pubkey");
     }
-    if (validatorKey.amount !== 31000000000) {
+    if (BigInt(validatorKey.amount) !== parseEther("31000000", "gwei")) {
       throw new Error(
         "Please use  stake_data file of trusted validator to stake"
       );

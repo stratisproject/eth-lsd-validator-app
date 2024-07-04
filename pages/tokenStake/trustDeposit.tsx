@@ -36,6 +36,7 @@ import { openLink } from "utils/commonUtils";
 import { getTokenName } from "utils/configUtils";
 import { formatNumber } from "utils/numberUtils";
 import { getEthWeb3 } from "utils/web3Utils";
+import { parseEther } from "viem";
 import { useConnect, useSwitchNetwork } from "wagmi";
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
@@ -93,9 +94,9 @@ const TrustDepositPage = () => {
     ) {
       throw new Error("Miss deposit_data_root or signature or pubkey");
     }
-    if (validatorKey.amount !== 1000000000) {
+    if (BigInt(validatorKey.amount) !== parseEther("1000000", "gwei")) {
       throw new Error(
-        "Please use  deposit_data file of trusted validator to deposit"
+        "Please use deposit_data file of trusted validator to deposit"
       );
     }
     if (
