@@ -5,6 +5,9 @@ import { ChooseTypeGuide } from "components/tokenStake/ChooseTypeGuide";
 import { robotoBold } from "config/font";
 import { useAppDispatch, useAppSelector } from "hooks/common";
 import { useIsTrustedValidator } from "hooks/useIsTrustedValidator";
+import { useSoloDepositEnabled } from "hooks/useSoloDepositEnabled";
+import { useSoloNodeDepositAmount } from "hooks/useSoloNodeDepositAmount";
+import { useTrustDepositEnabled } from "hooks/useTrustDepositEnabled";
 import { useWalletAccount } from "hooks/useWalletAccount";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -19,14 +22,16 @@ const ChooseTypePage = () => {
   const { isTrust } = useIsTrustedValidator();
   const { metaMaskAccount } = useWalletAccount();
 
-  const { validatorWithdrawalCredentials } = useAppSelector(
-    (state: RootState) => {
-      return {
-        validatorWithdrawalCredentials:
-          state.validator.validatorWithdrawalCredentials,
-      };
-    }
-  );
+  const { soloNodeDepositAmount } = useSoloNodeDepositAmount();
+  const soloDepositEnabled = useSoloDepositEnabled();
+  const trustDepositEnabled = useTrustDepositEnabled();
+
+  const soloDisabled =
+    !soloDepositEnabled ||
+    !soloNodeDepositAmount ||
+    Number(soloNodeDepositAmount) === 0 ||
+    isTrust ||
+    !metaMaskAccount;
 
   return (
     <div className="w-smallContentW xl:w-contentW 2xl:w-largeContentW mx-auto">
@@ -56,7 +61,7 @@ const ChooseTypePage = () => {
               <div className="self-stretch mb-[.24rem] mx-[.16rem]">
                 <CustomButton
                   height=".48rem"
-                  disabled={isTrust || !metaMaskAccount}
+                  disabled={soloDisabled}
                   onClick={() => {
                     router.push("/tokenStake/soloDeposit");
                   }}
@@ -91,6 +96,7 @@ const ChooseTypePage = () => {
                   <CustomButton
                     height=".48rem"
                     type="stroke"
+                    disabled={!trustDepositEnabled}
                     onClick={() => {
                       openLink("https://forms.gle/RtFK7qo9GzabQTCfA");
                     }}

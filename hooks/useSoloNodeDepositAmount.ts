@@ -1,39 +1,38 @@
+import { UseQueryResult, useQuery } from "@tanstack/react-query";
 import { getNodeDepositContract } from "config/contract";
 import { getNodeDepositContractAbi } from "config/contractAbi";
-import { useCallback, useEffect, useState } from "react";
 import { getEthWeb3 } from "utils/web3Utils";
 import Web3 from "web3";
 
 export function useSoloNodeDepositAmount() {
-  const [soloNodeDepositAmount, setSoloNodeDepositAmount] = useState<string>();
+  const amountResult: UseQueryResult<string | undefined> = useQuery({
+    queryKey: ["GetSoloNodeDepositAmount"],
+    staleTime: 10000,
+    queryFn: async () => {
+      try {
+        const web3 = getEthWeb3();
+        const nodeDepositContract = new web3.eth.Contract(
+          getNodeDepositContractAbi(),
+          getNodeDepositContract(),
+          {}
+        );
 
-  const updateData = useCallback(async () => {
-    try {
-      const web3 = getEthWeb3();
-      const nodeDepositContract = new web3.eth.Contract(
-        getNodeDepositContractAbi(),
-        getNodeDepositContract(),
-        {}
-      );
+        const soloNodeDepositAmount = await nodeDepositContract.methods
+          .soloNodeDepositAmount()
+          .call()
+          .catch((err: any) => {
+            console.log({ err });
+          });
 
-      const soloNodeDepositAmount = await nodeDepositContract.methods
-        .soloNodeDepositAmount()
-        .call()
-        .catch((err: any) => {
-          console.log({ err });
-        });
-
-      setSoloNodeDepositAmount(Web3.utils.fromWei(soloNodeDepositAmount));
-    } catch (err: any) {
-      console.log({ err });
-    }
-  }, []);
-
-  useEffect(() => {
-    updateData();
-  }, [updateData]);
+        return Web3.utils.fromWei(soloNodeDepositAmount);
+      } catch (err: any) {
+        console.log({ err });
+      }
+      return undefined;
+    },
+  });
 
   return {
-    soloNodeDepositAmount,
+    soloNodeDepositAmount: amountResult.data,
   };
 }

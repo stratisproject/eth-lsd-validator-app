@@ -4,13 +4,11 @@ import { getValidatorTotalDepositAmount } from "config/env";
 import { robotoBold } from "config/font";
 import { useAppSlice } from "hooks/selector";
 import { useSoloNodeDepositAmount } from "hooks/useSoloNodeDepositAmount";
-import { useRouter } from "next/router";
 import { getTokenName } from "utils/configUtils";
 import { formatNumber } from "utils/numberUtils";
 
 export const ChooseTypeGuide = () => {
   const { darkMode } = useAppSlice();
-  const router = useRouter();
 
   const { soloNodeDepositAmount } = useSoloNodeDepositAmount();
 
