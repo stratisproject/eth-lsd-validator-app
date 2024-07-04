@@ -5,6 +5,7 @@ import { ChooseTypeGuide } from "components/tokenStake/ChooseTypeGuide";
 import { robotoBold } from "config/font";
 import { useAppDispatch, useAppSelector } from "hooks/common";
 import { useIsTrustedValidator } from "hooks/useIsTrustedValidator";
+import { useWalletAccount } from "hooks/useWalletAccount";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { RootState } from "redux/store";
@@ -14,10 +15,9 @@ import { getTokenName } from "utils/configUtils";
 const ChooseTypePage = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const [validatorKeys, setValidatorKeys] = useState<any[]>([]);
-  const [fileName, setFileName] = useState<string>("");
 
   const { isTrust } = useIsTrustedValidator();
+  const { metaMaskAccount } = useWalletAccount();
 
   const { validatorWithdrawalCredentials } = useAppSelector(
     (state: RootState) => {
@@ -56,7 +56,7 @@ const ChooseTypePage = () => {
               <div className="self-stretch mb-[.24rem] mx-[.16rem]">
                 <CustomButton
                   height=".48rem"
-                  disabled={isTrust}
+                  disabled={isTrust || !metaMaskAccount}
                   onClick={() => {
                     router.push("/tokenStake/soloDeposit");
                   }}
