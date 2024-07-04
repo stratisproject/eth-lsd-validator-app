@@ -14,7 +14,11 @@ import { DepositGuide } from "components/tokenStake/DepositGuide";
 import { ValidatorKeyUpload } from "components/tokenStake/ValidatorKeyUpload";
 import { getNodeDepositContract } from "config/contract";
 import { getNodeDepositContractAbi } from "config/contractAbi";
-import { getEthereumChainId, getEthereumNetworkName } from "config/env";
+import {
+  getEthereumChainId,
+  getEthereumNetworkName,
+  getNetworkNameKey,
+} from "config/env";
 import { robotoBold } from "config/font";
 import { useAppDispatch, useAppSelector } from "hooks/common";
 import { useAppSlice } from "hooks/selector";
@@ -104,7 +108,7 @@ const TrustDepositPage = () => {
       throw new Error(`Incorrect withdrawal_credentials value`);
     }
     const networkName = getEthereumNetworkName();
-    if (validatorKey.eth2_network_name !== networkName) {
+    if (validatorKey[getNetworkNameKey()] !== networkName) {
       throw new Error(`Please use ${networkName} validator file to deposit`);
     }
   };

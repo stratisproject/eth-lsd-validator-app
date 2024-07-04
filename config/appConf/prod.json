@@ -8,7 +8,6 @@
   "beaconHost": "",
   "explorer": "https://etherscan.io",
   "validatorExplorer": "https://beaconcha.in",
-  "validatorDepositAmount": 32,
   "blockSeconds": 12,
   "contracts": {
     "lsdTokenContract": {

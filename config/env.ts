@@ -72,11 +72,16 @@ export function getLsdAppUrl() {
   return appProdConfig.lsdAppUrl;
 }
 
-export function getValidatorDepositAmount() {
-  if (isDev()) {
-    return appDevConfig.validatorDepositAmount;
-  }
-  return appProdConfig.validatorDepositAmount;
+export function getValidatorTotalDepositAmount() {
+  return appConfig.validatorTotalDepositAmount;
+}
+
+export function getTrustValidatorDepositAmount() {
+  return appConfig.trustValidatorDepositAmount;
+}
+
+export function getNetworkNameKey() {
+  return appConfig.networkNameKey;
 }
 
 export function getBlockSeconds() {
