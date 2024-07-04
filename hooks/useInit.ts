@@ -26,7 +26,7 @@ import {
   STORAGE_KEY_UNREAD_NOTICE,
   getStorage,
 } from "utils/storageUtils";
-import { useAccount } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { useAppDispatch } from "./common";
 import { useAppSlice } from "./selector";
 import { useInterval } from "./useInterval";
@@ -40,6 +40,8 @@ export function useInit() {
   const { updateFlag, darkMode } = useAppSlice();
 
   const { address: metaMaskAccount } = useAccount();
+  const chainId = useChainId();
+
   const { metaMaskAccount: walletMetaMaskAccount, metaMaskChainId } =
     useWalletAccount();
 
@@ -77,24 +79,8 @@ export function useInit() {
   }, [dispatch, metaMaskAccount]);
 
   useEffect(() => {
-    const listener = (chainId: any) => {
-      dispatch(setMetaMaskChainId(parseInt(chainId, 16) + ""));
-    };
-    if (window.ethereum && window.ethereum.isMetaMask) {
-      ethereum.request({ method: "eth_chainId" }).then((chainId: string) => {
-        dispatch(setMetaMaskChainId(parseInt(chainId, 16) + ""));
-        // clearDefaultProviderWeb3();
-      });
-
-      ethereum.on("chainChanged", listener);
-    }
-
-    return () => {
-      if (window.ethereum) {
-        ethereum?.removeListener("chainChanged", listener);
-      }
-    };
-  }, [dispatch]);
+    dispatch(setMetaMaskChainId(chainId + ""));
+  }, [dispatch, chainId]);
 
   // Update wallet balances.
   useEffect(() => {

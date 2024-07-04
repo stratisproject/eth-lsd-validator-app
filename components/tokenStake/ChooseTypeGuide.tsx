@@ -49,9 +49,7 @@ export const ChooseTypeGuide = () => {
                 {formatNumber(soloNodeDepositAmount, { fixedDecimals: false })}{" "}
                 {getTokenName()}
               </span>{" "}
-              to register as a delegated validator on StaFi;
-              <div className="mt-[.1rem]" />
-              StaFi will match{" "}
+              to register as a Solo validator on StaFi; StaFi will match{" "}
               <span className={robotoBold.className}>
                 {formatNumber(
                   getValidatorTotalDepositAmount() -
@@ -61,8 +59,7 @@ export const ChooseTypeGuide = () => {
                 {getTokenName()}
               </span>{" "}
               to your node so that it can meet the validator conditions of{" "}
-              {getTokenName()}
-              2.0.
+              {getTokenName()}.
               <div className="mt-[.1rem]" />
             </>
           )}

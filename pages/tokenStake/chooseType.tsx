@@ -56,6 +56,7 @@ const ChooseTypePage = () => {
               <div className="self-stretch mb-[.24rem] mx-[.16rem]">
                 <CustomButton
                   height=".48rem"
+                  disabled={isTrust}
                   onClick={() => {
                     router.push("/tokenStake/soloDeposit");
                   }}
