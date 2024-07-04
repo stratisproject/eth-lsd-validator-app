@@ -19,6 +19,7 @@ import {
 } from "config/contractAbi";
 import { useUserPubkeys } from "./useUserPubkeys";
 import { getEthereumChainId } from "config/env";
+import { formatScientificNumber } from "utils/numberUtils";
 
 export function useMyData() {
   const { updateFlag } = useAppSlice();
@@ -117,14 +118,16 @@ export function useMyData() {
       const myTotalRewardAmount = myRewardInfo?.totalRewardAmount || "0";
 
       const availableExitDeposit = !myRewardInfo
-        ? "0"
+        ? 0
         : Math.max(
             0,
             Number(myRewardInfo?.totalExitDepositAmount) -
               Number(totalClaimedDepositOfNode)
-          ) + "";
+          );
 
-      setAvailableExitDeposit(Web3.utils.fromWei(availableExitDeposit));
+      setAvailableExitDeposit(
+        Web3.utils.fromWei(formatScientificNumber(availableExitDeposit))
+      );
 
       const nodeDepositContract = new web3.eth.Contract(
         getNodeDepositContractAbi(),
@@ -217,14 +220,19 @@ export function useMyData() {
         0,
         totalNodeDepositAmount - Number(totalClaimedDepositOfNode)
       );
+      setMyShareAmount(
+        Web3.utils.fromWei(formatScientificNumber(myShareAmount))
+      );
 
-      setMyShareAmount(Web3.utils.fromWei(myShareAmount + ""));
       setMySharePercentage(
-        Number(Web3.utils.fromWei(myShareAmount + "")) /
+        Number(Web3.utils.fromWei(formatScientificNumber(myShareAmount))) /
           Number(totalManagedToken) +
           ""
       );
-      setSelfDepositedToken(Web3.utils.fromWei(selfDepositAmount + ""));
+
+      setSelfDepositedToken(
+        Web3.utils.fromWei(formatScientificNumber(selfDepositAmount) + "")
+      );
     } catch (err: any) {
       console.log({ err });
     }

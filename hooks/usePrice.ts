@@ -16,7 +16,7 @@ export function usePrice() {
         const resJson = await response.json();
         if (resJson) {
           const { usd } = resJson["pulsechain"];
-          console.log({ usd });
+          // console.log({ usd });
           return usd;
         }
       } catch (err: any) {}

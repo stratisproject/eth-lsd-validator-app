@@ -1,7 +1,4 @@
-import LinearProgress, {
-  linearProgressClasses,
-} from "@mui/material/LinearProgress";
-import { styled } from "@mui/styles";
+import LinearProgress from "@mui/material/LinearProgress";
 import classNames from "classnames";
 import { BackNavigation } from "components/common/BackNavigation";
 import { CardContainer } from "components/common/CardContainer";
@@ -24,6 +21,7 @@ import { robotoBold } from "config/font";
 import { useAppDispatch, useAppSelector } from "hooks/common";
 import { useAppSlice } from "hooks/selector";
 import { useIsTrustedValidator } from "hooks/useIsTrustedValidator";
+import { useSoloDepositAmount } from "hooks/useSoloDepositAmount";
 import { useUnmatchedToken } from "hooks/useUnmatchedToken";
 import { useWalletAccount } from "hooks/useWalletAccount";
 import Image from "next/image";
@@ -44,19 +42,7 @@ import { getEthWeb3 } from "utils/web3Utils";
 import { parseEther } from "viem";
 import { useConnect, useSwitchNetwork } from "wagmi";
 
-const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
-  height: 6,
-  borderRadius: 4,
-  [`&.${linearProgressClasses.colorPrimary}`]: {
-    backgroundColor: "white",
-  },
-  [`&.${linearProgressClasses.bar}`]: {
-    borderRadius: 4,
-    backgroundColor: "#80CAFF",
-  },
-}));
-
-const TrustDepositPage = () => {
+const SoloDepositPage = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { darkMode } = useAppSlice();
@@ -69,6 +55,7 @@ const TrustDepositPage = () => {
     useState(false);
 
   const { unmatchedEth } = useUnmatchedToken();
+  const { soloDepositAmountInWei } = useSoloDepositAmount();
 
   const { metaMaskAccount, metaMaskChainId } = useWalletAccount();
   const { switchNetworkAsync } = useSwitchNetwork();
@@ -85,8 +72,6 @@ const TrustDepositPage = () => {
     }
   );
 
-  const { isTrust } = useIsTrustedValidator();
-
   const isWrongMetaMaskNetwork = useMemo(() => {
     return Number(metaMaskChainId) !== getEthereumChainId();
   }, [metaMaskChainId]);
@@ -99,14 +84,16 @@ const TrustDepositPage = () => {
     ) {
       throw new Error("Miss deposit_data_root or signature or pubkey");
     }
+
     if (
-      BigInt(validatorKey.amount) !==
-      parseEther((getTrustValidatorDepositAmount() + "") as `${number}`, "gwei")
+      parseEther((validatorKey.amount + "") as `${number}`, "gwei") !==
+      BigInt(soloDepositAmountInWei || "0")
     ) {
       throw new Error(
         "Please use deposit_data file of trusted validator to deposit"
       );
     }
+
     if (
       validatorKey.withdrawal_credentials !== validatorWithdrawalCredentials
     ) {
@@ -176,7 +163,7 @@ const TrustDepositPage = () => {
       />
 
       <div className="flex mt-[.24rem] items-start">
-        <CardContainer width="6.2rem" title="Trusted Validator Deposit">
+        <CardContainer width="6.2rem" title="Solo Validator Deposit">
           <div className="flex flex-col items-center pb-[.24rem]">
             <div className="mt-[.32rem] flex items-center text-[.14rem]">
               <div
@@ -218,6 +205,7 @@ const TrustDepositPage = () => {
             <div className="mt-[.46rem]">
               {!fileName ? (
                 <ValidatorKeyUpload
+                  disabled={!soloDepositAmountInWei}
                   checkValidatorKey={checkFileKeyFormat}
                   onSuccess={(validatorKeys, fileName) => {
                     setFileName(fileName);
@@ -363,13 +351,12 @@ const TrustDepositPage = () => {
                 disabled={
                   !!metaMaskAccount &&
                   !isWrongMetaMaskNetwork &&
-                  isTrust &&
                   (validatorKeys.length === 0 ||
                     isNaN(Number(unmatchedEth)) ||
                     Number(unmatchedEth) < validatorKeys.length)
                 }
                 type={
-                  !metaMaskAccount || isWrongMetaMaskNetwork || !isTrust
+                  !metaMaskAccount || isWrongMetaMaskNetwork
                     ? "secondary"
                     : "primary"
                 }
@@ -400,13 +387,9 @@ const TrustDepositPage = () => {
                     return;
                   }
 
-                  if (!isTrust) {
-                    openLink("https://forms.gle/RtFK7qo9GzabQTCfA");
-                    return;
-                  }
                   dispatch(
                     handleEthValidatorDeposit(
-                      "trusted",
+                      "solo",
                       validatorKeys,
                       (success, result) => {
                         dispatch(updateEthBalance());
@@ -441,8 +424,6 @@ const TrustDepositPage = () => {
                   ? "Connect Wallet"
                   : isWrongMetaMaskNetwork
                   ? "Switch Network"
-                  : !isTrust
-                  ? "Apply Trusted Validator"
                   : validatorKeys.length === 0
                   ? "Please Upload 1 json file"
                   : ethTxLoading
@@ -489,4 +470,4 @@ const TrustDepositPage = () => {
   );
 };
 
-export default TrustDepositPage;
+export default SoloDepositPage;

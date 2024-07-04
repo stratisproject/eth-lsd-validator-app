@@ -18,6 +18,8 @@ import { robotoSemiBold } from "config/font";
 import { useAppDispatch, useAppSelector } from "hooks/common";
 import { useAppSlice } from "hooks/selector";
 import { useIsTrustedValidator } from "hooks/useIsTrustedValidator";
+import { useSoloDepositAmount } from "hooks/useSoloDepositAmount";
+import { useUnmatchedToken } from "hooks/useUnmatchedToken";
 import { useWalletAccount } from "hooks/useWalletAccount";
 import _ from "lodash";
 import Image from "next/image";
@@ -30,12 +32,16 @@ import { handleEthValidatorStake } from "redux/reducers/ValidatorSlice";
 import { setMetaMaskDisconnected } from "redux/reducers/WalletSlice";
 import { RootState } from "redux/store";
 import { openLink } from "utils/commonUtils";
+import { getTokenName } from "utils/configUtils";
+import snackbarUtil from "utils/snackbarUtils";
 import { getShortAddress } from "utils/stringUtils";
 import { parseEther } from "viem";
 import { useConnect, useSwitchNetwork } from "wagmi";
 
 const StakePage = () => {
   const router = useRouter();
+  const { type } = router.query;
+  console.log({ type });
   const dispatch = useAppDispatch();
   const { darkMode } = useAppSlice();
   const [validatorKeys, setValidatorKeys] = useState<any[]>([]);
@@ -43,6 +49,8 @@ const StakePage = () => {
   const { metaMaskAccount, metaMaskChainId } = useWalletAccount();
   const { switchNetworkAsync } = useSwitchNetwork();
   const { connectAsync, connectors } = useConnect();
+  const { soloDepositAmountInWei, soloDepositAmount } = useSoloDepositAmount();
+  const { unmatchedEth } = useUnmatchedToken();
 
   const [deleteConfirmModalVisible, setDeleteConfirmModalVisible] =
     useState(false);
@@ -99,19 +107,35 @@ const StakePage = () => {
     ) {
       throw new Error("Miss deposit_data_root or signature or pubkey");
     }
-    if (
-      BigInt(validatorKey.amount) !==
-      parseEther(
-        (getValidatorTotalDepositAmount() -
-          getTrustValidatorDepositAmount() +
-          "") as `${number}`,
-        "gwei"
-      )
-    ) {
-      throw new Error(
-        "Please use  stake_data file of trusted validator to stake"
-      );
+    if (type === "solo") {
+      if (
+        parseEther(
+          (getValidatorTotalDepositAmount() + "") as `${number}`,
+          "wei"
+        ) -
+          parseEther((validatorKey.amount + "") as `${number}`, "gwei") !==
+        BigInt(soloDepositAmountInWei || "0")
+      ) {
+        throw new Error(
+          "Please use stake_data file of solo validator to stake"
+        );
+      }
+    } else {
+      if (
+        BigInt(validatorKey.amount) !==
+        parseEther(
+          (getValidatorTotalDepositAmount() -
+            getTrustValidatorDepositAmount() +
+            "") as `${number}`,
+          "gwei"
+        )
+      ) {
+        throw new Error(
+          "Please use stake_data file of trusted validator to stake"
+        );
+      }
     }
+
     if (
       validatorKey.withdrawal_credentials !== validatorWithdrawalCredentials
     ) {
@@ -164,6 +188,7 @@ const StakePage = () => {
                   // disabled={
                   //   stakePubkeyAddressList.length === validatorKeys.length
                   // }
+                  disabled={!soloDepositAmountInWei}
                   checkValidatorKey={checkUploadPubkey}
                   onSuccess={handleNewValidaorKeys}
                 >
@@ -247,6 +272,7 @@ const StakePage = () => {
                         // disabled={
                         //   stakePubkeyAddressList.length === validatorKeys.length
                         // }
+                        disabled={!soloDepositAmountInWei}
                         checkValidatorKey={checkUploadPubkey}
                         onSuccess={handleNewValidaorKeys}
                       >
@@ -386,14 +412,16 @@ const StakePage = () => {
                   height=".56rem"
                   loading={ethTxLoading}
                   type={
-                    !metaMaskAccount || isWrongMetaMaskNetwork || !isTrust
+                    !metaMaskAccount ||
+                    isWrongMetaMaskNetwork ||
+                    (!isTrust && type === "trusted")
                       ? "secondary"
                       : "primary"
                   }
                   disabled={
                     !!metaMaskAccount &&
                     !isWrongMetaMaskNetwork &&
-                    isTrust &&
+                    (isTrust || type !== "trusted") &&
                     validatorKeys.length < stakePubkeyAddressList.length
                   }
                   onClick={async () => {
@@ -423,23 +451,41 @@ const StakePage = () => {
                       return;
                     }
 
-                    if (!isTrust) {
+                    if (type === "trusted" && !isTrust) {
                       openLink("https://forms.gle/RtFK7qo9GzabQTCfA");
                       return;
                     }
 
-                    // if (
-                    //   depositType === "trusted" &&
-                    //   Number(unmatchedEth) < validatorKeys.length * 31
-                    // ) {
-                    //   snackbarUtil.error("Insufficient ETH in pool");
-                    //   return;
-                    // }
+                    if (
+                      type === "solo" &&
+                      Number(unmatchedEth) <
+                        validatorKeys.length *
+                          (getValidatorTotalDepositAmount() -
+                            Number(soloDepositAmount))
+                    ) {
+                      snackbarUtil.error(
+                        `Insufficient ${getTokenName()} in pool`
+                      );
+                      return;
+                    }
+
+                    if (
+                      type === "trusted" &&
+                      Number(unmatchedEth) <
+                        validatorKeys.length *
+                          (getValidatorTotalDepositAmount() -
+                            getTrustValidatorDepositAmount())
+                    ) {
+                      snackbarUtil.error(
+                        `Insufficient ${getTokenName()} in pool`
+                      );
+                      return;
+                    }
 
                     dispatch(
                       handleEthValidatorStake(
                         validatorKeys,
-                        "trusted",
+                        type as "solo" | "trusted",
                         (success, result) => {
                           dispatch(updateEthBalance());
                           if (success) {
@@ -453,7 +499,7 @@ const StakePage = () => {
                     ? "Connect Wallet"
                     : isWrongMetaMaskNetwork
                     ? "Switch Network"
-                    : !isTrust
+                    : !isTrust && type === "trusted"
                     ? "Apply Trusted Validator"
                     : validatorKeys.length < stakePubkeyAddressList.length
                     ? `Please Upload ${stakePubkeyAddressList.length} ${

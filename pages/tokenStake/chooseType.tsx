@@ -9,6 +9,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { RootState } from "redux/store";
 import { openLink } from "utils/commonUtils";
+import { getTokenName } from "utils/configUtils";
 
 const ChooseTypePage = () => {
   const router = useRouter();
@@ -32,6 +33,38 @@ const ChooseTypePage = () => {
       <div className="flex mt-[.24rem] items-start">
         <CardContainer width="6.2rem" title="Choose Validator Type">
           <div className="h-[3.4rem] flex justify-center pt-[.52rem]">
+            <div className="mr-[.27rem] w-[1.88rem] h-[2.11rem] rounded-[.16rem] bg-color-bgPage flex flex-col items-center justify-between">
+              <div className="mt-[.32rem] flex flex-col items-center">
+                <div
+                  className={classNames(
+                    "text-[.16rem] text-color-text1",
+                    robotoBold.className
+                  )}
+                >
+                  Solo Validator
+                </div>
+
+                <div
+                  className={classNames(
+                    "text-[.14rem] text-color-text2 mt-[.14rem] text-center mx-[.12rem] leading-snug"
+                  )}
+                >
+                  Deposit {getTokenName()} to be delegated
+                </div>
+              </div>
+
+              <div className="self-stretch mb-[.24rem] mx-[.16rem]">
+                <CustomButton
+                  height=".48rem"
+                  onClick={() => {
+                    router.push("/tokenStake/soloDeposit");
+                  }}
+                >
+                  Next
+                </CustomButton>
+              </div>
+            </div>
+
             <div className="w-[1.88rem] h-[2.11rem] rounded-[.16rem] bg-color-bgPage flex flex-col items-center justify-between">
               <div className="mt-[.32rem] flex flex-col items-center">
                 <div
@@ -45,7 +78,7 @@ const ChooseTypePage = () => {
 
                 <div
                   className={classNames(
-                    "text-[.14rem] text-color-text2 mt-[.14rem]"
+                    "text-[.14rem] text-color-text2 mt-[.14rem] mx-[.12rem] leading-snug"
                   )}
                 >
                   Apply to be nominated
@@ -89,7 +122,7 @@ const ChooseTypePage = () => {
 
                 <div
                   className={classNames(
-                    "text-[.14rem] text-color-text2 mt-[.14rem] leading-normal text-center "
+                    "text-[.14rem] text-color-text2 mt-[.14rem] leading-snug text-center mx-[.12rem]"
                   )}
                 >
                   Use 3rd Party Server, such as SSV and Obol

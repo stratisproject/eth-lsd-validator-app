@@ -54,6 +54,7 @@ export enum DisplayPubkeyStatus {
 export interface NodePubkeyInfo {
   beaconApiStatus: string | undefined;
   pubkeyAddress: string;
+  type: "solo" | "trusted";
   canStake?: boolean;
   displayStatus?: string;
   eligibilityEpoch?: string;

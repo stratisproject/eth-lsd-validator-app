@@ -20,7 +20,7 @@ import {
 import { AppThunk } from "redux/store";
 import { isEvmTxCancelError, uuid } from "utils/commonUtils";
 import { getTokenName } from "utils/configUtils";
-import { formatNumber } from "utils/numberUtils";
+import { formatNumber, formatScientificNumber } from "utils/numberUtils";
 import snackbarUtil from "utils/snackbarUtils";
 import { getShortAddress } from "utils/stringUtils";
 import { createWeb3, getEthWeb3 } from "utils/web3Utils";
@@ -40,8 +40,12 @@ import {
   getNetworkWithdrawContractAbi,
   getNodeDepositContractAbi,
 } from "config/contractAbi";
-import { getValidatorTotalDepositAmount } from "config/env";
+import {
+  getTrustValidatorDepositAmount,
+  getValidatorTotalDepositAmount,
+} from "config/env";
 import { fetchPubkeyStatus } from "utils/apiUtils";
+import { parseEther } from "viem";
 
 export interface ValidatorState {
   validatorWithdrawalCredentials: string;
@@ -175,9 +179,18 @@ export const updateNodePubkeys = (): AppThunk => async (dispatch, getState) => {
       const matchedBeaconData = beaconStatusResJson.data?.find(
         (item: any) => item.validator?.pubkey === pubkeysOfNode[index]
       );
+      const type =
+        item._nodeDepositAmount ===
+        parseEther(
+          (getTrustValidatorDepositAmount() + "") as `${number}`,
+          "gwei"
+        )
+          ? "trusted"
+          : "solo";
       return {
         pubkeyAddress: pubkeysOfNode[index],
         beaconApiStatus: matchedBeaconData?.status?.toUpperCase() || undefined,
+        type,
         ...item,
       };
     });
@@ -190,6 +203,7 @@ export const updateNodePubkeys = (): AppThunk => async (dispatch, getState) => {
 
 export const handleEthValidatorDeposit =
   (
+    type: "solo" | "trusted",
     validatorKeys: any[],
     callback?: (success: boolean, result: any) => void
   ): AppThunk =>
@@ -217,30 +231,46 @@ export const handleEthValidatorDeposit =
         }
       );
 
-      const nodeInfoOf = await nodeDepositContract.methods
-        .nodeInfoOf(address)
-        .call();
+      if (type === "solo") {
+        const depositEnabled = await nodeDepositContract.methods
+          .soloNodeDepositEnabled()
+          .call();
+        if (!depositEnabled) {
+          throw Error("Solo node deposits are currently disabled");
+        }
+      } else {
+        const nodeInfoOf = await nodeDepositContract.methods
+          .nodeInfoOf(address)
+          .call();
 
-      if (nodeInfoOf._removed) {
-        throw Error("Node already removed");
-      }
+        if (nodeInfoOf._removed) {
+          throw Error("Node already removed");
+        }
 
-      const trustNodePubkeyNumberLimit = await nodeDepositContract.methods
-        .trustNodePubkeyNumberLimit()
-        .call();
+        const trustNodePubkeyNumberLimit = await nodeDepositContract.methods
+          .trustNodePubkeyNumberLimit()
+          .call();
 
-      const pubkeysOfNode = await nodeDepositContract.methods
-        .getPubkeysOfNode(address)
-        .call()
-        .catch((err: any) => {
-          console.log({ err });
-        });
+        const pubkeysOfNode = await nodeDepositContract.methods
+          .getPubkeysOfNode(address)
+          .call()
+          .catch((err: any) => {
+            console.log({ err });
+          });
 
-      if (
-        Number(trustNodePubkeyNumberLimit) <
-        pubkeysOfNode.length + validatorKeys.length
-      ) {
-        throw Error("Pubkey amount over limit");
+        if (
+          Number(trustNodePubkeyNumberLimit) <
+          pubkeysOfNode.length + validatorKeys.length
+        ) {
+          throw Error("Pubkey amount over limit");
+        }
+
+        const depositEnabled = await nodeDepositContract.methods
+          .trustNodeDepositEnabled()
+          .call();
+        if (!depositEnabled) {
+          throw Error("Trusted node deposits are currently disabled");
+        }
       }
 
       const pubkeys: string[] = [];
@@ -253,16 +283,17 @@ export const handleEthValidatorDeposit =
         depositDataRoots.push("0x" + validatorKey.deposit_data_root);
       });
 
-      const sendParams = {};
+      let sendParams = {};
+      if (type === "solo") {
+        const res = await nodeDepositContract.methods
+          .soloNodeDepositAmount()
+          .call();
+        sendParams = {
+          value: formatScientificNumber(res * validatorKeys.length),
+        };
+      }
 
       {
-        const depositEnabled = await nodeDepositContract.methods
-          .trustNodeDepositEnabled()
-          .call();
-        if (!depositEnabled) {
-          throw Error("Trusted node deposits are currently disabled");
-        }
-
         const statusRequests = pubkeys.map((pubkey) => {
           return (async () => {
             const pubkeyInfoOf = await nodeDepositContract.methods
@@ -274,6 +305,8 @@ export const handleEthValidatorDeposit =
         });
 
         const statusList = await Promise.all(statusRequests);
+
+        console.log({ statusList });
 
         statusList.forEach((status, index) => {
           if (Number(status) !== 0) {

@@ -51,12 +51,19 @@ export const TokenStakeList = () => {
   //   statusList
   // );
 
-  const showGroupStakeButton = useMemo(() => {
-    return (
-      displayPubkeyInfos.filter((item) => isPubkeyStakeable(item._status))
-        .length > 1
-    );
-  }, [displayPubkeyInfos]);
+  const displaySoloPubkeyInfos = displayPubkeyInfos.filter(
+    (item) => item.type === "solo"
+  );
+
+  const displayTrustPubkeyInfos = displayPubkeyInfos.filter(
+    (item) => item.type === "trusted"
+  );
+
+  const showGroupStakeButton =
+    displayTrustPubkeyInfos.filter((item) => isPubkeyStakeable(item._status))
+      .length > 1 ||
+    displaySoloPubkeyInfos.filter((item) => isPubkeyStakeable(item._status))
+      .length > 1;
 
   return (
     <div>
@@ -98,9 +105,16 @@ export const TokenStakeList = () => {
               className="px-[.16rem]"
               height=".42rem"
               onClick={() => {
-                const stakeablePubkeyInfos = displayPubkeyInfos.filter((item) =>
-                  isPubkeyStakeable(item._status)
-                );
+                const stakeablePubkeyInfos = (
+                  displaySoloPubkeyInfos.length > 1
+                    ? displaySoloPubkeyInfos
+                    : displayTrustPubkeyInfos
+                ).filter((item) => isPubkeyStakeable(item._status));
+
+                if (stakeablePubkeyInfos.length === 0) {
+                  return;
+                }
+
                 const pubkeyAddressList = stakeablePubkeyInfos.map(
                   (item) => item.pubkeyAddress
                 );
@@ -110,6 +124,7 @@ export const TokenStakeList = () => {
                     pathname: "/tokenStake/stake",
                     query: {
                       pubkeyAddressList: pubkeyAddressList,
+                      type: stakeablePubkeyInfos[0].type,
                     },
                   },
                   "/tokenStake/stake"
@@ -117,7 +132,10 @@ export const TokenStakeList = () => {
               }}
             >
               <div className="flex items-center">
-                <div>Group Stake Avaliable Nodes</div>
+                <div>
+                  Group Stake Avaliable{" "}
+                  {displaySoloPubkeyInfos.length > 1 ? "Solo" : "Trusted"} Nodes
+                </div>
 
                 <div className="ml-[.06rem] rotate-[-90deg]">
                   <Icomoon icon="arrow-down" size=".1rem" color="#848B97" />
@@ -263,6 +281,7 @@ export const TokenStakeList = () => {
                           pathname: "/tokenStake/stake",
                           query: {
                             pubkeyAddressList: [pubkeyInfo.pubkeyAddress],
+                            type: pubkeyInfo.type,
                           },
                         },
                         "/tokenStake/stake"

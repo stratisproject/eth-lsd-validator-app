@@ -46,7 +46,8 @@ export const ChooseTypeGuide = () => {
             <>
               Deposit{" "}
               <span className={robotoBold.className}>
-                {soloNodeDepositAmount} {getTokenName()}
+                {formatNumber(soloNodeDepositAmount, { fixedDecimals: false })}{" "}
+                {getTokenName()}
               </span>{" "}
               to register as a delegated validator on StaFi;
               <div className="mt-[.1rem]" />

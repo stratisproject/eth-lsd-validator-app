@@ -62,7 +62,8 @@ export const DepositGuide = () => {
               Begin as a delegated validator with the StaFi rToken App by
               depositing{" "}
               <span className={robotoBold.className}>
-                {soloNodeDepositAmount} {getTokenName()}
+                {formatNumber(soloNodeDepositAmount, { fixedDecimals: false })}{" "}
+                {getTokenName()}
               </span>
               . StaFi will contribute an additional{" "}
               <span className={robotoBold.className}>
@@ -74,7 +75,7 @@ export const DepositGuide = () => {
                 {getTokenName()}
               </span>
               , ensuring your node fulfills the validator requirements for{" "}
-              <span className={robotoBold.className}>{getTokenName()} 2.0</span>
+              <span className={robotoBold.className}>{getTokenName()}</span>
               .
               <div className="mt-[.1rem]" />
             </>
