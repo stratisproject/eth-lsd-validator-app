@@ -15,6 +15,7 @@ import { useAppSlice } from "./selector";
 import { usePoolPubkeyData } from "./usePoolPubkeyData";
 import { usePrice } from "./usePrice";
 import { getEthereumChainId, getValidatorTotalDepositAmount } from "config/env";
+import { formatScientificNumber } from "utils/numberUtils";
 
 export function usePoolData() {
   const { updateFlag } = useAppSlice();
@@ -180,7 +181,9 @@ export function usePoolData() {
 
       await Promise.all(requests);
 
-      setPoolEth(Web3.utils.fromWei(poolEth + ""));
+      console.log({ poolEth });
+
+      setPoolEth(Web3.utils.fromWei(formatScientificNumber(poolEth) + ""));
     } catch {
       setPoolEth("--");
     }
