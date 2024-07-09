@@ -1,30 +1,30 @@
 {
   "chain": {
-    "id": 943,
-    "name": "PulseChain Testnet v4",
-    "networkName": "pulsechain-testnet-v4"
+    "id": 17000,
+    "name": "HoleSky",
+    "networkName": "holeSky"
   },
-  "rpc": "https://rpc.v4.testnet.pulsechain.com",
-  "beaconHost": "https://rpc-testnet-pulsechain.g4mm4.io/beacon-api",
-  "explorer": "https://scan.v4.testnet.pulsechain.com/#",
-  "validatorExplorer": "https://beacon.v4.testnet.pulsechain.com/",
-  "blockSeconds": 10,
+  "rpc": "https://ethereum-holesky.publicnode.com",
+  "beaconHost": "https://holesky-beacon.stafi.io",
+  "explorer": "https://holesky.etherscan.io",
+  "validatorExplorer": "https://holesky.beaconcha.in",
+  "blockSeconds": 12,
   "contracts": {
     "lsdTokenContract": {
-      "address": "0x21072f1Fe1f8B2b0d88ea2cba9209Ad955262b70"
+      "address": "0x85F7c01009B1bf540699C4FDDf3589DDE60BCb14"
     },
     "depositContract": {
-      "address": "0x80C6840611C36B1656E4D36BcbA29F965d7043F9"
+      "address": "0x044E54D0Fd299917eC9f5cb27B35Ce252D546A2b"
     },
     "networkBalanceContract": {
-      "address": "0x5912ECE81449Dd83257F242A10B66b10981434E2"
+      "address": "0xbfa824c78AC83c09dBF33Fcf6bf8116496189F28"
     },
     "networkWithdrawContract": {
-      "address": "0x93564AEBDd016c9cF621e7366Ae7F9bFF554C08E"
+      "address": "0x3CB60643B531632A243dA103f3d0A860eB49EEFC"
     },
     "nodeDepositContract": {
-      "address": "0xb23bd0A97D9823B176e97d29B20f1BA620c5a3B5"
+      "address": "0xcF490F4AB5dF7478de350A28cD2741534dD24986"
     }
   },
-  "lsdAppUrl": "https://test-pulse-lsd.stafi.io"
+  "lsdAppUrl": "https://test-eth-lsd.stafi.io"
 }

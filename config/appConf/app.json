@@ -1,18 +1,18 @@
 {
-  "appTitle": "Pulse Validator App",
-  "chainIcon": "/images/chain/pulse.png",
+  "appTitle": "ETH Validator App",
+  "chainIcon": "/images/chain/ethereum.png",
   "token": {
-    "tokenName": "PLS",
-    "lsdTokenName": "rPLS",
-    "lsdTokenIconUri": "https://cdn.stafi.io/rtoken/logo/rPLS.png",
-    "tokenIcon": "/images/token/PLS.svg",
-    "lsdTokenIcon": "/images/token/rPLS.svg"
+    "tokenName": "ETH",
+    "lsdTokenName": "rETH",
+    "lsdTokenIconUri": "https://cdn.stafi.io/rtoken/logo/rETH.png",
+    "tokenIcon": "/images/token/ETH.svg",
+    "lsdTokenIcon": "/images/token/rETH.svg"
   },
   "supportRestApi": true,
-  "apr": 8.1,
-  "validatorTotalDepositAmount": 32000000,
-  "trustValidatorDepositAmount": 1000000,
-  "networkNameKey": "network_name",
+  "apr": 3.1,
+  "validatorTotalDepositAmount": 32,
+  "trustValidatorDepositAmount": 1,
+  "networkNameKey": "eth2_network_name",
   "detailedInfo": {},
   "faqList": [
     {
@@ -34,20 +34,20 @@
       ]
     },
     {
-      "title": "How much time is needed for PLS withdrawals?",
+      "title": "How much time is needed for ETH withdrawals?",
       "contents": [
         {
           "type": "text",
-          "content": "If the unstaking pool's PLS balance exceeds your withdrawal amount, you will instantly receive your PLS upon transaction approval.\n"
+          "content": "If the unstaking pool's ETH balance exceeds your withdrawal amount, you will instantly receive your ETH upon transaction approval.\n"
         },
         {
           "type": "text",
-          "content": "However, if the unstaking pool's PLS balance is less than your withdrawal amount, the withdrawal process will take 1-5 days. After this period, you can claim your PLS using the withdraw function.\n"
+          "content": "However, if the unstaking pool's ETH balance is less than your withdrawal amount, the withdrawal process will take 1-5 days. After this period, you can claim your ETH using the withdraw function.\n"
         }
       ]
     },
     {
-      "title": "What's the exchange rate of rPLS?",
+      "title": "What's the exchange rate of rETH?",
       "contents": [
         {
           "type": "text",
@@ -77,6 +77,10 @@
     {
       "name": "Dune Dashboard",
       "link": "https://dune.com/stafi-analysis/stafi"
+    },
+    {
+      "name": "rETH Listing",
+      "link": "https://docs.stafi.io/"
     }
   ],
   "contactList": [
@@ -97,7 +101,7 @@
       "link": "https://t.me/stafi_protocol"
     }
   ],
-  "tokenPriceUrl": "https://api.coingecko.com/api/v3/simple/price?ids=pulsechain&vs_currencies=usd",
+  "tokenPriceUrl": "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd",
   "docLinks": {
     "ejectionMechanism": "https://commonwealth.im/stafi/discussion/10127-withdrawal-design-for-reth-solution-for-upcoming-shanghai-upgrade",
     "delegationMechanism": "https://lsaas-docs.stafi.io/docs/developethlsd/validator.html"

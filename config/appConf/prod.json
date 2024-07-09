@@ -2,10 +2,10 @@
   "chain": {
     "id": 1,
     "name": "Ethereum",
-    "networkName": "pulsechain"
+    "networkName": "mainnet"
   },
   "rpc": "https://mainnet.infura.io/v3/b3611f564322439ab2491e04ddd55b39",
-  "beaconHost": "https://rpc-pulsechain.g4mm4.io/beacon-api",
+  "beaconHost": "",
   "explorer": "https://etherscan.io",
   "validatorExplorer": "https://beaconcha.in",
   "blockSeconds": 12,
