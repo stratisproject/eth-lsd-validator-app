@@ -181,7 +181,7 @@ export function usePoolData() {
 
       await Promise.all(requests);
 
-      console.log({ poolEth });
+      // console.log({ poolEth });
 
       setPoolEth(Web3.utils.fromWei(formatScientificNumber(poolEth) + ""));
     } catch {
