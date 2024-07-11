@@ -12,7 +12,6 @@
   "apr": 3.1,
   "validatorTotalDepositAmount": 32,
   "trustValidatorDepositAmount": 1,
-  "networkNameKey": "eth2_network_name",
   "detailedInfo": {},
   "faqList": [
     {

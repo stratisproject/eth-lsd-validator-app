@@ -14,6 +14,8 @@ export const PAGE_SIZE = 10;
 export const FAQ_ID_CONFIGURE_FEE = "faq_id_configure_fee";
 export const FAQ_ID_SLASH = "faq_id_slash";
 
+export const FILE_NETWORK_NAME_KEY = "network_name";
+
 export const LOADING_MESSAGE_STAKING =
   "Staking processing, please wait for a moment";
 export const LOADING_MESSAGE_MINTING =

@@ -80,10 +80,6 @@ export function getTrustValidatorDepositAmount() {
   return appConfig.trustValidatorDepositAmount;
 }
 
-export function getNetworkNameKey() {
-  return appConfig.networkNameKey;
-}
-
 export function getBlockSeconds() {
   if (isDev()) {
     return appDevConfig.blockSeconds;

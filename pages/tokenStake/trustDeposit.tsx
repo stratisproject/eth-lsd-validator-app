@@ -17,10 +17,10 @@ import { getNodeDepositContractAbi } from "config/contractAbi";
 import {
   getEthereumChainId,
   getNetworkName,
-  getNetworkNameKey,
   getTrustValidatorDepositAmount,
 } from "config/env";
 import { robotoBold } from "config/font";
+import { FILE_NETWORK_NAME_KEY } from "constants/common";
 import { useAppDispatch, useAppSelector } from "hooks/common";
 import { useAppSlice } from "hooks/selector";
 import { useIsTrustedValidator } from "hooks/useIsTrustedValidator";
@@ -113,7 +113,7 @@ const TrustDepositPage = () => {
       throw new Error(`Incorrect withdrawal_credentials value`);
     }
     const networkName = getNetworkName();
-    if (validatorKey[getNetworkNameKey()] !== networkName) {
+    if (validatorKey[FILE_NETWORK_NAME_KEY] !== networkName) {
       throw new Error(`Please use ${networkName} validator file to deposit`);
     }
   };
