@@ -24,9 +24,8 @@ export function useRewardUpdateHour() {
           console.log({ err });
         });
 
-      const epochMinutes = (getBlockSeconds() * 32) / 60;
-
-      const updateHours = (Number(updateBalancesEpochs) * epochMinutes) / 60;
+      const updateHours =
+        (Number(updateBalancesEpochs) * (getBlockSeconds() * 32)) / 60 / 60;
       setRewardUpdateHour(Math.round(updateHours) + "");
     } catch (err: any) {
       console.log({ err });
