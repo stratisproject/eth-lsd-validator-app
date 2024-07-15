@@ -18,7 +18,7 @@ import {
   getNodeDepositContractAbi,
 } from "config/contractAbi";
 import { useUserPubkeys } from "./useUserPubkeys";
-import { getEthereumChainId } from "config/env";
+import { getEthereumChainId, getValidatorTotalDepositAmount } from "config/env";
 import { formatScientificNumber } from "utils/numberUtils";
 
 export function useMyData() {
@@ -49,7 +49,7 @@ export function useMyData() {
         item.beaconApiStatus !== "EXITED_SLASHED" &&
         item.beaconApiStatus !== "EXITED"
       ) {
-        totalManagedToken += 32;
+        totalManagedToken += getValidatorTotalDepositAmount();
       }
     });
 
@@ -146,7 +146,9 @@ export function useMyData() {
       setPubkeysOfNode(pubkeysOfNode);
 
       const myRewardEth = Web3.utils.fromWei(
-        Number(myTotalRewardAmount) - Number(totalClaimedRewardOfNode) + ""
+        formatScientificNumber(
+          Number(myTotalRewardAmount) - Number(totalClaimedRewardOfNode)
+        ) + ""
       );
 
       setMyRewardTokenAmount(myRewardEth);
