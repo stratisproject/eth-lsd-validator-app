@@ -114,8 +114,8 @@ export function useMyData() {
       const list: IpfsRewardItem[] = resTextJson.List?.map((item: any) => {
         return {
           ...item,
-          totalRewardAmount: item.totalRewardAmount.toString(),
-          totalDepositAmount: item.totalDepositAmount.toString(),
+          totalRewardAmount: item.totalRewardAmount.toFixed(),
+          totalDepositAmount: item.totalDepositAmount.toFixed(),
         };
       });
 
