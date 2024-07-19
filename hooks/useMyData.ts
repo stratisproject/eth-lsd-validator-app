@@ -107,12 +107,19 @@ export function useMyData() {
           headers: {},
         }
       );
+      const resText = await response.text();
+      var JSONbig = require("json-bigint");
+      const resTextJson = JSONbig.parse(resText);
 
-      const resJson: RewardJsonResponse = await response.json();
+      const list: IpfsRewardItem[] = resTextJson.List?.map((item: any) => {
+        return {
+          ...item,
+          totalRewardAmount: item.totalRewardAmount.toString(),
+          totalDepositAmount: item.totalDepositAmount.toString(),
+        };
+      });
 
-      const myRewardInfo = resJson.List?.find(
-        (item) => item.address === userAddress
-      );
+      const myRewardInfo = list?.find((item) => item.address === userAddress);
       setIpfsMyRewardInfo(myRewardInfo);
 
       const myTotalRewardAmount = myRewardInfo?.totalRewardAmount || "0";
