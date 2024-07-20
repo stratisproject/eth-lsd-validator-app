@@ -47,7 +47,6 @@ export const usePubkeysHome = (
 
     nodePubkeys.forEach((item) => {
       const displayStatus = getPubkeyDisplayStatus(item, remainingTokenAmount);
-      item.displayStatus === displayStatus;
       let canStake = false;
       if (
         item._status === ChainPubkeyStatus.Match &&
@@ -57,7 +56,7 @@ export const usePubkeysHome = (
         canStake = true;
       }
 
-      const isUnmatch = item.displayStatus === "Unmatched";
+      const isUnmatch = displayStatus === "Unmatched";
       const isStaked =
         item._status === ChainPubkeyStatus.Staked &&
         item.beaconApiStatus !== "EXITED_UNSLASHED" &&

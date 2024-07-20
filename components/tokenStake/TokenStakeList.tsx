@@ -60,10 +60,12 @@ export const TokenStakeList = () => {
   );
 
   const showGroupStakeButton =
-    displayTrustPubkeyInfos.filter((item) => isPubkeyStakeable(item._status))
-      .length > 1 ||
-    displaySoloPubkeyInfos.filter((item) => isPubkeyStakeable(item._status))
-      .length > 1;
+    displayTrustPubkeyInfos.filter(
+      (item) => item.canStake && isPubkeyStakeable(item._status)
+    ).length > 1 ||
+    displaySoloPubkeyInfos.filter(
+      (item) => item.canStake && isPubkeyStakeable(item._status)
+    ).length > 1;
 
   return (
     <div>
@@ -271,26 +273,27 @@ export const TokenStakeList = () => {
               </div>
 
               <div className="flex items-center justify-end pr-[.56rem] text-[.16rem] text-color-text2">
-                {isPubkeyStakeable(pubkeyInfo._status) && (
-                  <CustomButton
-                    height=".42rem"
-                    className="px-[.5rem]"
-                    onClick={() => {
-                      router.push(
-                        {
-                          pathname: "/tokenStake/stake",
-                          query: {
-                            pubkeyAddressList: [pubkeyInfo.pubkeyAddress],
-                            type: pubkeyInfo.type,
+                {pubkeyInfo.canStake &&
+                  isPubkeyStakeable(pubkeyInfo._status) && (
+                    <CustomButton
+                      height=".42rem"
+                      className="px-[.5rem]"
+                      onClick={() => {
+                        router.push(
+                          {
+                            pathname: "/tokenStake/stake",
+                            query: {
+                              pubkeyAddressList: [pubkeyInfo.pubkeyAddress],
+                              type: pubkeyInfo.type,
+                            },
                           },
-                        },
-                        "/tokenStake/stake"
-                      );
-                    }}
-                  >
-                    Stake
-                  </CustomButton>
-                )}
+                          "/tokenStake/stake"
+                        );
+                      }}
+                    >
+                      Stake
+                    </CustomButton>
+                  )}
               </div>
             </div>
           ))}
