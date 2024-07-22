@@ -116,6 +116,7 @@ export function useMyData() {
           ...item,
           totalRewardAmount: item.totalRewardAmount.toFixed(),
           totalDepositAmount: item.totalDepositAmount.toFixed(),
+          totalExitDepositAmount: item.totalExitDepositAmount.toFixed(),
         };
       });
 
