@@ -179,14 +179,17 @@ export const updateNodePubkeys = (): AppThunk => async (dispatch, getState) => {
       const matchedBeaconData = beaconStatusResJson.data?.find(
         (item: any) => item.validator?.pubkey === pubkeysOfNode[index]
       );
-      const type =
-        item._nodeDepositAmount ===
-        parseEther(
-          (getTrustValidatorDepositAmount() + "") as `${number}`,
-          "gwei"
-        )
-          ? "trusted"
-          : "solo";
+      // console.log({ item });
+      // const type =
+      //   item._nodeDepositAmount ===
+      //   parseEther(
+      //     (getTrustValidatorDepositAmount() + "") as `${number}`,
+      //     "gwei"
+      //   )
+      //     ? "trusted"
+      //     : "solo";
+      const type = item._nodeDepositAmount === 0 ? "solo" : "trusted";
+      // console.log({ type });
       return {
         pubkeyAddress: pubkeysOfNode[index],
         beaconApiStatus: matchedBeaconData?.status?.toUpperCase() || undefined,

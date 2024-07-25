@@ -15,6 +15,7 @@ import { isPubkeyStakeable, openLink } from "utils/commonUtils";
 import snackbarUtil from "utils/snackbarUtils";
 import { getShortAddress } from "utils/stringUtils";
 import { TokenStakeListTabs } from "./TokenStakeListTabs";
+import { useIsTrustedValidator } from "hooks/useIsTrustedValidator";
 
 export const TokenStakeList = () => {
   const router = useRouter();
@@ -22,6 +23,7 @@ export const TokenStakeList = () => {
   const { metaMaskAccount } = useWalletAccount();
   const [page, setPage] = useState(1);
   const [selectedTab, setSelectedTab] = useState("All");
+  const isTrust = useIsTrustedValidator();
 
   const selectedStatus = useMemo(() => {
     switch (selectedTab) {
@@ -126,7 +128,7 @@ export const TokenStakeList = () => {
                     pathname: "/tokenStake/stake",
                     query: {
                       pubkeyAddressList: pubkeyAddressList,
-                      type: stakeablePubkeyInfos[0].type,
+                      type: isTrust ? "trusted" : "solo",
                     },
                   },
                   "/tokenStake/stake"
@@ -284,7 +286,7 @@ export const TokenStakeList = () => {
                             pathname: "/tokenStake/stake",
                             query: {
                               pubkeyAddressList: [pubkeyInfo.pubkeyAddress],
-                              type: pubkeyInfo.type,
+                              type: isTrust ? "trusted" : "solo",
                             },
                           },
                           "/tokenStake/stake"
