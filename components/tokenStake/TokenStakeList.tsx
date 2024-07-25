@@ -6,6 +6,7 @@ import { Icomoon } from "components/icon/Icomoon";
 import { getValidatorProfileUrl } from "config/explorer";
 import { robotoSemiBold } from "config/font";
 import { useAppSlice } from "hooks/selector";
+import { useIsTrustedValidator } from "hooks/useIsTrustedValidator";
 import { usePubkeysHome } from "hooks/usePubkeysHome";
 import { useWalletAccount } from "hooks/useWalletAccount";
 import { PubkeyStatus } from "interfaces/common";
@@ -15,7 +16,6 @@ import { isPubkeyStakeable, openLink } from "utils/commonUtils";
 import snackbarUtil from "utils/snackbarUtils";
 import { getShortAddress } from "utils/stringUtils";
 import { TokenStakeListTabs } from "./TokenStakeListTabs";
-import { useIsTrustedValidator } from "hooks/useIsTrustedValidator";
 
 export const TokenStakeList = () => {
   const router = useRouter();
@@ -271,7 +271,9 @@ export const TokenStakeList = () => {
                     : "text-color-text2"
                 )}
               >
-                {pubkeyInfo.displayStatus}
+                {!pubkeyInfo.canStake && pubkeyInfo.displayStatus === "Matched"
+                  ? "Unmatch"
+                  : pubkeyInfo.displayStatus}
               </div>
 
               <div className="flex items-center justify-end pr-[.56rem] text-[.16rem] text-color-text2">

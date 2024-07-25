@@ -74,7 +74,7 @@ export function useInit() {
     if (!metaMaskAccount) {
       metaMask.connectEagerly();
     }
-    // dispatch(setMetaMaskAccount("0x7939869edf6dC94F668b8Ba726374C9501Ed5f35"));
+    // dispatch(setMetaMaskAccount("0x9c259119F309D2aA8dcBa838D9A4EC77d8d0E8B0"));
     dispatch(setMetaMaskAccount(metaMaskAccount));
   }, [dispatch, metaMaskAccount]);
 
