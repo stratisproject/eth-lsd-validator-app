@@ -23,7 +23,7 @@ export const TokenStakeList = () => {
   const { metaMaskAccount } = useWalletAccount();
   const [page, setPage] = useState(1);
   const [selectedTab, setSelectedTab] = useState("All");
-  const isTrust = useIsTrustedValidator();
+  const { isTrust } = useIsTrustedValidator();
 
   const selectedStatus = useMemo(() => {
     switch (selectedTab) {
