@@ -32,7 +32,7 @@ export default async function handler(
   res: NextApiResponse<ResponseData>
 ) {
   const response = await fetch(
-    `${getBeaconHost()}/eth/v1/beacon/states/head/validators\?id=${
+    `${getBeaconHost()}/eth/v1/beacon/states/head/validators?id=${
       req.query.id
     }`,
     {

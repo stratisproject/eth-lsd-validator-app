@@ -169,6 +169,77 @@ const StakePage = () => {
     }
   };
 
+  const handleStake = async () => {
+    if (isWrongMetaMaskNetwork) {
+      await (switchNetworkAsync &&
+        switchNetworkAsync(getEthereumChainId()));
+      return;
+    } else if (!metaMaskAccount) {
+      const metamaskConnector = connectors.find(
+        (c) => c.name === "MetaMask"
+      );
+      if (!metamaskConnector) {
+        return;
+      }
+      try {
+        dispatch(setMetaMaskDisconnected(false));
+        await connectAsync({
+          chainId: getEthereumChainId(),
+          connector: metamaskConnector,
+        });
+      } catch (err: any) {
+        if (err.code === 4001) {
+        } else {
+          console.error(err);
+        }
+      }
+      return;
+    }
+
+    if (type === "trusted" && !isTrust) {
+      openLink("https://forms.gle/RtFK7qo9GzabQTCfA");
+      return;
+    }
+
+    if (
+      type === "solo" &&
+      Number(unmatchedEth) <
+        validatorKeys.length *
+          (getValidatorTotalDepositAmount() -
+            Number(soloDepositAmount))
+    ) {
+      snackbarUtil.error(
+        `Insufficient ${getTokenName()} in pool`
+      );
+      return;
+    }
+
+    if (
+      type === "trusted" &&
+      Number(unmatchedEth) <
+        validatorKeys.length *
+          (getValidatorTotalDepositAmount() -
+            getTrustValidatorDepositAmount())
+    ) {
+      snackbarUtil.error(
+        `Insufficient ${getTokenName()} in pool`
+      );
+      return;
+    }
+
+    dispatch(
+      handleEthValidatorStake(
+        validatorKeys,
+        type as "solo" | "trusted",
+        (success, result) => {
+          dispatch(updateEthBalance());
+          if (success) {
+          }
+        }
+      )
+    );
+  }
+
   return (
     <div className="w-smallContentW xl:w-contentW 2xl:w-largeContentW mx-auto">
       <BackNavigation
@@ -424,76 +495,7 @@ const StakePage = () => {
                     (isTrust || type !== "trusted") &&
                     validatorKeys.length < stakePubkeyAddressList.length
                   }
-                  onClick={async () => {
-                    if (isWrongMetaMaskNetwork) {
-                      await (switchNetworkAsync &&
-                        switchNetworkAsync(getEthereumChainId()));
-                      return;
-                    } else if (!metaMaskAccount) {
-                      const metamaskConnector = connectors.find(
-                        (c) => c.name === "MetaMask"
-                      );
-                      if (!metamaskConnector) {
-                        return;
-                      }
-                      try {
-                        dispatch(setMetaMaskDisconnected(false));
-                        await connectAsync({
-                          chainId: getEthereumChainId(),
-                          connector: metamaskConnector,
-                        });
-                      } catch (err: any) {
-                        if (err.code === 4001) {
-                        } else {
-                          console.error(err);
-                        }
-                      }
-                      return;
-                    }
-
-                    if (type === "trusted" && !isTrust) {
-                      openLink("https://forms.gle/RtFK7qo9GzabQTCfA");
-                      return;
-                    }
-
-                    if (
-                      type === "solo" &&
-                      Number(unmatchedEth) <
-                        validatorKeys.length *
-                          (getValidatorTotalDepositAmount() -
-                            Number(soloDepositAmount))
-                    ) {
-                      snackbarUtil.error(
-                        `Insufficient ${getTokenName()} in pool`
-                      );
-                      return;
-                    }
-
-                    if (
-                      type === "trusted" &&
-                      Number(unmatchedEth) <
-                        validatorKeys.length *
-                          (getValidatorTotalDepositAmount() -
-                            getTrustValidatorDepositAmount())
-                    ) {
-                      snackbarUtil.error(
-                        `Insufficient ${getTokenName()} in pool`
-                      );
-                      return;
-                    }
-
-                    dispatch(
-                      handleEthValidatorStake(
-                        validatorKeys,
-                        type as "solo" | "trusted",
-                        (success, result) => {
-                          dispatch(updateEthBalance());
-                          if (success) {
-                          }
-                        }
-                      )
-                    );
-                  }}
+                  onClick={handleStake}
                 >
                   {!metaMaskAccount
                     ? "Connect Wallet"

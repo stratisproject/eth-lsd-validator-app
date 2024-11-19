@@ -24,9 +24,13 @@ export function useUnstakedTokenOfDay() {
       const topics = Web3.utils.sha3(
         "Unstake(address,uint256,uint256,uint256,bool)"
       );
+      let fromBlock = currentBlock - Math.floor((1 / 15) * 60 * 60 * 24)
+      if (fromBlock < 0) {
+        fromBlock = 0
+      }
       const events = await networkWithdrawContract.getPastEvents("allEvents", {
-        fromBlock: currentBlock - Math.floor((1 / 12) * 60 * 60 * 24),
-        toBlock: currentBlock,
+        fromBlock: `0x${fromBlock.toString(16)}`,
+        toBlock: `0x${currentBlock.toString(16)}`,
       });
 
       const unstakeEvents = events

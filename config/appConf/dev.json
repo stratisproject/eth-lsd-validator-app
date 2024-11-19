@@ -1,30 +1,30 @@
 {
   "chain": {
-    "id": 17000,
-    "name": "HoleSky",
-    "networkName": "holeSky"
+    "id": 205205,
+    "name": "Auroria",
+    "networkName": "auroria"
   },
-  "rpc": "https://ethereum-holesky.publicnode.com",
-  "beaconHost": "https://holesky-beacon.stafi.io",
-  "explorer": "https://holesky.etherscan.io",
-  "validatorExplorer": "https://holesky.beaconcha.in",
-  "blockSeconds": 12,
+  "rpc": "https://auroria.rpc.stratisevm.com",
+  "beaconHost": "http://144.126.200.138:5052",
+  "explorer": "https://auroria.explorer.stratisevm.com/",
+  "validatorExplorer": "https://auroria.beacon.stratisevm.com/",
+  "blockSeconds": 15,
   "contracts": {
     "lsdTokenContract": {
-      "address": "0x85F7c01009B1bf540699C4FDDf3589DDE60BCb14"
+      "address": "0x5c0958e166144606A5d0Aeaf8efe2f1110c37B53"
     },
     "depositContract": {
-      "address": "0x044E54D0Fd299917eC9f5cb27B35Ce252D546A2b"
+      "address": "0x632ae1A591D165C68cF3cCccA492748a2184d37b"
     },
     "networkBalanceContract": {
-      "address": "0xbfa824c78AC83c09dBF33Fcf6bf8116496189F28"
+      "address": "0x15A0EB8a9412278E67676bA97f3c0C9F89112843"
     },
     "networkWithdrawContract": {
-      "address": "0x3CB60643B531632A243dA103f3d0A860eB49EEFC"
+      "address": "0xce5C6540a239D13453Ac601Fe359CDc2eBB5F84F"
     },
     "nodeDepositContract": {
-      "address": "0xcF490F4AB5dF7478de350A28cD2741534dD24986"
+      "address": "0xb81d60684Cc903521F05C3a4012072ab36496F8C"
     }
   },
-  "lsdAppUrl": "https://test-eth-lsd.stafi.io"
+  "lsdAppUrl": "https://stafi-app.stratisproject.com"
 }

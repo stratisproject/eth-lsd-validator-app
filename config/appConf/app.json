@@ -1,16 +1,16 @@
 {
-  "appTitle": "ETH Validator App",
-  "chainIcon": "/images/chain/ethereum.png",
+  "appTitle": "STRAX Validator App",
+  "chainIcon": "/images/token/STRAX.svg",
   "token": {
-    "tokenName": "ETH",
-    "lsdTokenName": "rETH",
-    "lsdTokenIconUri": "https://cdn.stafi.io/rtoken/logo/rETH.png",
-    "tokenIcon": "/images/token/ETH.svg",
-    "lsdTokenIcon": "/images/token/rETH.svg"
+    "tokenName": "STRAX",
+    "lsdTokenName": "rSTRAX",
+    "lsdTokenIconUri": "/images/token/STRAX.svg",
+    "tokenIcon": "/images/token/STRAX.svg",
+    "lsdTokenIcon": "/images/token/STRAX.svg"
   },
   "supportRestApi": true,
-  "apr": 3.1,
-  "validatorTotalDepositAmount": 32,
+  "apr": 0,
+  "validatorTotalDepositAmount": 20000,
   "trustValidatorDepositAmount": 1,
   "detailedInfo": {},
   "faqList": [
@@ -100,7 +100,7 @@
       "link": "https://t.me/stafi_protocol"
     }
   ],
-  "tokenPriceUrl": "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd",
+  "tokenPriceUrl": "https://api.coingecko.com/api/v3/simple/price?ids=stratis&vs_currencies=usd",
   "docLinks": {
     "ejectionMechanism": "https://commonwealth.im/stafi/discussion/10127-withdrawal-design-for-reth-solution-for-upcoming-shanghai-upgrade",
     "delegationMechanism": "https://lsaas-docs.stafi.io/docs/developethlsd/validator.html"

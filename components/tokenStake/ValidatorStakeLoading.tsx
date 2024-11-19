@@ -14,14 +14,16 @@ import { Icomoon } from "components/icon/Icomoon";
 export const ValidatorStakeLoading = () => {
   const dispatch = useAppDispatch();
 
-  const { validatorStakeLoadingParams, darkMode } = useAppSelector(
-    (state: RootState) => {
-      return {
-        validatorStakeLoadingParams: state.app.validatorStakeLoadingParams,
-        darkMode: state.app.darkMode,
-      };
-    }
-  );
+  // const { validatorStakeLoadingParams, darkMode } = useAppSelector(
+  //   (state: RootState) => {
+  //     return {
+  //       validatorStakeLoadingParams: state.app.validatorStakeLoadingParams,
+  //       darkMode: state.app.darkMode,
+  //     };
+  //   }
+  // );
+  const validatorStakeLoadingParams = useAppSelector((state: RootState) => state.app.validatorStakeLoadingParams)
+  const darkMode = useAppSelector((state: RootState) => state.app.darkMode)
 
   const title = useMemo(() => {
     return validatorStakeLoadingParams?.status === "success"

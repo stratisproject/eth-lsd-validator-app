@@ -1,33 +1,33 @@
 {
   "chain": {
-    "id": 1,
-    "name": "Ethereum",
-    "networkName": "mainnet"
+    "id": 105105,
+    "name": "Stratis",
+    "networkName": "stratis"
   },
-  "rpc": "https://mainnet.infura.io/v3/b3611f564322439ab2491e04ddd55b39",
+  "rpc": "https://rpc.stratisevm.com",
   "beaconHost": "",
-  "explorer": "https://etherscan.io",
-  "validatorExplorer": "https://beaconcha.in",
-  "blockSeconds": 12,
+  "explorer": "https://explorer.stratisevm.com",
+  "validatorExplorer": "https://beacon.stratisevm.com",
+  "blockSeconds": 15,
   "contracts": {
     "lsdTokenContract": {
-      "address": "0x9559aaa82d9649c7a7b220e7c461d2e74c9a3593"
+      "address": ""
     },
     "depositContract": {
-      "address": "0x70C5744d377aE6E9926CcBCF19D501340CB26285"
+      "address": ""
     },
     "withdrawContract": {
-      "address": "0xE773dbe9d073dBEfdC147fbdCCB06dBD4f5AAF54"
+      "address": ""
     },
     "networkBalanceContract": {
-      "address": "0xda9726Fd1B125a3923f9D9521e28fE888091698d"
+      "address": ""
     },
     "networkWithdrawContract": {
-      "address": "0x524611Ca2e5A0bE5bca87bf4A6e6468Ed9311572"
+      "address": ""
     },
     "nodeDepositContract": {
-      "address": "0x696280D6962607E32C43AF85547B39cae51a403a"
+      "address": ""
     }
   },
-  "lsdAppUrl": "https://test-eth-lsd.stafi.io"
+  "lsdAppUrl": "https://stafi-app.stratisproject.com"
 }

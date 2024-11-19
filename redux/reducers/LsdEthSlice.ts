@@ -115,9 +115,13 @@ export const updateApr = (): AppThunk => async (dispatch, getState) => {
     const topics = web3.utils.sha3(
       "BalancesUpdated(uint256,uint256,uint256,uint256)"
     );
+    let fromBlock = currentBlock - Math.floor((1 / 15) * 60 * 60 * 24)
+    if (fromBlock < 0) {
+      fromBlock = 0
+    }
     const events = await contract.getPastEvents("allEvents", {
-      fromBlock: currentBlock - Math.floor((1 / 12) * 60 * 60 * 24 * 7),
-      toBlock: currentBlock,
+      fromBlock: `0x${fromBlock.toString(16)}`,
+      toBlock: `0x${currentBlock.toString(16)}`,
     });
     let apr = getDefaultApr();
     const balancesUpdatedEvents = events
