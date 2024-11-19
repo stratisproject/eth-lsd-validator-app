@@ -15,7 +15,7 @@ export function useIsTrustedValidator() {
       return;
     }
     try {
-      const web3 = createWeb3();
+      const web3 = createWeb3(window.ethereum);
       let nodeDepositContract = new web3.eth.Contract(
         getNodeDepositContractAbi(),
         getNodeDepositContract()

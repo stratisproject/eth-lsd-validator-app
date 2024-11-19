@@ -225,7 +225,7 @@ export const handleEthValidatorDeposit =
         })
       );
 
-      const web3 = createWeb3();
+      const web3 = createWeb3(window.ethereum);
       let nodeDepositContract = new web3.eth.Contract(
         getNodeDepositContractAbi(),
         getNodeDepositContract(),
@@ -381,7 +381,7 @@ export const handleEthValidatorStake =
       const address = getState().wallet.metaMaskAccount;
 
       dispatch(setEthTxLoading(true));
-      const web3 = createWeb3();
+      const web3 = createWeb3(window.ethereum);
       let nodeDepositContract = new web3.eth.Contract(
         getNodeDepositContractAbi(),
         getNodeDepositContract(),
@@ -478,7 +478,7 @@ export const claimValidatorRewards =
         throw new Error("Please connect MetaMask");
       }
 
-      const web3 = createWeb3();
+      const web3 = createWeb3(window.ethereum);
       const contract = new web3.eth.Contract(
         getNetworkWithdrawContractAbi(),
         getNetworkWithdrawContract(),
@@ -575,7 +575,7 @@ export const withdrawValidatorEth =
         throw new Error("Please connect MetaMask");
       }
 
-      const web3 = createWeb3();
+      const web3 = createWeb3(window.ethereum);
       const contract = new web3.eth.Contract(
         getNetworkWithdrawContractAbi(),
         getNetworkWithdrawContract(),
