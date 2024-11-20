@@ -5,7 +5,7 @@
     "networkName": "auroria"
   },
   "rpc": "https://auroria.rpc.stratisevm.com",
-  "beaconHost": "http://144.126.200.138:5052",
+  "beaconHost": "https://auroria.rpc.stratisevm.com/prysm",
   "explorer": "https://auroria.explorer.stratisevm.com/",
   "validatorExplorer": "https://auroria.beacon.stratisevm.com/",
   "blockSeconds": 15,
@@ -26,5 +26,5 @@
       "address": "0xb81d60684Cc903521F05C3a4012072ab36496F8C"
     }
   },
-  "lsdAppUrl": "https://stafi-app.stratisproject.com"
+  "lsdAppUrl": "https://auroria.stafi.stratisevm.com"
 }
