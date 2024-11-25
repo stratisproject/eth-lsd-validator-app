@@ -4,8 +4,8 @@
     "name": "Auroria",
     "networkName": "auroria"
   },
-  "rpc": "http://207.154.197.204:8545",
-  "beaconHost": "http://207.154.197.204:5052",
+  "rpc": "https://auroria.rpc.stratisevm.com",
+  "beaconHost": "https://auroria.rpc.stratisevm.com/prysm",
   "explorer": "https://auroria.explorer.stratisevm.com/",
   "validatorExplorer": "https://auroria.beacon.stratisevm.com/",
   "blockSeconds": 15,
