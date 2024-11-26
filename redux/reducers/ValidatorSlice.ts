@@ -491,6 +491,7 @@ export const claimValidatorRewards =
 
       const formatProofs = ipfsRewardItem.proof
         .split(":")
+        .filter(item => !!item)
         .map((item) => "0x" + item);
 
       const claimParams = [
