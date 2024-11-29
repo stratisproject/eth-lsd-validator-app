@@ -218,10 +218,10 @@ export const getPubkeyDisplayStatus = (
   if (item._status === ChainPubkeyStatus.UnMatch) {
     return "Failed";
   }
-  if (item._status === ChainPubkeyStatus.Match && unmatchedToken < 31) {
+  if (item._status === ChainPubkeyStatus.Match && unmatchedToken < 19999) {
     return "Unmatched";
   }
-  if (item._status === ChainPubkeyStatus.Match && unmatchedToken >= 31) {
+  if (item._status === ChainPubkeyStatus.Match && unmatchedToken >= 19999) {
     return "Matched";
   }
   if (

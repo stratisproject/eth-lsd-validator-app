@@ -49,9 +49,9 @@ export const usePubkeysMyData = (
       let canStake = false;
       if (
         item._status === ChainPubkeyStatus.Match &&
-        remainingTokenAmount >= 31
+        remainingTokenAmount >= 19999
       ) {
-        remainingTokenAmount -= 31;
+        remainingTokenAmount -= 19999;
         canStake = true;
       }
 
