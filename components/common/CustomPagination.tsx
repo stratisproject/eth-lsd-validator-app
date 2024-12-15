@@ -9,11 +9,7 @@ interface CustomPaginationProps {
 }
 
 export const CustomPagination = (props: CustomPaginationProps) => {
-  const { darkMode } = useAppSelector((state: RootState) => {
-    return {
-      darkMode: state.app.darkMode,
-    };
-  });
+  const darkMode = useAppSelector((state: RootState) => state.app.darkMode);
   const pageCount = Math.ceil(props.totalCount / 10);
 
   return (

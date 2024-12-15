@@ -20,14 +20,8 @@ export const DepositLoadingModal = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
 
-  const { depositLoadingParams, darkMode } = useAppSelector(
-    (state: RootState) => {
-      return {
-        depositLoadingParams: state.app.depositLoadingParams,
-        darkMode: state.app.darkMode,
-      };
-    }
-  );
+  const darkMode = useAppSelector((state: RootState) => state.app.darkMode)
+  const depositLoadingParams = useAppSelector((state: RootState) => state.app.depositLoadingParams)
 
   const secondaryMsg = useMemo(() => {
     return depositLoadingParams?.customMsg

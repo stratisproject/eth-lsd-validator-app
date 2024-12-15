@@ -245,11 +245,7 @@ const UserInfo = (props: { auditExpand: boolean }) => {
   const { auditExpand } = props;
   const dispatch = useAppDispatch();
   const { metaMaskAccount } = useWalletAccount();
-  const { darkMode } = useAppSelector((state: RootState) => {
-    return {
-      darkMode: state.app.darkMode,
-    };
-  });
+  const darkMode = useAppSelector((state: RootState) => state.app.darkMode);
 
   const [hideNet, hideAddress] = useMemo(() => {
     if (!auditExpand) {

@@ -28,14 +28,8 @@ export const MyDataAssets = () => {
   } = useMyData();
   const [claimRewardModalVisible, setClaimRewardModalVisible] = useState(false);
 
-  const { withdrawLoading, claimRewardsLoading } = useAppSelector(
-    (state: RootState) => {
-      return {
-        claimRewardsLoading: state.validator.claimRewardsLoading,
-        withdrawLoading: state.validator.withdrawLoading,
-      };
-    }
-  );
+  const withdrawLoading = useAppSelector((state: RootState) => state.validator.withdrawLoading)
+  const claimRewardsLoading = useAppSelector((state: RootState) => state.validator.claimRewardsLoading)
 
   const showWithdraw = useMemo(() => {
     return Number(availableExitDeposit) > 0;

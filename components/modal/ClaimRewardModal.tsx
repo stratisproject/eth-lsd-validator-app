@@ -35,14 +35,8 @@ export const ClaimRewardModal = (props: ClaimRewardModalProps) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
 
-  const { darkMode, claimRewardsLoading } = useAppSelector(
-    (state: RootState) => {
-      return {
-        darkMode: state.app.darkMode,
-        claimRewardsLoading: state.validator.claimRewardsLoading,
-      };
-    }
-  );
+  const darkMode = useAppSelector((state: RootState) => state.app.darkMode)
+  const claimRewardsLoading = useAppSelector((state: RootState) => state.validator.claimRewardsLoading)
 
   return (
     <Modal open={visible} onClose={onClose}>

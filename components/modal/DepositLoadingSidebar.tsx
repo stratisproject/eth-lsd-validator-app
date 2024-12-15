@@ -13,11 +13,7 @@ import commonStyles from "styles/Common.module.scss";
 export const DepositLoadingSidebar = () => {
   const { darkMode } = useAppSlice();
   const dispatch = useAppDispatch();
-  const { depositLoadingParams } = useAppSelector((state: RootState) => {
-    return {
-      depositLoadingParams: state.app.depositLoadingParams,
-    };
-  });
+  const depositLoadingParams = useAppSelector((state: RootState) => state.app.depositLoadingParams);
 
   return (
     <div

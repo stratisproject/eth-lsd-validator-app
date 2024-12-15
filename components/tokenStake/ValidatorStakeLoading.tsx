@@ -2,7 +2,7 @@ import classNames from "classnames";
 import { CardContainer } from "components/common/CardContainer";
 import { PrimaryLoading } from "components/common/PrimaryLoading";
 import { roboto } from "config/font";
-import { useAppDispatch, useAppSelector } from "hooks/common";
+import { useAppSelector } from "hooks/common";
 import Image from "next/image";
 import { useMemo } from "react";
 import { RootState } from "redux/store";
@@ -12,16 +12,6 @@ import { getTokenName } from "utils/configUtils";
 import { Icomoon } from "components/icon/Icomoon";
 
 export const ValidatorStakeLoading = () => {
-  const dispatch = useAppDispatch();
-
-  // const { validatorStakeLoadingParams, darkMode } = useAppSelector(
-  //   (state: RootState) => {
-  //     return {
-  //       validatorStakeLoadingParams: state.app.validatorStakeLoadingParams,
-  //       darkMode: state.app.darkMode,
-  //     };
-  //   }
-  // );
   const validatorStakeLoadingParams = useAppSelector((state: RootState) => state.app.validatorStakeLoadingParams)
   const darkMode = useAppSelector((state: RootState) => state.app.darkMode)
 

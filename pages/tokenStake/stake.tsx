@@ -65,18 +65,9 @@ const StakePage = () => {
 
   const { isTrust } = useIsTrustedValidator();
 
-  const {
-    validatorWithdrawalCredentials,
-    ethTxLoading,
-    validatorStakeLoadingParams,
-  } = useAppSelector((state: RootState) => {
-    return {
-      validatorWithdrawalCredentials:
-        state.validator.validatorWithdrawalCredentials,
-      ethTxLoading: state.eth.txLoading,
-      validatorStakeLoadingParams: state.app.validatorStakeLoadingParams,
-    };
-  });
+  const validatorWithdrawalCredentials = useAppSelector((state: RootState) => state.validator.validatorWithdrawalCredentials)
+  const ethTxLoading = useAppSelector((state: RootState) => state.eth.txLoading)
+  const validatorStakeLoadingParams = useAppSelector((state: RootState) => state.app.validatorStakeLoadingParams)
 
   useEffect(() => {
     const { pubkeyAddressList } = router.query;

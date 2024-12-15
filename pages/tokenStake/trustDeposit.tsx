@@ -74,16 +74,6 @@ const TrustDepositPage = () => {
   const { switchNetworkAsync } = useSwitchNetwork();
   const { connectAsync, connectors } = useConnect();
 
-  // const { validatorWithdrawalCredentials, ethTxLoading } = useAppSelector(
-  //   (state: RootState) => {
-  //     return {
-  //       metaMaskAccount: state.wallet.metaMaskAccount,
-  //       validatorWithdrawalCredentials:
-  //         state.validator.validatorWithdrawalCredentials,
-  //       ethTxLoading: state.eth.txLoading,
-  //     };
-  //   }
-  // );
   const validatorWithdrawalCredentials = useAppSelector((state: RootState) => state.validator.validatorWithdrawalCredentials)
   const ethTxLoading = useAppSelector((state: RootState) => state.eth.txLoading)
 
