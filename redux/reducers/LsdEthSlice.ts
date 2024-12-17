@@ -115,7 +115,7 @@ export const updateApr = (): AppThunk => async (dispatch, getState) => {
     const topics = web3.utils.sha3(
       "BalancesUpdated(uint256,uint256,uint256,uint256)"
     );
-    let fromBlock = currentBlock - Math.floor((1 / 15) * 60 * 60 * 24)
+    let fromBlock = currentBlock - Math.floor((1 / 15) * 60 * 60 * 24 * 8)
     if (fromBlock < 0) {
       fromBlock = 0
     }
@@ -127,8 +127,8 @@ export const updateApr = (): AppThunk => async (dispatch, getState) => {
     const balancesUpdatedEvents = events
       .filter((e) => e.raw.topics.length === 1 && e.raw.topics[0] === topics)
       .sort((a, b) => a.blockNumber - b.blockNumber);
-    if (balancesUpdatedEvents.length > 1) {
-      const beginEvent = balancesUpdatedEvents[0];
+    if (balancesUpdatedEvents.length > 17) {
+      const beginEvent = balancesUpdatedEvents[balancesUpdatedEvents.length - 18];
       const endEvent = balancesUpdatedEvents[balancesUpdatedEvents.length - 1];
       const beginValues: any = decodeBalancesUpdatedLog(
         beginEvent.raw.data,
@@ -142,7 +142,7 @@ export const updateApr = (): AppThunk => async (dispatch, getState) => {
       const endRate = endValues.totalEth / endValues.lsdTokenSupply;
       if (
         !isNaN(beginRate) &&
-        isNaN(endRate) &&
+        !isNaN(endRate) &&
         endRate !== 1 &&
         beginRate !== 1
       ) {
