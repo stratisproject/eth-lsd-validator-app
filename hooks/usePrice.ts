@@ -15,7 +15,7 @@ export function usePrice() {
         });
         const resJson = await response.json();
         if (resJson) {
-          const { usd } = resJson["ethereum"];
+          const { usd } = resJson["stratis"];
           // console.log({ usd });
           return usd;
         }

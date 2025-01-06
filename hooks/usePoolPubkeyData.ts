@@ -1,7 +1,9 @@
+import { useCallback, useEffect, useState } from "react";
+import chunk from 'lodash/chunk'
+
 import { getNodeDepositContract } from "config/contract";
 import { getNodeDepositContractAbi } from "config/contractAbi";
 import { ChainPubkeyStatus, NodePubkeyInfo } from "interfaces/common";
-import { useCallback, useEffect, useState } from "react";
 import { fetchPubkeyStatus } from "utils/apiUtils";
 import { getEthWeb3 } from "utils/web3Utils";
 
@@ -56,9 +58,14 @@ export function usePoolPubkeyData() {
       //   }
       // );
       // const beaconStatusResJson = await beaconStatusResponse.json();
-      const beaconStatusResJson = await fetchPubkeyStatus(
-        pubkeyAddressList.join(",")
-      );
+      const beaconStatusResJson = await Promise.all(chunk(pubkeyAddressList, 50).map(pubkeys => fetchPubkeyStatus(pubkeys.join(','))))
+            .then(results => 
+              results.reduce((r, cur) => ({
+                execution_optimistic: cur.execution_optimistic,
+                finalized: cur.finalized,
+                data: [...(r.data || []), ...cur.data],
+              }), {})
+            )
 
       // Query on-chain pubkey detail info list
       const pubkeyInfoRequests = pubkeyAddressList?.map(
