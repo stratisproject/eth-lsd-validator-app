@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import chunk from 'lodash/chunk'
 import {
   getNetworkWithdrawContract,
   getNodeDepositContract,
@@ -164,16 +165,14 @@ export const updateNodePubkeys = (): AppThunk => async (dispatch, getState) => {
 
     const pubkeyInfos = await Promise.all(requests);
 
-    // const beaconStatusResponse = await fetch(
-    //   `/api/pubkeyStatus?id=${pubkeysOfNode.join(",")}`,
-    //   {
-    //     method: "GET",
-    //   }
-    // );
-    // const beaconStatusResJson = await beaconStatusResponse.json();
-    const beaconStatusResJson = await fetchPubkeyStatus(
-      pubkeysOfNode.join(",")
-    );
+    const beaconStatusResJson = await Promise.all(chunk(pubkeysOfNode, 50).map(pubkeys => fetchPubkeyStatus(pubkeys.join(','))))
+      .then(results => 
+        results.reduce((r, cur) => ({
+          execution_optimistic: cur.execution_optimistic,
+          finalized: cur.finalized,
+          data: [...(r.data || []), ...cur.data],
+        }), {})
+      )
 
     const nodePubkeyInfos: NodePubkeyInfo[] = pubkeyInfos.map((item, index) => {
       const matchedBeaconData = beaconStatusResJson.data?.find(
