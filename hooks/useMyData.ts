@@ -4,6 +4,7 @@ import {
   getNodeDepositContract,
 } from "config/contract";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import chunk from 'lodash/chunk'
 import { getEthWeb3 } from "utils/web3Utils";
 import { useWalletAccount } from "./useWalletAccount";
 import Web3 from "web3";
@@ -209,9 +210,14 @@ export function useMyData() {
 
       let totalNodeDepositAmount = 0;
 
-      const beaconStatusResJson = await fetchPubkeyStatus(
-        pubkeysOfNode.join(",")
-      );
+      const beaconStatusResJson = await Promise.all(chunk(pubkeysOfNode, 50).map(pubkeys => fetchPubkeyStatus(pubkeys.join(','))))
+        .then(results => 
+          results.reduce((r, cur) => ({
+            execution_optimistic: cur.execution_optimistic,
+            finalized: cur.finalized,
+            data: [...(r.data || []), ...cur.data],
+          }), {})
+        )
 
       pubekyInfos.forEach((pubkeyInfo, index) => {
         const matchedBeaconData = beaconStatusResJson.data?.find(
