@@ -136,10 +136,12 @@ export function usePoolData() {
         Number(lsdTotalSupply) * Number(Web3.utils.fromWei(lsdRate));
 
       const response = await fetch(
-        `https://${nodeRewardsFileCid}.ipfs.dweb.link/${getLsdEthTokenContract().toLowerCase()}-rewards-${getEthereumChainId()}-${latestMerkleRootEpoch}.json`,
+        `https://ipfs.stratisplatform.com/ipfs/${nodeRewardsFileCid}`,
         {
           method: "GET",
-          headers: {},
+          headers: {
+            'Accept': 'application/json',
+          },
         }
       );
 
