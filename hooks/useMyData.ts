@@ -102,12 +102,10 @@ export function useMyData() {
         });
 
       const response = await fetch(
-        `https://ipfs.stratisplatform.com/ipfs/${nodeRewardsFileCid}`,
+        `https://ipfs.stratisplatform.com/ipfs/${nodeRewardsFileCid}/${getLsdEthTokenContract().toLowerCase()}-rewards-${getEthereumChainId()}-${latestMerkleRootEpoch}.json`,
         {
           method: "GET",
-          headers: {
-            'Accept': 'application/json',
-          },
+          headers: {},
         }
       );
       const resText = await response.text();
