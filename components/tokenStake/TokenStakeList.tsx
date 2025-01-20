@@ -45,7 +45,7 @@ export const TokenStakeList = () => {
     totalCount,
     unmatchedCount,
     stakedCount,
-    othersCount,
+    othersCount
   } = usePubkeysHome(metaMaskAccount, page, selectedStatus);
   // } = useNodePubkeys(
   //   "0x99C6a3B0d131C996D9f65275fB5a196a8B57B583",
@@ -70,40 +70,37 @@ export const TokenStakeList = () => {
     ).length > 1;
 
   return (
-    <div>
-      <div className="pt-[.24rem] flex items-center justify-between">
-        <div className="flex items-center">
-          <TokenStakeListTabs
-            selectedTab={selectedTab}
-            onChange={setSelectedTab}
-            totalCount={totalCount}
-            unmatchedCount={unmatchedCount}
-            stakedCount={stakedCount}
-            othersCount={othersCount}
-          />
+    <div className="mt-[.24rem]">
+      <div className="flex items-center flex-row gap-[.16rem] w-full max-[800px]:flex-col max-[800px]:mx-auto max-[800px]:max-w-[480px]">
+        <TokenStakeListTabs
+          selectedTab={selectedTab}
+          onChange={setSelectedTab}
+          totalCount={totalCount}
+          unmatchedCount={unmatchedCount}
+          stakedCount={stakedCount}
+          othersCount={othersCount}
+        />
 
-          <div className="ml-[.24rem]">
-            <CustomButton
-              type="stroke"
-              height=".42rem"
-              className="px-[.16rem]"
-              onClick={() => {
-                router.push("/tokenStake/chooseType");
-              }}
-            >
-              <div className="flex items-center">
-                <div>New Deposit</div>
+        <div className="max-[800px]:w-full w-fit">
+          <CustomButton
+            type="small"
+            height=".42rem"
+            className="px-[.16rem]"
+            onClick={() => {
+              router.push("/tokenStake/chooseType");
+            }}
+          >
+            <div className="flex items-center">
+              <div>New Deposit</div>
 
-                <div className="ml-[.06rem] rotate-[-90deg]">
-                  <Icomoon icon="arrow-down" size=".1rem" color="#848B97" />
-                </div>
+              <div className="ml-[.06rem] rotate-[-90deg]">
+                <Icomoon icon="arrow-down" size=".1rem" color="white" />
               </div>
-            </CustomButton>
-          </div>
+            </div>
+          </CustomButton>
         </div>
-
         {showGroupStakeButton && (
-          <div className="mr-[.24rem]">
+          <div className="ml-auto max-[800px]:ml-0 max-[800px]:w-full">
             <CustomButton
               type="stroke"
               className="px-[.16rem]"
@@ -128,179 +125,168 @@ export const TokenStakeList = () => {
                     pathname: "/tokenStake/stake",
                     query: {
                       pubkeyAddressList: pubkeyAddressList,
-                      type: isTrust ? "trusted" : "solo",
-                    },
+                      type: isTrust ? "trusted" : "solo"
+                    }
                   },
                   "/tokenStake/stake"
                 );
               }}
             >
-              <div className="flex items-center">
-                <div>
-                  Group Stake Avaliable{" "}
-                  {displaySoloPubkeyInfos.length > 1 ? "Solo" : "Trusted"} Nodes
-                </div>
-
-                <div className="ml-[.06rem] rotate-[-90deg]">
-                  <Icomoon icon="arrow-down" size=".1rem" color="#848B97" />
-                </div>
+              <div className="text-[#8771e3] text-[14px] leading-tight text-center">
+                Group Stake Avaliable{" "}
+                {displaySoloPubkeyInfos.length > 1 ? "Solo" : "Trusted"} Nodes
               </div>
             </CustomButton>
           </div>
         )}
       </div>
 
-      <div className="mt-[.24rem] bg-color-bg2 border-[0.01rem] border-color-border1 rounded-[.3rem]">
-        <div
-          className={classNames(
-            "h-[.7rem] grid items-center font-[500] border-solid border-b-[.01rem] border-white dark:border-[#222C3C]",
-            robotoSemiBold.className
-          )}
-          style={{
-            gridTemplateColumns: "20% 20% 20% 40%",
-          }}
-        >
-          <div className="flex items-center justify-center text-[.16rem] text-color-text2">
-            Pool Addr
-          </div>
-
-          <div className="flex items-center justify-center text-[.16rem] text-color-text2">
-            Node Addr
-          </div>
-
-          <div className="flex items-center justify-center text-[.16rem] text-color-text2">
-            Status
-          </div>
-        </div>
-
-        {showEmptyContent && (
-          <div className="h-[2rem] flex items-center justify-center">
-            <EmptyContent />
-          </div>
-        )}
-
-        {showLoading && (
-          <div className="h-[2rem] flex items-center justify-center relative">
-            <LoadingContent />
-          </div>
-        )}
-
-        <div className="max-h-[4.2rem] overflow-auto">
-          {displayPubkeyInfos.map((pubkeyInfo, index) => (
-            <div
-              key={index}
-              className={classNames(
-                "h-[.74rem] grid items-center font-[500]",
-                index % 2 === 0 ? "bg-bgPage/50 dark:bg-bgPageDark/50" : ""
-              )}
-              style={{
-                gridTemplateColumns: "20% 20% 20% 40%",
-              }}
-            >
-              <div className="flex items-center justify-center text-[.16rem] text-color-text2 cursor-pointer">
-                <Icomoon
-                  icon="copy"
-                  size=".133rem"
-                  color={darkMode ? "#ffffff80" : "#6C86AD"}
-                  onClick={() => {
-                    navigator.clipboard
-                      .writeText(pubkeyInfo.pubkeyAddress)
-                      .then(() => {
-                        snackbarUtil.success("Copy success");
-                      });
-                  }}
-                />
-
-                <div
-                  className="flex items-center"
-                  onClick={() => {
-                    router.push(`/pubkey/${pubkeyInfo.pubkeyAddress}`);
-                  }}
-                >
-                  <div className="mx-[.06rem]">
-                    {getShortAddress(pubkeyInfo.pubkeyAddress, 4)}
-                  </div>
-
-                  <Icomoon
-                    icon="right1"
-                    size=".12rem"
-                    color={darkMode ? "#ffffff80" : "#6C86AD"}
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center justify-center text-[.16rem] text-color-text2 cursor-pointer">
-                <Icomoon
-                  icon="copy"
-                  size=".133rem"
-                  color={darkMode ? "#ffffff80" : "#6C86AD"}
-                  onClick={() => {
-                    navigator.clipboard
-                      .writeText(metaMaskAccount || "")
-                      .then(() => {
-                        snackbarUtil.success("Copy success");
-                      });
-                  }}
-                />
-
-                <div
-                  className="flex items-center"
-                  onClick={() => {
-                    openLink(getValidatorProfileUrl(metaMaskAccount || ""));
-                  }}
-                >
-                  <div className="mx-[.06rem]">
-                    {getShortAddress(metaMaskAccount, 4)}
-                  </div>
-
-                  <Icomoon
-                    icon="right1"
-                    size=".12rem"
-                    color={darkMode ? "#ffffff80" : "#6C86AD"}
-                  />
-                </div>
-              </div>
-
-              <div
-                className={classNames(
-                  "flex items-center justify-center text-[.16rem] ",
-                  pubkeyInfo.displayStatus === "Exited"
-                    ? "text-error"
-                    : pubkeyInfo.displayStatus === "Active"
-                    ? "text-color-text1"
-                    : "text-color-text2"
-                )}
-              >
-                {!pubkeyInfo.canStake && pubkeyInfo.displayStatus === "Matched"
-                  ? "Unmatch"
-                  : pubkeyInfo.displayStatus}
-              </div>
-
-              <div className="flex items-center justify-end pr-[.56rem] text-[.16rem] text-color-text2">
-                {pubkeyInfo.canStake &&
-                  isPubkeyStakeable(pubkeyInfo._status) && (
-                    <CustomButton
-                      height=".42rem"
-                      className="px-[.5rem]"
-                      onClick={() => {
-                        router.push(
-                          {
-                            pathname: "/tokenStake/stake",
-                            query: {
-                              pubkeyAddressList: [pubkeyInfo.pubkeyAddress],
-                              type: isTrust ? "trusted" : "solo",
-                            },
-                          },
-                          "/tokenStake/stake"
-                        );
-                      }}
-                    >
-                      Stake
-                    </CustomButton>
-                  )}
-              </div>
+      <div className="g-border-pink mt-[.24rem] rounded-[.3rem] overflow-auto">
+        <div className="g-bg-box rounded-[.3rem] min-w-[800px]">
+          <div
+            className={classNames(
+              "h-[.7rem] grid items-center font-[500] border-solid border-b-[.01rem] border-white/10",
+              robotoSemiBold.className
+            )}
+            style={{
+              gridTemplateColumns: "25% 25% 25% 25%"
+            }}
+          >
+            <div className="flex items-center justify-center text-[.16rem] text-[#8771e3] text-center">
+              Pool Addr
             </div>
-          ))}
+
+            <div className="flex items-center justify-center text-[.16rem] text-[#8771e3] text-center">
+              Node Addr
+            </div>
+
+            <div className="flex items-center justify-center text-[.16rem] text-[#8771e3] text-center">
+              Status
+            </div>
+          </div>
+
+          {showEmptyContent && (
+            <div className="h-[2rem] flex items-center justify-center">
+              <EmptyContent />
+            </div>
+          )}
+
+          {showLoading && (
+            <div className="h-[2rem] flex items-center justify-center relative">
+              <LoadingContent />
+            </div>
+          )}
+
+          <div className="max-h-[4.2rem] overflow-auto">
+            {displayPubkeyInfos.map((pubkeyInfo, index) => (
+              <div
+                key={index}
+                className={classNames(
+                  "h-[.74rem] grid items-center font-[500]",
+                  index % 2 === 0 ? "bg-bgPage/50 dark:bg-bgPageDark/50" : ""
+                )}
+                style={{
+                  gridTemplateColumns: "25% 25% 25% 25%"
+                }}
+              >
+                <div className="flex items-center justify-center text-[.16rem] text-color-text2 cursor-pointer">
+                  <Icomoon
+                    icon="copy"
+                    size=".133rem"
+                    color="#fff"
+                    onClick={() => {
+                      navigator.clipboard
+                        .writeText(pubkeyInfo.pubkeyAddress)
+                        .then(() => {
+                          snackbarUtil.success("Copy success");
+                        });
+                    }}
+                  />
+
+                  <div
+                    className="flex items-center"
+                    onClick={() => {
+                      router.push(`/pubkey/${pubkeyInfo.pubkeyAddress}`);
+                    }}
+                  >
+                    <div className="mx-[.06rem]">
+                      {getShortAddress(pubkeyInfo.pubkeyAddress, 4)}
+                    </div>
+
+                    <Icomoon icon="right1" size=".12rem" color={"#fff"} />
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-center text-[.16rem] text-color-text2 cursor-pointer">
+                  <Icomoon
+                    icon="copy"
+                    size=".133rem"
+                    color={"#fff"}
+                    onClick={() => {
+                      navigator.clipboard
+                        .writeText(metaMaskAccount || "")
+                        .then(() => {
+                          snackbarUtil.success("Copy success");
+                        });
+                    }}
+                  />
+
+                  <div
+                    className="flex items-center"
+                    onClick={() => {
+                      openLink(getValidatorProfileUrl(metaMaskAccount || ""));
+                    }}
+                  >
+                    <div className="mx-[.06rem]">
+                      {getShortAddress(metaMaskAccount, 4)}
+                    </div>
+
+                    <Icomoon icon="right1" size=".12rem" color={"#fff"} />
+                  </div>
+                </div>
+
+                <div
+                  className={classNames(
+                    "flex items-center justify-center text-[.16rem] ",
+                    pubkeyInfo.displayStatus === "Exited"
+                      ? "text-error"
+                      : pubkeyInfo.displayStatus === "Active"
+                      ? "text-color-text1"
+                      : "text-color-text2"
+                  )}
+                >
+                  {!pubkeyInfo.canStake &&
+                  pubkeyInfo.displayStatus === "Matched"
+                    ? "Unmatch"
+                    : pubkeyInfo.displayStatus}
+                </div>
+
+                <div className="flex items-center justify-end pr-[.56rem] text-[.16rem] text-color-text2">
+                  {pubkeyInfo.canStake &&
+                    isPubkeyStakeable(pubkeyInfo._status) && (
+                      <CustomButton
+                        height=".42rem"
+                        className="px-[.4rem] text-white"
+                        onClick={() => {
+                          router.push(
+                            {
+                              pathname: "/tokenStake/stake",
+                              query: {
+                                pubkeyAddressList: [pubkeyInfo.pubkeyAddress],
+                                type: isTrust ? "trusted" : "solo"
+                              }
+                            },
+                            "/tokenStake/stake"
+                          );
+                        }}
+                      >
+                        Stake
+                      </CustomButton>
+                    )}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

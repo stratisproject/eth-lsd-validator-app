@@ -27,7 +27,7 @@ export const FaqItem = (props: Props) => {
   }, [collapseOpenId, props.id, dispatch]);
 
   return (
-    <div className="bg-color-bg3 rounded-[.12rem]" id={id}>
+    <div className="g-bg-box rounded-[.08rem] border border-white/5 max-[1280px]:w-full w-[6.2rem]" id={id}>
       <div
         className="py-[.24rem] flex items-start justify-between px-[.24rem] cursor-pointer"
         style={{
@@ -36,7 +36,7 @@ export const FaqItem = (props: Props) => {
         onClick={() => setCollapsed(!collapsed)}
       >
         <div
-          className="text-color-text2 text-[.18rem] font-[1000] flex-1 leading-tight mr-[.12rem]"
+          className="text-white text-[.16rem]  flex-1 leading-tight mr-[.12rem]"
           style={{
             maxLines: 2,
             overflow: "hidden",
@@ -50,19 +50,14 @@ export const FaqItem = (props: Props) => {
           {props.text}
         </div>
 
-        <div
-          className={classNames(
-            "mt-[.05rem] flex items-center",
-            collapsed ? "rotate-90" : ""
-          )}
-        >
-          <Icomoon icon="right" size=".11rem" color="#6C86AD" />
+        <div className={classNames("mt-[.05rem] flex items-center", collapsed ? "rotate-90" : "")}>
+          <Icomoon icon="right" size=".11rem" color="#fff" />
         </div>
       </div>
 
       {
         <Collapse in={collapsed}>
-          <div className="mt-[.12rem] text-color-text2 text-[.15rem] pb-[.16rem] px-[.24rem] break-word leading-normal">
+          <div className="mt-[.12rem] text-white/50 text-[.15rem] pb-[.16rem] px-[.24rem] break-word leading-normal">
             {props.children}
           </div>
         </Collapse>

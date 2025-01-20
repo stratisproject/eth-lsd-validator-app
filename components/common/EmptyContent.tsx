@@ -25,11 +25,7 @@ export const EmptyContent = (props: EmptyContentProps) => {
         >
           <Image src={empty} alt="empty" layout="fill" />
         </div>
-        {!props.hideText && (
-          <div className="mt-[.16rem] text-[.14rem] text-color-text2">
-            There is Nothing Here
-          </div>
-        )}
+        {!props.hideText && <div className="mt-[.16rem] text-[.14rem] text-white/50">There is Nothing Here</div>}
       </div>
     </div>
   );

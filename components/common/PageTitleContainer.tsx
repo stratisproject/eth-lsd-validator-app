@@ -13,18 +13,13 @@ export const PageTitleContainer = (props: Props) => {
 
   return (
     <div
-      className={classNames(
-        "flex justify-center ",
-        showBackButton ? "h-[1.56rem]" : "h-[1.16rem]"
-      )}
+      className={classNames("flex justify-center items-center", "py-[20px] px-[.1rem]")}
       style={{
-        background: darkMode
-          ? "linear-gradient(180deg, #222C3C -20.69%, #222C3C80 103.45%)"
-          : "linear-gradient(180deg, rgba(255, 255, 255, 0) -20.69%, rgba(255, 255, 255, 0.5) 103.45%)",
-        boxShadow: darkMode ? "0px 1px 0px #6C86AD4D" : "0px 1px 0px #FFFFFF",
+        background: "linear-gradient(180deg, #f3dbff00 -20.69%, #7d53ff20 103.45%)",
+        boxShadow: "0px 1px 0px #8974ffa3 "
       }}
     >
-      <div className="w-smallContentW xl:w-contentW 2xl:w-largeContentW flex flex-col">
+      <div className="w-full max-w-[1280px] flex flex-col">
         {showBackButton && onClickBack && (
           <div className="mb-[.24rem]">
             <BackNavigation onClick={onClickBack} />

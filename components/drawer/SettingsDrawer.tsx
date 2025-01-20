@@ -33,16 +33,17 @@ export const SettingsDrawer = (props: Props) => {
       onClose={() => onChangeOpen(false)}
       sx={{
         "& .MuiPaper-root": {
-          background: darkMode ? "#222C3C" : "#E8EFFD",
-          width: "4.85rem",
+          background: "#101112",
+          maxWidth: "4.85rem",
+          width: "100%",
           paddingTop: "1rem",
         },
       }}
     >
-      <div className="pb-[1rem] flex-1 flex flex-col justify-between items-stretch">
+      <div className="pb-[1rem] flex-1 flex flex-col justify-between items-stretch bg-[#101112]">
         <div>
           <div className="px-[.36rem]">
-            <div className="ml-[.24rem] mt-[.56rem] flex items-center">
+            {/* <div className="ml-[.24rem] mt-[.56rem] flex items-center">
               <div className="text-[.16rem] text-color-text2 mr-[.16rem]">
                 Dark Mode
               </div>
@@ -54,26 +55,19 @@ export const SettingsDrawer = (props: Props) => {
                   dispatch(setDarkMode(e.target.checked));
                 }}
               />
-            </div>
+            </div> */}
 
-            <div className="mt-[.32rem] h-[0.01rem] bg-color-divider2" />
+            {/* <div className="mt-[.32rem] h-[0.01rem] bg-color-divider2" /> */}
 
             <div className="ml-[.24rem]">
-              {getExternalLinkList().map(
-                (item: { name: string; link: string }) => (
-                  <MenuItem
-                    key={item.name}
-                    mt=".36rem"
-                    text={item.name}
-                    link={item.link}
-                  />
-                )
-              )}
+              {getExternalLinkList().map((item: { name: string; link: string }) => (
+                <MenuItem key={item.name} mt=".36rem" text={item.name} link={item.link} />
+              ))}
             </div>
           </div>
         </div>
 
-        <div className="pl-[.56rem] flex items-center">
+        {/* <div className="pl-[.56rem] flex items-center">
           {getContactList().map(
             (item: { type: string; link: string }, index: number) => (
               <div
@@ -90,7 +84,7 @@ export const SettingsDrawer = (props: Props) => {
               </div>
             )
           )}
-        </div>
+        </div> */}
       </div>
     </Drawer>
   );

@@ -38,14 +38,11 @@ export const Layout = (props: React.PropsWithChildren) => {
         setNavigation,
       }}
     >
-      <div className={classNames(darkMode ? "dark" : "", roboto.className)}>
+      <div className={classNames(darkMode ? "dark" : "bg-[#101112]", roboto.className)}>
         <Head>
           <title>{getAppTitle()}</title>
           <meta name="description" content="" />
-          <meta
-            name="viewport"
-            content="initial-scale=1.0, width=device-width"
-          />
+          <meta name="viewport" content="initial-scale=1.0, width=device-width" />
         </Head>
 
         <HideOnScroll>
@@ -59,7 +56,7 @@ export const Layout = (props: React.PropsWithChildren) => {
           </AppBar>
         </HideOnScroll>
 
-        <main className="flex flex-col items-center pt-[1.16rem] h-[100vh]">
+        <main className="flex flex-col items-center pt-[1.16rem] max-[800px]:pt-[1.8rem] h-auto">
           <div className="mb-[1rem] w-full">{props.children}</div>
         </main>
 

@@ -25,7 +25,7 @@ export const MyDataHistory = () => {
 
   const typePopupState = usePopupState({
     variant: "popover",
-    popupId: "type",
+    popupId: "type"
   });
 
   const displayTypesText = useMemo(() => {
@@ -40,13 +40,11 @@ export const MyDataHistory = () => {
 
   return (
     <div>
-      <div className="mt-[.24rem] flex items-center">
+      <div className="mt-[.24rem] flex items-center max-[400px]:flex-col gap-[.16rem]">
         <div
           className={classNames(
             "cursor-pointer px-[.16rem] h-[.42rem] inline-flex items-center justify-between rounded-[.3rem] border-[0.01rem]",
-            typePopupState.isOpen
-              ? "border-[#ffffff00] bg-color-selected"
-              : "border-[#6C86AD80]"
+            typePopupState.isOpen ? "border-[#ffffff00] bg-color-selected" : "border-[#fff2]"
           )}
           {...bindTrigger(typePopupState)}
         >
@@ -63,7 +61,7 @@ export const MyDataHistory = () => {
               lineClamp: 1,
               display: "-webkit-box",
               WebkitBoxOrient: "vertical",
-              wordBreak: "break-all",
+              wordBreak: "break-all"
             }}
           >
             {displayTypesText}
@@ -74,7 +72,7 @@ export const MyDataHistory = () => {
           </div>
         </div>
 
-        <div className="ml-[.36rem] flex items-center">
+        <div className=" flex items-center gap-[.06rem]">
           <IOSSwitch
             // darkMode={darkMode}
             checked={toggleOn}
@@ -82,78 +80,62 @@ export const MyDataHistory = () => {
               setToggleOn(e.target.checked);
             }}
           />
+          <div className="flex flex-wrap gap-[.06rem] flex-col">
+            <div className="text-[.14rem] text-color-text1">Reward History</div>
 
-          <div className="text-[.16rem] text-color-text1 ml-[.06rem]">
-            Reward History
-          </div>
-
-          <div className="text-[.16rem] text-color-text2 ml-[.06rem] flex items-center">
-            (Updates every
-            <div className="mx-[.06rem]">
-              {rewardUpdateHour === undefined ? (
-                <DataLoading height=".16rem" />
-              ) : (
-                rewardUpdateHour
-              )}
+            <div className="text-[.14rem] text-color-text2">
+              (Updates every{" "}
+              <span>{rewardUpdateHour === undefined ? <DataLoading height=".16rem" /> : rewardUpdateHour}</span>
+              hours)
             </div>
-            hours)
           </div>
         </div>
       </div>
 
-      <div className="mt-[.24rem] bg-color-bg2 border-[0.01rem] border-color-border1 rounded-[.3rem]">
-        <div className="mt-[.24rem] h-[.56rem] mx-[.24rem] bg-[#6C86AD14] dark:bg-[#6C86AD50] rounded-[.16rem] flex items-center justify-between pl-[.12rem] pr-[.18rem]">
-          <div className="flex items-center">
-            <Icomoon icon="tip" size=".2rem" />
+      <div className="g-border-pink mt-[.24rem] rounded-[.3rem]">
+        <div className="g-bg-box rounded-[.3rem] pt-[.25rem]">
+          <div className="flex items-center mx-[.24rem] bg-[#1b1b1c] rounded-[.16rem] p-[.12rem]">
+            <div className="flex-none">
+              <Icomoon icon="tip" size=".2rem" />
+            </div>
 
             <div className="ml-[.06rem] text-color-text2 text-[.14rem] leading-normal">
-              Holding rTokens will keep generating rewards while you depositing
-              them to farm and other yield protocols, but it can't be shown in
-              the est.Reward as the calculation limits.
+              Holding rTokens will keep generating rewards while you depositing them to farm and other yield protocols,
+              but it can't be shown in the est.Reward as the calculation limits.
             </div>
           </div>
+
+          <div
+            className="h-[.7rem] grid items-center font-[500] border-solid border-b-[.01rem] border-white/10"
+            style={{
+              gridTemplateColumns: "20% 16% 16% 16% 16% 16%"
+            }}
+          >
+            <div className="flex items-center justify-center text-[.16rem] text-[#8771e3]">Token Name</div>
+            <div className="flex items-center justify-center text-[.16rem] text-[#8771e3]">Time (UTC)</div>
+            <div className="flex items-center justify-center text-[.16rem] text-[#8771e3]">Kind</div>
+            <div className="flex items-center justify-center text-[.16rem] text-[#8771e3]">Transaction</div>
+            <div className="flex items-center justify-center text-[.16rem] text-[#8771e3]">Balance</div>
+            <div className="flex items-center justify-center text-[.16rem] text-[#8771e3]">Rewards</div>
+          </div>
+
+          <div className="h-[2rem] flex items-center justify-center">
+            <EmptyContent />
+          </div>
+          {/*
+          <MyDataHistoryItem index={0} />
+          <MyDataHistoryItem index={1} />
+          <MyDataHistoryItem index={2} /> */}
+
+          <ChooseTypePopover
+            popupState={typePopupState}
+            types={types}
+            onChangeTypes={setTypes}
+            onClose={() => {
+              typePopupState.close();
+            }}
+          />
         </div>
-
-        <div
-          className="h-[.7rem] grid items-center font-[500] border-solid border-b-[.01rem] border-white dark:border-[#222C3C]"
-          style={{
-            gridTemplateColumns: "20% 16% 16% 16% 16% 16%",
-          }}
-        >
-          <div className="flex items-center justify-center text-[.16rem] text-color-text2">
-            Token Name
-          </div>
-          <div className="flex items-center justify-center text-[.16rem] text-color-text2">
-            Time (UTC)
-          </div>
-          <div className="flex items-center justify-center text-[.16rem] text-color-text2">
-            Kind
-          </div>
-          <div className="flex items-center justify-center text-[.16rem] text-color-text2">
-            Transaction
-          </div>
-          <div className="flex items-center justify-center text-[.16rem] text-color-text2">
-            Balance
-          </div>
-          <div className="flex items-center justify-center text-[.16rem] text-color-text2">
-            Rewards
-          </div>
-        </div>
-
-        <div className="h-[2rem] flex items-center justify-center">
-          <EmptyContent />
-        </div>
-
-        {/* <MyDataHistoryItem index={0} /> */}
-
-        <ChooseTypePopover
-          popupState={typePopupState}
-          types={types}
-          onChangeTypes={setTypes}
-          onClose={() => {
-            typePopupState.close();
-          }}
-        />
       </div>
     </div>
   );
@@ -173,12 +155,12 @@ const MyDataHistoryItem = (props: MyDataHistoryItemProps) => {
         index % 2 === 0 ? "bg-bgPage/50 dark:bg-bgPageDark/50" : ""
       )}
       style={{
-        gridTemplateColumns: "20% 16% 16% 16% 16% 16%",
+        gridTemplateColumns: "20% 16% 16% 16% 16% 16%"
       }}
     >
       <div className="flex items-center justify-center text-[.16rem] text-color-text1">
         <div
-          className="cursor-pointer mx-[.24rem] flex-1 h-[.42rem] flex items-center justify-between bg-color-bgPage rounded-[.6rem] border-[0.01rem] border-color-border1"
+          className="cursor-pointer mx-[.24rem] flex-1 h-[.42rem] flex items-center justify-between rounded-[.6rem] border-[0.01rem] border-white/30"
           onClick={() => {}}
         >
           <div className="flex items-center">
@@ -186,32 +168,22 @@ const MyDataHistoryItem = (props: MyDataHistoryItemProps) => {
               <Image src={getLsdTokenIcon()} alt="logo" layout="fill" />
             </div>
 
-            <div className="ml-[.08rem] text-[.16rem] text-color-text1">
-              {getLsdTokenName()}
-            </div>
+            <div className="ml-[.08rem] text-[.16rem] text-color-text1">{getLsdTokenName()}</div>
           </div>
 
           <div className="mr-[.16rem] -rotate-90">
-            <Icomoon icon="arrow-down" size=".1rem" color="#848B97" />
+            <Icomoon icon="arrow-down" size=".1rem" color="white" />
           </div>
         </div>
       </div>
 
-      <div className="flex items-center justify-center text-[.16rem] text-color-text1">
-        16 April 23:00
-      </div>
-      <div className="flex items-center justify-center text-[.16rem] text-color-text1">
-        Stake
-      </div>
+      <div className="flex items-center justify-center text-[.16rem] text-color-text1">16 April 23:00</div>
+      <div className="flex items-center justify-center text-[.16rem] text-color-text1">Stake</div>
       <div className="flex items-center justify-center text-[.16rem] text-color-text1">
         <div className="text-link">+0.2</div>
       </div>
-      <div className="flex items-center justify-center text-[.16rem] text-color-text1">
-        0.8+0.2
-      </div>
-      <div className="flex items-center justify-center text-[.16rem] text-color-text1">
-        0.05
-      </div>
+      <div className="flex items-center justify-center text-[.16rem] text-color-text1">0.8+0.2</div>
+      <div className="flex items-center justify-center text-[.16rem] text-color-text1">0.05</div>
     </div>
   );
 };
@@ -240,34 +212,31 @@ const ChooseTypePopover = (props: ChooseTypePopoverProps) => {
       {...bindPopover(popupState)}
       anchorOrigin={{
         vertical: "bottom",
-        horizontal: "left",
+        horizontal: "left"
       }}
       transformOrigin={{
         vertical: "top",
-        horizontal: "left",
+        horizontal: "left"
       }}
       elevation={0}
       sx={{
         marginTop: ".15rem",
         "& .MuiPopover-paper": {
-          background: darkMode ? "#6C86AD4D" : "#ffffff80",
-          border: darkMode
-            ? "0.01rem solid #6C86AD80"
-            : "0.01rem solid #FFFFFF",
+          background: "#111213",
+          border: "0.01rem solid #fff1",
           backdropFilter: "blur(.4rem)",
-          borderRadius: ".3rem",
+          borderRadius: ".1rem",
+          filter: "drop-shadow(0px 0px 12px #0002)!important"
         },
         "& .MuiTypography-root": {
-          padding: "0px",
+          padding: "0px"
         },
         "& .MuiBox-root": {
-          padding: "0px",
-        },
+          padding: "0px"
+        }
       }}
     >
-      <div
-        className={classNames("p-[.16rem] w-[3.1rem]", darkMode ? "dark" : "")}
-      >
+      <div className={classNames("p-[.16rem] w-[3.1rem]", darkMode ? "dark" : "")}>
         <div
           className="cursor-pointer flex items-center justify-between"
           onClick={() => {
@@ -276,9 +245,7 @@ const ChooseTypePopover = (props: ChooseTypePopoverProps) => {
           }}
         >
           <div className="flex items-center">
-            <div className="ml-[.12rem] text-color-text1 text-[.16rem]">
-              All
-            </div>
+            <div className="ml-[.12rem] text-white/70 text-[.16rem]">All</div>
           </div>
 
           {types.length === 0 ? (
@@ -286,11 +253,11 @@ const ChooseTypePopover = (props: ChooseTypePopoverProps) => {
               <Image src={checkedIcon} alt="checked" layout="fill" />
             </div>
           ) : (
-            <div className="w-[.16rem] h-[.16rem] rounded-[0.03rem] border-solid border-[1px] border-[#6C86AD4D]" />
+            <div className="w-[.16rem] h-[.16rem] rounded-[0.03rem] border-solid border-[1px] border-white/70" />
           )}
         </div>
 
-        <div className="my-[.16rem] h-[0.01rem] bg-color-divider1" />
+        <div className="my-[.16rem] h-[0.01rem] bg-[#fff1]" />
 
         <div
           className="cursor-pointer flex items-center justify-between"
@@ -299,9 +266,7 @@ const ChooseTypePopover = (props: ChooseTypePopoverProps) => {
           }}
         >
           <div className="flex items-center">
-            <div className="ml-[.12rem] text-color-text1 text-[.16rem]">
-              Reward
-            </div>
+            <div className="ml-[.12rem] text-white/70 text-[.16rem]">Reward</div>
           </div>
 
           {types.indexOf("Reward") >= 0 ? (
@@ -309,11 +274,11 @@ const ChooseTypePopover = (props: ChooseTypePopoverProps) => {
               <Image src={checkedIcon} alt="checked" layout="fill" />
             </div>
           ) : (
-            <div className="w-[.16rem] h-[.16rem] rounded-[0.03rem] border-solid border-[1px] border-[#6C86AD4D]" />
+            <div className="w-[.16rem] h-[.16rem] rounded-[0.03rem] border-solid border-[1px] border-white/70" />
           )}
         </div>
 
-        <div className="my-[.16rem] h-[0.01rem] bg-color-divider1" />
+        <div className="my-[.16rem] h-[0.01rem] bg-[#fff1]" />
 
         <div
           className="cursor-pointer flex items-center justify-between"
@@ -322,9 +287,7 @@ const ChooseTypePopover = (props: ChooseTypePopoverProps) => {
           }}
         >
           <div className="flex items-center">
-            <div className="ml-[.12rem] text-color-text1 text-[.16rem]">
-              Withdraw
-            </div>
+            <div className="ml-[.12rem] text-white/70 text-[.16rem]">Withdraw</div>
           </div>
 
           {types.indexOf("Withdraw") >= 0 ? (
@@ -332,7 +295,7 @@ const ChooseTypePopover = (props: ChooseTypePopoverProps) => {
               <Image src={checkedIcon} alt="checked" layout="fill" />
             </div>
           ) : (
-            <div className="w-[.16rem] h-[.16rem] rounded-[0.03rem] border-solid border-[1px] border-[#6C86AD4D]" />
+            <div className="w-[.16rem] h-[.16rem] rounded-[0.03rem] border-solid border-[1px] border-white/70" />
           )}
         </div>
       </div>

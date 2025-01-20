@@ -30,47 +30,20 @@ export const ClaimRewardModal = (props: ClaimRewardModalProps) => {
     ipfsMyRewardInfo,
     myShareAmount,
     mySharePercentage,
-    totalManagedAmount,
+    totalManagedAmount
   } = props;
   const router = useRouter();
   const dispatch = useAppDispatch();
 
-  const darkMode = useAppSelector((state: RootState) => state.app.darkMode)
-  const claimRewardsLoading = useAppSelector((state: RootState) => state.validator.claimRewardsLoading)
+  const darkMode = useAppSelector((state: RootState) => state.app.darkMode);
+  const claimRewardsLoading = useAppSelector((state: RootState) => state.validator.claimRewardsLoading);
 
   return (
     <Modal open={visible} onClose={onClose}>
-      <Box
-        pt="0"
-        sx={{
-          backgroundColor: darkMode ? "#38475D" : "#ffffff",
-          width: "5.8rem",
-          borderRadius: "0.16rem",
-          outline: "none",
-          position: "fixed",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-        }}
-      >
-        <div
-          className={classNames(
-            "flex-1 flex flex-col items-center",
-            darkMode ? "dark" : "",
-            roboto.className
-          )}
-        >
-          <div
-            className={classNames(
-              "mr-[.24rem] self-end mt-[.24rem] cursor-pointer"
-            )}
-            onClick={onClose}
-          >
-            <Icomoon
-              icon="close"
-              size=".16rem"
-              color={darkMode ? "#FFFFFF80" : "#6C86AD80"}
-            />
+      <div className="pt-0 bg-[#101112] max-w-[5.8rem] w-full border-none fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        <div className={classNames("flex-1 flex flex-col items-center", darkMode ? "dark" : "", roboto.className)}>
+          <div className={classNames("mr-[.24rem] self-end mt-[.24rem] cursor-pointer")} onClick={onClose}>
+            <Icomoon icon="close" size=".16rem" color={darkMode ? "#FFFFFF80" : "white"} />
           </div>
 
           <div
@@ -85,32 +58,17 @@ export const ClaimRewardModal = (props: ClaimRewardModalProps) => {
           <div className="mt-[.4rem] self-stretch bg-bgPage/50 dark:bg-bgPageDark/50 flex items-center justify-between h-[.84rem] px-[.32rem]">
             <div className="text-[.14rem] text-color-text2">Claimable</div>
 
-            <div
-              className={classNames(
-                "text-color-link text-[.24rem]",
-                robotoBold.className
-              )}
-            >
-              {formatNumber(myRewardTokenAmount, { hideDecimalsForZero: true })}{" "}
-              {getTokenName()}
+            <div className={classNames("text-color-link text-[.24rem]", robotoBold.className)}>
+              {formatNumber(myRewardTokenAmount, { hideDecimalsForZero: true })} {getTokenName()}
             </div>
 
-            <div className="text-[.14rem] text-color-text2 invisible">
-              Claimable
-            </div>
+            <div className="text-[.14rem] text-color-text2 invisible">Claimable</div>
           </div>
 
           <div className="mt-[.25rem] self-stretch flex items-center justify-between px-[.32rem]">
-            <div className="text-[.14rem] text-color-text2">
-              Total Staked {getTokenName()}
-            </div>
+            <div className="text-[.14rem] text-color-text2">Total Staked {getTokenName()}</div>
 
-            <div
-              className={classNames(
-                "text-[.14rem] text-color-text2",
-                robotoSemiBold.className
-              )}
-            >
+            <div className={classNames("text-[.14rem] text-color-text2", robotoSemiBold.className)}>
               {totalManagedAmount === undefined ? (
                 <DataLoading height=".16rem" />
               ) : (
@@ -122,25 +80,13 @@ export const ClaimRewardModal = (props: ClaimRewardModalProps) => {
           <div className="mt-[.25rem] self-stretch items-center justify-between px-[.32rem] hidden">
             <div className="text-[.14rem] text-color-text2">Vesting</div>
 
-            <div
-              className={classNames(
-                "text-[.14rem] text-color-text2",
-                robotoSemiBold.className
-              )}
-            >
-              -- D
-            </div>
+            <div className={classNames("text-[.14rem] text-color-text2", robotoSemiBold.className)}>-- D</div>
           </div>
 
           <div className="mt-[.25rem] self-stretch flex items-center justify-between px-[.32rem]">
             <div className="text-[.14rem] text-color-text2">My Share</div>
 
-            <div
-              className={classNames(
-                "text-[.14rem] text-color-text2 flex",
-                robotoSemiBold.className
-              )}
-            >
+            <div className={classNames("text-[.14rem] text-color-text2 flex", robotoSemiBold.className)}>
               <div className="mr-[.06rem]">
                 {myShareAmount === undefined ? (
                   <DataLoading height=".16rem" />
@@ -155,7 +101,7 @@ export const ClaimRewardModal = (props: ClaimRewardModalProps) => {
                 ) : (
                   formatNumber(Number(mySharePercentage) * 100, {
                     hideDecimalsForZero: true,
-                    decimals: 2,
+                    decimals: 2
                   })
                 )}
               </div>
@@ -165,20 +111,17 @@ export const ClaimRewardModal = (props: ClaimRewardModalProps) => {
 
           <div className="self-stretch m-[.24rem]">
             <CustomButton
+              type="small"
               loading={claimRewardsLoading}
               height=".56rem"
               disabled={Number(myRewardTokenAmount) <= 0 || !ipfsMyRewardInfo}
               onClick={() => {
                 dispatch(
-                  claimValidatorRewards(
-                    ipfsMyRewardInfo,
-                    myRewardTokenAmount || "0",
-                    (success) => {
-                      if (success) {
-                        onClose();
-                      }
+                  claimValidatorRewards(ipfsMyRewardInfo, myRewardTokenAmount || "0", (success) => {
+                    if (success) {
+                      onClose();
                     }
-                  )
+                  })
                 );
               }}
             >
@@ -186,7 +129,7 @@ export const ClaimRewardModal = (props: ClaimRewardModalProps) => {
             </CustomButton>
           </div>
         </div>
-      </Box>
+      </div>
     </Modal>
   );
 };

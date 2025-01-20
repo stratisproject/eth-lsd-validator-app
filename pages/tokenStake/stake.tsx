@@ -52,8 +52,7 @@ const StakePage = () => {
   const { soloDepositAmountInWei, soloDepositAmount } = useSoloDepositAmount();
   const { unmatchedEth } = useUnmatchedToken();
 
-  const [deleteConfirmModalVisible, setDeleteConfirmModalVisible] =
-    useState(false);
+  const [deleteConfirmModalVisible, setDeleteConfirmModalVisible] = useState(false);
   const [waitDeletePubkeys, setWaitDeletePubkeys] = useState<string[]>([]);
 
   const [editMode, setEditMode] = useState(false);
@@ -65,16 +64,15 @@ const StakePage = () => {
 
   const { isTrust } = useIsTrustedValidator();
 
-  const validatorWithdrawalCredentials = useAppSelector((state: RootState) => state.validator.validatorWithdrawalCredentials)
-  const ethTxLoading = useAppSelector((state: RootState) => state.eth.txLoading)
-  const validatorStakeLoadingParams = useAppSelector((state: RootState) => state.app.validatorStakeLoadingParams)
+  const validatorWithdrawalCredentials = useAppSelector(
+    (state: RootState) => state.validator.validatorWithdrawalCredentials
+  );
+  const ethTxLoading = useAppSelector((state: RootState) => state.eth.txLoading);
+  const validatorStakeLoadingParams = useAppSelector((state: RootState) => state.app.validatorStakeLoadingParams);
 
   useEffect(() => {
     const { pubkeyAddressList } = router.query;
-    if (
-      !pubkeyAddressList ||
-      (Array.isArray(pubkeyAddressList) && pubkeyAddressList.length === 0)
-    ) {
+    if (!pubkeyAddressList || (Array.isArray(pubkeyAddressList) && pubkeyAddressList.length === 0)) {
       router.push("/tokenStake/list");
     }
   }, [router]);
@@ -91,45 +89,27 @@ const StakePage = () => {
   }, [router]);
 
   const checkUploadPubkey = (validatorKey: any) => {
-    if (
-      !validatorKey.deposit_data_root ||
-      !validatorKey.signature ||
-      !validatorKey.pubkey
-    ) {
+    if (!validatorKey.deposit_data_root || !validatorKey.signature || !validatorKey.pubkey) {
       throw new Error("Miss deposit_data_root or signature or pubkey");
     }
     if (type === "solo") {
       if (
-        parseEther(
-          (getValidatorTotalDepositAmount() + "") as `${number}`,
-          "wei"
-        ) -
+        parseEther((getValidatorTotalDepositAmount() + "") as `${number}`, "wei") -
           parseEther((validatorKey.amount + "") as `${number}`, "gwei") !==
         BigInt(soloDepositAmountInWei || "0")
       ) {
-        throw new Error(
-          "Please use stake_data file of solo validator to stake"
-        );
+        throw new Error("Please use stake_data file of solo validator to stake");
       }
     } else {
       if (
         BigInt(validatorKey.amount) !==
-        parseEther(
-          (getValidatorTotalDepositAmount() -
-            getTrustValidatorDepositAmount() +
-            "") as `${number}`,
-          "gwei"
-        )
+        parseEther((getValidatorTotalDepositAmount() - getTrustValidatorDepositAmount() + "") as `${number}`, "gwei")
       ) {
-        throw new Error(
-          "Please use stake_data file of trusted validator to stake"
-        );
+        throw new Error("Please use stake_data file of trusted validator to stake");
       }
     }
 
-    if (
-      validatorKey.withdrawal_credentials !== validatorWithdrawalCredentials
-    ) {
+    if (validatorKey.withdrawal_credentials !== validatorWithdrawalCredentials) {
       throw new Error(`Incorrect withdrawal_credentials value`);
     }
     const networkName = getNetworkName();
@@ -146,9 +126,7 @@ const StakePage = () => {
         hasUnmatched = true;
         return;
       }
-      const exist = oldValidatorKeys.find(
-        (item) => item.pubkey === validatorKey.pubkey
-      );
+      const exist = oldValidatorKeys.find((item) => item.pubkey === validatorKey.pubkey);
       if (!exist) {
         oldValidatorKeys.push(validatorKey);
       }
@@ -162,13 +140,10 @@ const StakePage = () => {
 
   const handleStake = async () => {
     if (isWrongMetaMaskNetwork) {
-      await (switchNetworkAsync &&
-        switchNetworkAsync(getEthereumChainId()));
+      await (switchNetworkAsync && switchNetworkAsync(getEthereumChainId()));
       return;
     } else if (!metaMaskAccount) {
-      const metamaskConnector = connectors.find(
-        (c) => c.name === "MetaMask"
-      );
+      const metamaskConnector = connectors.find((c) => c.name === "MetaMask");
       if (!metamaskConnector) {
         return;
       }
@@ -194,45 +169,32 @@ const StakePage = () => {
 
     if (
       type === "solo" &&
-      Number(unmatchedEth) <
-        validatorKeys.length *
-          (getValidatorTotalDepositAmount() -
-            Number(soloDepositAmount))
+      Number(unmatchedEth) < validatorKeys.length * (getValidatorTotalDepositAmount() - Number(soloDepositAmount))
     ) {
-      snackbarUtil.error(
-        `Insufficient ${getTokenName()} in pool`
-      );
+      snackbarUtil.error(`Insufficient ${getTokenName()} in pool`);
       return;
     }
 
     if (
       type === "trusted" &&
       Number(unmatchedEth) <
-        validatorKeys.length *
-          (getValidatorTotalDepositAmount() -
-            getTrustValidatorDepositAmount())
+        validatorKeys.length * (getValidatorTotalDepositAmount() - getTrustValidatorDepositAmount())
     ) {
-      snackbarUtil.error(
-        `Insufficient ${getTokenName()} in pool`
-      );
+      snackbarUtil.error(`Insufficient ${getTokenName()} in pool`);
       return;
     }
 
     dispatch(
-      handleEthValidatorStake(
-        validatorKeys,
-        type as "solo" | "trusted",
-        (success, result) => {
-          dispatch(updateEthBalance());
-          if (success) {
-          }
+      handleEthValidatorStake(validatorKeys, type as "solo" | "trusted", (success, result) => {
+        dispatch(updateEthBalance());
+        if (success) {
         }
-      )
+      })
     );
-  }
+  };
 
   return (
-    <div className="w-smallContentW xl:w-contentW 2xl:w-largeContentW mx-auto">
+    <div className="w-full max-w-[1280px] mx-auto">
       <BackNavigation
         onClick={() => {
           router.replace("/tokenStake/list");
@@ -260,11 +222,8 @@ const StakePage = () => {
                     </div>
 
                     <div className="text-color-text2 text-[.14rem] mt-[.15rem]">
-                      Please follow the instruction and upload{" "}
-                      {stakePubkeyAddressList.length}{" "}
-                      {stakePubkeyAddressList.length <= 1
-                        ? "Pubkey"
-                        : "Pubkeys"}
+                      Please follow the instruction and upload {stakePubkeyAddressList.length}{" "}
+                      {stakePubkeyAddressList.length <= 1 ? "Pubkey" : "Pubkeys"}
                     </div>
                   </div>
                 </ValidatorKeyUpload>
@@ -277,14 +236,8 @@ const StakePage = () => {
                 )}
               >
                 <div className="bg-color-bg3 rounded-t-[.1rem] h-[.42rem] flex items-center justify-between px-[.32rem]">
-                  <div
-                    className={classNames(
-                      "text-color-text1 text-[.14rem]",
-                      robotoSemiBold.className
-                    )}
-                  >
-                    {validatorKeys.length}{" "}
-                    {validatorKeys.length > 1 ? "files" : "file"} Uploaded
+                  <div className={classNames("text-color-text1 text-[.14rem]", robotoSemiBold.className)}>
+                    {validatorKeys.length} {validatorKeys.length > 1 ? "files" : "file"} Uploaded
                   </div>
 
                   {editMode ? (
@@ -300,9 +253,7 @@ const StakePage = () => {
                         }}
                       >
                         Delete Selection
-                        {editSelectedPubkeys.length > 0
-                          ? ` (${editSelectedPubkeys.length})`
-                          : ""}
+                        {editSelectedPubkeys.length > 0 ? ` (${editSelectedPubkeys.length})` : ""}
                       </CustomButton>
 
                       <div
@@ -312,19 +263,11 @@ const StakePage = () => {
                         }}
                       >
                         <div className="cursor-pointer" onClick={() => {}}>
-                          <Icomoon
-                            size=".15rem"
-                            color={darkMode ? "#ffffff80" : "#6C86AD"}
-                            icon="edit"
-                          />
+                          <Icomoon size=".15rem" color={darkMode ? "#ffffff80" : "#6C86AD"} icon="edit" />
                         </div>
 
                         <div className="ml-[.24rem] cursor-pointer">
-                          <Icomoon
-                            icon="complete-outline"
-                            color={darkMode ? "#ffffff80" : "#6C86AD"}
-                            size=".12rem"
-                          />
+                          <Icomoon icon="complete-outline" color={darkMode ? "#ffffff80" : "#6C86AD"} size=".12rem" />
                         </div>
                       </div>
                     </div>
@@ -339,11 +282,7 @@ const StakePage = () => {
                         onSuccess={handleNewValidaorKeys}
                       >
                         <div className="">
-                          <Icomoon
-                            size=".16rem"
-                            color={darkMode ? "#E8EFFD" : "#222C3C"}
-                            icon="file_add"
-                          />
+                          <Icomoon size=".16rem" color={darkMode ? "#E8EFFD" : "#222C3C"} icon="file_add" />
                         </div>
                       </ValidatorKeyUpload>
 
@@ -354,27 +293,17 @@ const StakePage = () => {
                           setEditMode(true);
                         }}
                       >
-                        <Icomoon
-                          size=".16rem"
-                          color={darkMode ? "#E8EFFD" : "#222C3C"}
-                          icon="edit"
-                        />
+                        <Icomoon size=".16rem" color={darkMode ? "#E8EFFD" : "#222C3C"} icon="edit" />
                       </div>
 
                       <div
                         className="ml-[.16rem] cursor-pointer"
                         onClick={() => {
-                          setWaitDeletePubkeys(
-                            validatorKeys.map((item) => item.pubkey)
-                          );
+                          setWaitDeletePubkeys(validatorKeys.map((item) => item.pubkey));
                           setDeleteConfirmModalVisible(true);
                         }}
                       >
-                        <Icomoon
-                          size=".16rem"
-                          color={darkMode ? "#E8EFFD" : "#222C3C"}
-                          icon="delete"
-                        />
+                        <Icomoon size=".16rem" color={darkMode ? "#E8EFFD" : "#222C3C"} icon="delete" />
                       </div>
                     </div>
                   )}
@@ -390,29 +319,20 @@ const StakePage = () => {
                       )}
                       style={{
                         background:
-                          editMode &&
-                          editSelectedPubkeys.indexOf(item.pubkey) >= 0
+                          editMode && editSelectedPubkeys.indexOf(item.pubkey) >= 0
                             ? "linear-gradient(0deg, rgba(0, 243, 171, 0.1), rgba(0, 243, 171, 0.1)), linear-gradient(0deg, rgba(0, 243, 171, 0.1), rgba(0, 243, 171, 0.1))"
                             : darkMode
                             ? "#6C86AD80"
                             : "#DEE6F7",
                         border:
-                          editMode &&
-                          editSelectedPubkeys.indexOf(item.pubkey) >= 0
-                            ? "1px solid #00F3AB80"
-                            : "none",
+                          editMode && editSelectedPubkeys.indexOf(item.pubkey) >= 0 ? "1px solid #00F3AB80" : "none",
                       }}
                       onClick={() => {
                         if (editMode) {
                           if (editSelectedPubkeys.indexOf(item.pubkey) >= 0) {
-                            setEditSelectedPubkeys(
-                              _.without(editSelectedPubkeys, item.pubkey)
-                            );
+                            setEditSelectedPubkeys(_.without(editSelectedPubkeys, item.pubkey));
                           } else {
-                            setEditSelectedPubkeys([
-                              ...editSelectedPubkeys,
-                              item.pubkey,
-                            ]);
+                            setEditSelectedPubkeys([...editSelectedPubkeys, item.pubkey]);
                           }
                         }
                       }}
@@ -421,11 +341,7 @@ const StakePage = () => {
                         <div className="mr-[.12rem]">
                           {editSelectedPubkeys.indexOf(item.pubkey) >= 0 ? (
                             <div className="w-[.16rem] h-[.16rem] relative">
-                              <Image
-                                src={checkedIcon}
-                                layout="fill"
-                                alt="checked"
-                              />
+                              <Image src={checkedIcon} layout="fill" alt="checked" />
                             </div>
                           ) : (
                             <div className="w-[.16rem] h-[.16rem] rounded-full border-solid border-[1px] border-[#9DAFBE]" />
@@ -449,20 +365,13 @@ const StakePage = () => {
                       </div>
 
                       <div
-                        className={classNames(
-                          "cursor-pointer w-[.16rem] min-w-[.16rem]",
-                          editMode ? "hidden" : ""
-                        )}
+                        className={classNames("cursor-pointer w-[.16rem] min-w-[.16rem]", editMode ? "hidden" : "")}
                         onClick={() => {
                           setWaitDeletePubkeys([item.pubkey]);
                           setDeleteConfirmModalVisible(true);
                         }}
                       >
-                        <Icomoon
-                          icon="delete"
-                          size=".16rem"
-                          color={darkMode ? "#ffffff80" : "#6C86AD"}
-                        />
+                        <Icomoon icon="delete" size=".16rem" color={darkMode ? "#ffffff80" : "#6C86AD"} />
                       </div>
                     </div>
                   ))}
@@ -474,9 +383,7 @@ const StakePage = () => {
                   height=".56rem"
                   loading={ethTxLoading}
                   type={
-                    !metaMaskAccount ||
-                    isWrongMetaMaskNetwork ||
-                    (!isTrust && type === "trusted")
+                    !metaMaskAccount || isWrongMetaMaskNetwork || (!isTrust && type === "trusted")
                       ? "secondary"
                       : "primary"
                   }
@@ -496,9 +403,7 @@ const StakePage = () => {
                     ? "Apply Trusted Validator"
                     : validatorKeys.length < stakePubkeyAddressList.length
                     ? `Please Upload ${stakePubkeyAddressList.length} ${
-                        stakePubkeyAddressList.length <= 1
-                          ? "Pubkey"
-                          : "Pubkeys"
+                        stakePubkeyAddressList.length <= 1 ? "Pubkey" : "Pubkeys"
                       }`
                     : `Stake (${validatorKeys.length} Uploaded)`}
                 </CustomButton>
@@ -519,9 +424,7 @@ const StakePage = () => {
         }}
         onConfirm={() => {
           setDeleteConfirmModalVisible(false);
-          const newValidatorKeys = validatorKeys.filter(
-            (item) => waitDeletePubkeys.indexOf(item.pubkey) < 0
-          );
+          const newValidatorKeys = validatorKeys.filter((item) => waitDeletePubkeys.indexOf(item.pubkey) < 0);
           setValidatorKeys(newValidatorKeys);
           if (newValidatorKeys.length === 0) {
             setEditMode(false);

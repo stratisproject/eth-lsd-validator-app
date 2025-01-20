@@ -27,33 +27,22 @@ const ChooseTypePage = () => {
   const trustDepositEnabled = useTrustDepositEnabled();
 
   const soloDisabled =
-    !soloDepositEnabled ||
-    !soloNodeDepositAmount ||
-    Number(soloNodeDepositAmount) === 0 ||
-    isTrust ||
-    !metaMaskAccount;
+    !soloDepositEnabled || !soloNodeDepositAmount || Number(soloNodeDepositAmount) === 0 || isTrust || !metaMaskAccount;
 
   return (
-    <div className="w-smallContentW xl:w-contentW 2xl:w-largeContentW mx-auto">
-      <div className="flex mt-[.24rem] items-start">
-        <CardContainer width="6.2rem" title="Choose Validator Type">
+    <div className="w-full max-w-[1280px] mx-auto flex mt-[.24rem] gap-[.6rem] justify-center items-start px-[.1rem] max-[1280px]:flex-col max-[1280px]:items-center">
+      <div className="w-full max-w-[720px]">
+        <CardContainer width="7rem" title="Choose Validator Type">
           <div
-            className="pb-[.52rem] flex justify-center pt-[.52rem] flex-wrap gap-[.12rem]"
+            className="p-[.52rem] flex justify-center gap-[.12rem] max-[640px]:flex-col"
             style={{
               rowGap: ".32rem",
-              columnGap: ".12rem",
+              columnGap: ".12rem"
             }}
           >
-            <div className="w-[1.88rem] h-[2.11rem] rounded-[.16rem] bg-color-bgPage flex flex-col items-center justify-between">
+            <div className="w-full h-[2.11rem] rounded-[.16rem] bg-color-bgPage flex flex-col items-center justify-between">
               <div className="mt-[.32rem] flex flex-col items-center">
-                <div
-                  className={classNames(
-                    "text-[.16rem] text-color-text1",
-                    robotoBold.className
-                  )}
-                >
-                  Solo Validator
-                </div>
+                <div className={classNames("text-[.16rem] text-color-text1", robotoBold.className)}>Solo Validator</div>
 
                 <div
                   className={classNames(
@@ -71,26 +60,22 @@ const ChooseTypePage = () => {
                   onClick={() => {
                     router.push("/tokenStake/soloDeposit");
                   }}
+                  className="text-white"
                 >
                   Next
                 </CustomButton>
               </div>
             </div>
 
-            <div className="w-[1.88rem] h-[2.11rem] rounded-[.16rem] bg-color-bgPage flex flex-col items-center justify-between">
+            <div className="w-full h-[2.11rem] rounded-[.16rem] bg-color-bgPage flex flex-col items-center justify-between">
               <div className="mt-[.32rem] flex flex-col items-center">
-                <div
-                  className={classNames(
-                    "text-[.16rem] text-color-text1",
-                    robotoBold.className
-                  )}
-                >
+                <div className={classNames("text-[.16rem] text-color-text1", robotoBold.className)}>
                   Trusted Validator
                 </div>
 
                 <div
                   className={classNames(
-                    "text-[.14rem] text-color-text2 mt-[.14rem] mx-[.12rem] leading-snug"
+                    "text-[.14rem] text-color-text2 mt-[.14rem] mx-[.12rem] leading-snug text-center"
                   )}
                 >
                   Apply to be nominated
@@ -122,16 +107,9 @@ const ChooseTypePage = () => {
               </div>
             </div>
 
-            <div className="w-[1.88rem] h-[2.11rem] rounded-[.16rem] bg-color-bgPage flex flex-col items-center justify-between">
+            <div className="w-full h-[2.11rem] rounded-[.16rem] bg-color-bgPage flex flex-col items-center justify-between">
               <div className="mt-[.32rem] flex flex-col items-center mx-[.16rem]">
-                <div
-                  className={classNames(
-                    "text-[.16rem] text-color-text1",
-                    robotoBold.className
-                  )}
-                >
-                  DVT Validator
-                </div>
+                <div className={classNames("text-[.16rem] text-color-text1", robotoBold.className)}>DVT Validator</div>
 
                 <div
                   className={classNames(
@@ -156,10 +134,9 @@ const ChooseTypePage = () => {
             </div>
           </div>
         </CardContainer>
-
-        <div className="ml-[.85rem]">
-          <ChooseTypeGuide />
-        </div>
+      </div>
+      <div className="w-full max-w-[480px] max-[1280px]:max-w-[720px] ">
+        <ChooseTypeGuide />
       </div>
     </div>
   );

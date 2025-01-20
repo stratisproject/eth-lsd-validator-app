@@ -19,55 +19,48 @@ export const IOSSwitch = styled((props: Props) => (
       transform: "translateX(0.39rem)",
       color: "#fff",
       "& + .MuiSwitch-track": {
-        background:
-          theme.palette.mode === "dark"
-            ? "#2ECA45"
-            : "linear-gradient(284.4deg, rgba(133, 224, 163, 0.5) 15.63%, rgba(128, 202, 255, 0.5) 89.06%)",
+        background: theme.palette.mode === "dark" ? "#101112" : "linear-gradient(90deg, #7168c0, #53429a)",
         opacity: 1,
-        border: 0,
+        border: 0
       },
       "&.Mui-disabled + .MuiSwitch-track": {
-        opacity: 0.5,
+        opacity: 0.5
       },
       "& .MuiSwitch-thumb": {
         // backgroundImage:
         //   "url(../../../../assets/images/switch_thumb_checked.png)",
         // backgroundSize: "100% 100%",
-        background:
-          "linear-gradient(284.4deg, rgba(133, 224, 163, 1) 15.63%, rgba(128, 202, 255, 1) 89.06%)",
-        border: "0.02rem solid #ffffff",
-      },
+        background: "rgba(59, 39, 138, 0.9)",
+        border: "0.02rem solid #ffffff"
+      }
     },
     "&.Mui-focusVisible .MuiSwitch-thumb": {
       color: "#33cf4d",
-      border: "6px solid #fff",
+      border: "6px solid #fff"
     },
     "&.Mui-disabled .MuiSwitch-thumb": {
-      color:
-        theme.palette.mode === "light"
-          ? theme.palette.grey[100]
-          : theme.palette.grey[600],
+      color: theme.palette.mode === "light" ? theme.palette.grey[100] : theme.palette.grey[600]
     },
     "&.Mui-disabled + .MuiSwitch-track": {
-      opacity: theme.palette.mode === "light" ? 0.7 : 0.3,
-    },
+      opacity: theme.palette.mode === "light" ? 0.7 : 0.3
+    }
   },
   "& .MuiSwitch-thumb": {
     boxSizing: "border-box",
     width: ".26rem",
     height: ".26rem",
-    backgroundColor: "#E8EFFD",
+    backgroundColor: "#E8EFFD"
   },
   "& .MuiSwitch-track": {
     borderRadius: ".6rem",
-    backgroundColor: theme.palette.mode === "light" ? "#6C86AD80" : "#39393D",
+    backgroundColor: "#2b2d31",
     opacity: 1,
     transition: theme.transitions.create(["background-color"], {
-      duration: 500,
+      duration: 500
     }),
     // border: props.darkMode
     //   ? '"0.01rem solid #ffffff80"'
     //   : "0.01rem solid #ffffff80",
-    border: "0.01rem solid #ffffff",
-  },
+    border: "0.01rem solid #fff5"
+  }
 }));

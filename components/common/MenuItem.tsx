@@ -12,14 +12,14 @@ export const MenuItem = (props: Props) => {
     <div
       className="cursor-pointer flex items-center justify-between"
       style={{
-        marginTop: props.mt || "0",
+        marginTop: props.mt || "0"
       }}
       onClick={() => {
         openLink(props.link);
       }}
     >
       <div
-        className="text-color-text2 text-[.16rem] font-[500] flex-1"
+        className="text-white/70 text-[.16rem] font-[500] flex-1"
         style={{
           maxLines: 1,
           overflow: "hidden",
@@ -27,13 +27,17 @@ export const MenuItem = (props: Props) => {
           WebkitLineClamp: 1,
           lineClamp: 1,
           display: "-webkit-box",
-          WebkitBoxOrient: "vertical",
+          WebkitBoxOrient: "vertical"
         }}
       >
         {props.text}
       </div>
 
-      <Icomoon icon="right" size=".12rem" color="#6C86AD" />
+      <Icomoon
+        icon="right"
+        size=".12rem"
+        color="#FFFFFFB3"
+      />
     </div>
   );
 };

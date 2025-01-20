@@ -32,18 +32,12 @@ export const DrawerNoticeList = (props: Props) => {
 
   return (
     <div className="pt-[.24rem]">
-      {noticeList.length === 0 && <EmptyContent mt="1rem" />}
+      {noticeList.length === 0 && <EmptyContent mt="2rem" />}
       {noticeList.map((notice, index) => (
         <div key={notice.id}>
-          <NoticeItem
-            notice={notice}
-            visible={open}
-            onUpdate={updateNoticeList}
-          />
+          <NoticeItem notice={notice} visible={open} onUpdate={updateNoticeList} />
 
-          {index !== noticeList.length - 1 && (
-            <div className="h-[0.02rem] bg-color-divider2" />
-          )}
+          {index !== noticeList.length - 1 && <div className="h-[0.02rem] bg-color-divider2" />}
         </div>
       ))}
     </div>

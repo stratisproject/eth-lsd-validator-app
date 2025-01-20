@@ -7,7 +7,7 @@ import { Icomoon } from "components/icon/Icomoon";
 import {
   getEthereumChainId,
   getEthereumChainName,
-  getNetworkName,
+  getNetworkName
 } from "config/env";
 import { useAppDispatch, useAppSelector } from "hooks/common";
 import { useAppSlice } from "hooks/selector";
@@ -15,7 +15,7 @@ import { useWalletAccount } from "hooks/useWalletAccount";
 import {
   bindPopover,
   bindTrigger,
-  usePopupState,
+  usePopupState
 } from "material-ui-popup-state/hooks";
 import Image from "next/image";
 import Link from "next/link";
@@ -32,11 +32,11 @@ import appLogoLight from "public/images/stafi_logo_lightmode.png";
 import { useEffect, useMemo, useState } from "react";
 import {
   setNoticeDrawerOpen,
-  setSettingsDrawerOpen,
+  setSettingsDrawerOpen
 } from "redux/reducers/AppSlice";
 import {
   disconnectWallet,
-  setMetaMaskDisconnected,
+  setMetaMaskDisconnected
 } from "redux/reducers/WalletSlice";
 import { RootState } from "redux/store";
 import { getLsdTokenName } from "utils/configUtils";
@@ -58,7 +58,7 @@ export const Navbar = () => {
     (state: RootState) => {
       return {
         noticeDrawerOpen: state.app.noticeDrawerOpen,
-        settingsDrawerOpen: state.app.settingsDrawerOpen,
+        settingsDrawerOpen: state.app.settingsDrawerOpen
       };
     }
   );
@@ -73,12 +73,12 @@ export const Navbar = () => {
 
   const envPopupState = usePopupState({
     variant: "popover",
-    popupId: "env",
+    popupId: "env"
   });
 
   const chainPopupState = usePopupState({
     variant: "popover",
-    popupId: "chain",
+    popupId: "chain"
   });
 
   const resizeListener = () => {
@@ -103,40 +103,22 @@ export const Navbar = () => {
   }, [envPopupState.isOpen, dispatch]);
 
   return (
-    <div className="bg-color-bgPage py-[.36rem] flex items-center justify-center">
-      <div className="w-smallContentW xl:w-contentW 2xl:w-largeContentW mx-auto flex items-center justify-between relative">
-        <div
-          className={classNames(
-            "absolute top-[.11rem] w-[.82rem] h-[.2rem]",
-            pageWidth >= 1600 ? "left-[-1.06rem]" : "left-0"
-          )}
-        >
-          <Image
-            src={darkMode ? appLogo : appLogoLight}
-            alt="stafi"
-            layout="fill"
-          />
-        </div>
-
-        <div
-          className={classNames(
-            "flex items-center",
-            pageWidth >= 1600 ? "" : "pl-[1.06rem]"
-          )}
-        >
+    <div className="bg-[#101112] text-white py-[.36rem] flex items-center justify-center px-[.1rem]">
+      <div className="w-full max-w-[1280px] mx-auto flex items-center justify-between relative max-[800px]:flex-col flex-row gap-[0.16rem]">
+        <div className={classNames("flex items-center")}>
           <div
-            className="w-[3.3rem] h-[.42rem] p-[.04rem] grid items-stretch bg-color-bg2 rounded-[.6rem]"
+            className="w-[3.3rem] h-auto p-[.04rem] grid items-stretch bg-color-bg2 rounded-[.6rem] border border-solid border-white/5 g-bg-box"
             style={{
-              gridTemplateColumns: "40% 28% 32%",
+              gridTemplateColumns: "40% 28% 32%"
             }}
           >
             <Link href={`/tokenStake/list`}>
               <div
                 className={classNames(
-                  "h-[.34rem] cursor-pointer flex items-center justify-center text-[.16rem] rounded-[.6rem]",
+                  "h-[.34rem] cursor-pointer flex items-center justify-center text-[.16rem] rounded-[.6rem] ",
                   router.pathname.startsWith("/tokenStake")
-                    ? "bg-color-selected font-bold rounded-[.6rem] border-color-divider1 text-text1 border-solid border-[0.01rem]"
-                    : "text-color-text1"
+                    ? " border-[#8771e3] text-[#8771e3] font-bold rounded-[.6rem]  border-solid border-[0.01rem]"
+                    : "text-white"
                 )}
               >
                 Token Stake
@@ -148,8 +130,8 @@ export const Navbar = () => {
                 className={classNames(
                   "h-[.34rem] cursor-pointer flex items-center justify-center text-[.16rem] rounded-[.6rem] ",
                   router.pathname.startsWith("/myData")
-                    ? "bg-color-selected text-text1 font-bold rounded-[.6rem] border-color-divider1 border-solid border-[0.01rem]"
-                    : "text-color-text1"
+                    ? " border-[#8771e3] text-[#8771e3] font-bold rounded-[.6rem]  border-solid border-[0.01rem]"
+                    : "text-white"
                 )}
               >
                 <span>My Data</span>
@@ -159,13 +141,13 @@ export const Navbar = () => {
             <Link href={"/poolData"}>
               <div
                 className={classNames(
-                  "h-[.34rem] cursor-pointer flex items-center justify-center text-[.16rem] rounded-[.6rem]",
+                  "h-[.34rem] cursor-pointer flex items-center justify-center text-[.16rem] rounded-[.6rem] px-[3px] ",
                   router.pathname.startsWith("/poolData")
-                    ? "bg-color-selected text-text1 font-bold rounded-[.6rem] border-color-divider1 border-solid border-[0.01rem]"
-                    : "text-color-text1"
+                    ? "  font-bold rounded-[.6rem] border-[#8771e3] text-[#8771e3] border-solid border-[0.01rem]"
+                    : "text-white"
                 )}
               >
-                {getLsdTokenName()} Pool
+                Pool
               </div>
             </Link>
           </div>
@@ -177,12 +159,7 @@ export const Navbar = () => {
         </div>
 
         <div className={classNames("flex items-center")}>
-          <div
-            className={classNames(
-              "ml-[.16rem]",
-              isGalleryHomePage ? "hidden" : ""
-            )}
-          >
+          <div className={classNames(isGalleryHomePage ? "hidden" : "")}>
             {displayAddress ? (
               <UserInfo auditExpand={auditExpand} />
             ) : (
@@ -192,8 +169,8 @@ export const Navbar = () => {
 
           <div
             className={classNames(
-              "cursor-pointer ml-[.3rem] w-[.42rem] h-[.42rem] flex items-center justify-center rounded-[.12rem] relative",
-              noticeDrawerOpen ? "bg-color-selected" : ""
+              "cursor-pointer max-[560px]:ml-[.15rem] ml-[.3rem] w-[.42rem] h-[.42rem] flex items-center justify-center rounded-[.12rem] relative",
+              noticeDrawerOpen ? "bg-[#272729]" : ""
             )}
             onClick={() => {
               dispatch(setSettingsDrawerOpen(false));
@@ -211,15 +188,15 @@ export const Navbar = () => {
 
           <div
             className={classNames(
-              "cursor-pointer ml-[.3rem] w-[.42rem] h-[.42rem] flex items-center justify-center rounded-[.12rem]",
-              settingsDrawerOpen ? "bg-color-selected" : ""
+              "cursor-pointer max-[560px]:ml-[.05rem] ml-[.3rem] w-[.42rem] h-[.42rem] flex items-center justify-center rounded-[.12rem]",
+              settingsDrawerOpen ? "bg-[#272729]" : ""
             )}
             onClick={() => {
               dispatch(setNoticeDrawerOpen(false));
               dispatch(setSettingsDrawerOpen(!settingsDrawerOpen));
             }}
           >
-            <Icomoon icon="more" size=".2rem" color="#6C86AD" />
+            <Icomoon icon="more" size=".2rem" color="white" />
           </div>
         </div>
 
@@ -264,12 +241,12 @@ const UserInfo = (props: { auditExpand: boolean }) => {
 
   const addressPopupState = usePopupState({
     variant: "popover",
-    popupId: "address",
+    popupId: "address"
   });
 
   const netPopupState = usePopupState({
     variant: "popover",
-    popupId: "net",
+    popupId: "net"
   });
 
   // useEffect(() => {
@@ -292,7 +269,7 @@ const UserInfo = (props: { auditExpand: boolean }) => {
           auditExpand ? "hidden 2xl:flex" : "flex"
         )}
       >
-        <div className="w-[.34rem] h-[.34rem] relative">
+        <div className="w-[.34rem] h-[.34rem] relative max-[560px]:hidden">
           <Image
             src={getChainIcon()}
             alt="logo"
@@ -304,7 +281,7 @@ const UserInfo = (props: { auditExpand: boolean }) => {
         <div
           className={classNames(
             "ml-[.08rem] text-[.16rem]",
-            netPopupState.isOpen ? "text-text1 " : "text-color-text1"
+            netPopupState.isOpen ? "text-text1 " : "text-white"
           )}
         >
           {getEthereumChainName()}
@@ -325,7 +302,7 @@ const UserInfo = (props: { auditExpand: boolean }) => {
       <div
         className={classNames(
           "cursor-pointer pr-[.04rem] flex items-center rounded-r-[.6rem]",
-          addressPopupState.isOpen ? "bg-color-selected" : "",
+          addressPopupState.isOpen ? "" : "",
           auditExpand
             ? "rounded-[.6rem] pl-[.04rem] 2xl:rounded-r-[.6rem] 2xl:pl-[.12rem]"
             : "rounded-r-[.6rem]  pl-[.12rem]"
@@ -335,14 +312,14 @@ const UserInfo = (props: { auditExpand: boolean }) => {
         <Image
           src={defaultAvatar}
           alt="logo"
-          className="w-[.34rem] h-[.34rem] rounded-full"
+          className="w-[.34rem] h-[.34rem] rounded-full max-[560px]:hidden"
         />
 
         {!hideAddress && (
           <div
             className={classNames(
               "mx-[.12rem] text-[.16rem]",
-              addressPopupState.isOpen ? "text-text1 " : "text-color-text1"
+              addressPopupState.isOpen ? "text-text1 " : "text-white"
             )}
           >
             {getShortAddress(metaMaskAccount, 5)}
@@ -355,34 +332,31 @@ const UserInfo = (props: { auditExpand: boolean }) => {
         {...bindPopover(addressPopupState)}
         anchorOrigin={{
           vertical: "bottom",
-          horizontal: "right",
+          horizontal: "right"
         }}
         transformOrigin={{
           vertical: "top",
-          horizontal: "right",
+          horizontal: "right"
         }}
         elevation={0}
         sx={{
           marginTop: ".15rem",
           "& .MuiPopover-paper": {
-            background: darkMode ? "#6C86AD4D" : "#ffffff80",
-            border: darkMode
-              ? "0.01rem solid #6C86AD80"
-              : "0.01rem solid #FFFFFF",
+            background: "#111213",
+            border: "0.01rem solid #fff1",
             backdropFilter: "blur(.4rem)",
-            borderRadius: ".3rem",
+            borderRadius: ".1rem",
+            filter: "drop-shadow(0px 0px 12px #0002)!important"
           },
           "& .MuiTypography-root": {
-            padding: "0px",
+            padding: "0px"
           },
           "& .MuiBox-root": {
-            padding: "0px",
-          },
+            padding: "0px"
+          }
         }}
       >
-        <div
-          className={classNames("p-[.16rem] w-[2rem]", darkMode ? "dark" : "")}
-        >
+        <div className={classNames("p-[.16rem] w-[2rem]")}>
           <div
             className="cursor-pointer flex items-center justify-between"
             onClick={() => {
@@ -393,13 +367,13 @@ const UserInfo = (props: { auditExpand: boolean }) => {
             }}
           >
             <div className="flex items-center">
-              <div className="ml-[.12rem] text-color-text1 text-[.16rem]">
+              <div className="ml-[.12rem] text-white text-[.16rem]">
                 Copy Address
               </div>
             </div>
           </div>
 
-          <div className="my-[.16rem] h-[0.01rem] bg-color-divider1" />
+          <div className="my-[.16rem] h-[0.01rem] bg-[#fff1]" />
 
           <div
             className="cursor-pointer flex items-center justify-between"
@@ -408,7 +382,7 @@ const UserInfo = (props: { auditExpand: boolean }) => {
               dispatch(disconnectWallet());
             }}
           >
-            <div className="ml-[.12rem] text-color-text1 text-[.16rem]">
+            <div className="ml-[.12rem] text-white text-[.16rem]">
               Disconnect
             </div>
           </div>
@@ -435,7 +409,7 @@ const ConnectButton = () => {
       dispatch(setMetaMaskDisconnected(false));
       await connectAsync({
         chainId: getEthereumChainId(),
-        connector: metamaskConnector,
+        connector: metamaskConnector
       });
       dispatch(setMetaMaskDisconnected(false));
     } catch (err: any) {

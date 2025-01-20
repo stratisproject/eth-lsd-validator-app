@@ -31,7 +31,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
     let html = document.documentElement;
     let clientW = html.clientWidth;
     let htmlRem = (clientW * 100) / designSize;
-    html.style.fontSize = Math.min(htmlRem, 100) + "px";
+    html.style.fontSize = "100px";
   };
 
   useEffect(() => {
@@ -61,8 +61,8 @@ const MyAppWrapper = ({ Component, pageProps }: any) => {
   const { darkMode } = useAppSlice();
 
   const StyledMaterialDesignContent = useMemo(() => {
-    const successBg = darkMode ? "#5A5DE0" : "#E8EFFD";
-    const successTextColor = darkMode ? "#E8EFFD" : "#222C3C";
+    const successBg = "#5A5DE0";
+    const successTextColor = "#E8EFFD";
 
     return styled(MaterialDesignContent)(() => ({
       "&.notistack-MuiContent-success": {
@@ -81,7 +81,7 @@ const MyAppWrapper = ({ Component, pageProps }: any) => {
         fontSize: ".16rem",
       },
     }));
-  }, [darkMode]);
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>

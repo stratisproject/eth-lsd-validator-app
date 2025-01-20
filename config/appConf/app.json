@@ -6,7 +6,7 @@
     "lsdTokenName": "rSTRAX",
     "lsdTokenIconUri": "/images/token/STRAX.svg",
     "tokenIcon": "/images/token/STRAX.svg",
-    "lsdTokenIcon": "/images/token/STRAX.svg"
+    "lsdTokenIcon": "/images/token/rSTRAX.svg"
   },
   "supportRestApi": true,
   "apr": 0,

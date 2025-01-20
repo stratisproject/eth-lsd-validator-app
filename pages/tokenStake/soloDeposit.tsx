@@ -14,7 +14,7 @@ import { getNodeDepositContractAbi } from "config/contractAbi";
 import {
   getEthereumChainId,
   getNetworkName,
-  getTrustValidatorDepositAmount,
+  getTrustValidatorDepositAmount
 } from "config/env";
 import { robotoBold } from "config/font";
 import { FILE_NETWORK_NAME_KEY } from "constants/common";
@@ -61,8 +61,12 @@ const SoloDepositPage = () => {
   const { switchNetworkAsync } = useSwitchNetwork();
   const { connectAsync, connectors } = useConnect();
 
-  const validatorWithdrawalCredentials = useAppSelector((state: RootState) => state.validator.validatorWithdrawalCredentials)
-  const ethTxLoading = useAppSelector((state: RootState) => state.eth.txLoading)
+  const validatorWithdrawalCredentials = useAppSelector(
+    (state: RootState) => state.validator.validatorWithdrawalCredentials
+  );
+  const ethTxLoading = useAppSelector(
+    (state: RootState) => state.eth.txLoading
+  );
 
   const isWrongMetaMaskNetwork = useMemo(() => {
     return Number(metaMaskChainId) !== getEthereumChainId();
@@ -147,7 +151,7 @@ const SoloDepositPage = () => {
   };
 
   return (
-    <div className="w-smallContentW xl:w-contentW 2xl:w-largeContentW mx-auto">
+    <div className="w-full max-w-[1280px] mx-auto">
       <BackNavigation
         onClick={() => {
           router.replace("/tokenStake/chooseType");
@@ -250,7 +254,7 @@ const SoloDepositPage = () => {
                           WebkitLineClamp: 2,
                           lineClamp: 2,
                           display: "-webkit-box",
-                          WebkitBoxOrient: "vertical",
+                          WebkitBoxOrient: "vertical"
                         }}
                       >
                         File{" "}
@@ -280,8 +284,8 @@ const SoloDepositPage = () => {
                               //   backgroundColor: "white",
                               // },
                               "& .MuiLinearProgress-bar": {
-                                backgroundColor: "#80CAFF",
-                              },
+                                backgroundColor: "#80CAFF"
+                              }
                             }}
                           />
 
@@ -349,7 +353,7 @@ const SoloDepositPage = () => {
                 }
                 type={
                   !metaMaskAccount || isWrongMetaMaskNetwork
-                    ? "secondary"
+                    ? "small"
                     : "primary"
                 }
                 onClick={async () => {
@@ -368,7 +372,7 @@ const SoloDepositPage = () => {
                       dispatch(setMetaMaskDisconnected(false));
                       await connectAsync({
                         chainId: getEthereumChainId(),
-                        connector: metamaskConnector,
+                        connector: metamaskConnector
                       });
                     } catch (err: any) {
                       if (err.code === 4001) {

@@ -28,12 +28,12 @@ export const MyDataTabs = (props: MyDataTabsProps) => {
         pathname: router.pathname,
         query: {
           ...router.query,
-          tab,
-        },
+          tab
+        }
       },
       undefined,
       {
-        scroll: false,
+        scroll: false
       }
     );
   };
@@ -44,8 +44,8 @@ export const MyDataTabs = (props: MyDataTabsProps) => {
         className={classNames(
           "px-[.24rem] flex items-center justify-center relative cursor-pointer",
           selectedTab === "assets"
-            ? "bg-color-highlight text-white dark:text-text1 rounded-[.4rem]"
-            : "text-text1 dark:text-white"
+            ? "bg-[#5F4AB7] text-white dark:text-text1 rounded-[.4rem]"
+            : "text-white/50 dark:text-white"
         )}
         onClick={() => {
           updateTab("assets");
@@ -58,8 +58,8 @@ export const MyDataTabs = (props: MyDataTabsProps) => {
         className={classNames(
           "ml-[.1rem] px-[.16rem] flex items-center justify-center relative cursor-pointer",
           selectedTab === "pubkeys"
-            ? "bg-color-highlight text-white dark:text-text1 rounded-[.4rem]"
-            : "text-text1 dark:text-white"
+            ? "bg-[#5F4AB7] text-white dark:text-text1 rounded-[.4rem]"
+            : "text-white/50 dark:text-white"
         )}
         onClick={() => {
           updateTab("pubkeys");
@@ -72,8 +72,8 @@ export const MyDataTabs = (props: MyDataTabsProps) => {
         className={classNames(
           "ml-[.1rem] px-[.24rem] flex items-center justify-center relative cursor-pointer",
           selectedTab === "history"
-            ? "bg-color-highlight text-white dark:text-text1 rounded-[.4rem]"
-            : "text-text1 dark:text-white"
+            ? "bg-[#5F4AB7] text-white dark:text-text1 rounded-[.4rem]"
+            : "text-white/50 dark:text-white"
         )}
         onClick={() => {
           updateTab("history");

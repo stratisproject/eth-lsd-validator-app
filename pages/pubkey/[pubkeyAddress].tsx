@@ -20,11 +20,7 @@ const PubkeyDetailPage = () => {
   const router = useRouter();
 
   const pubkeyAddress: string | undefined = useMemo(() => {
-    if (
-      router.isReady &&
-      router.query.pubkeyAddress &&
-      typeof router.query.pubkeyAddress === "string"
-    ) {
+    if (router.isReady && router.query.pubkeyAddress && typeof router.query.pubkeyAddress === "string") {
       return router.query.pubkeyAddress;
     } else {
       return undefined;
@@ -41,7 +37,7 @@ const PubkeyDetailPage = () => {
           router.back();
         }}
       >
-        <div className="h-full flex items-center justify-between w-smallContentW xl:w-contentW 2xl:w-largeContentW">
+        <div className="h-full flex items-center justify-between w-full max-w-[1280px]">
           <div className="flex items-center">
             <div className="w-[.68rem] h-[.68rem] relative">
               <Image src={getLsdTokenIcon()} layout="fill" alt="icon" />
@@ -49,12 +45,7 @@ const PubkeyDetailPage = () => {
 
             <div>
               <div className="flex items-center">
-                <div
-                  className={classNames(
-                    robotoBold.className,
-                    "text-[.34rem] ml-[.12rem] text-color-text1"
-                  )}
-                >
+                <div className={classNames(robotoBold.className, "text-[.34rem] ml-[.12rem] text-color-text1")}>
                   Public Key Detail
                 </div>
 
@@ -78,8 +69,7 @@ const PubkeyDetailPage = () => {
                 <div className="ml-[.12rem] mt-[.12rem] flex items-center justify-center text-[.12rem] text-color-text2 cursor-pointer">
                   <div className="flex items-center">
                     <div className="mr-[.06rem]">
-                      <span className={robotoBold.className}>Address:</span>{" "}
-                      {getShortAddress(pubkeyAddress, 20)}
+                      <span className={robotoBold.className}>Address:</span> {getShortAddress(pubkeyAddress, 20)}
                     </div>
                   </div>
 
@@ -106,11 +96,7 @@ const PubkeyDetailPage = () => {
                   "text-[.34rem] ml-[.12rem] flex items-center text-color-text1"
                 )}
               >
-                {pubkeyInfo?.days === undefined ? (
-                  <DataLoading height=".12rem" />
-                ) : (
-                  pubkeyInfo?.days
-                )}
+                {pubkeyInfo?.days === undefined ? <DataLoading height=".12rem" /> : pubkeyInfo?.days}
 
                 <div className="ml-[.06rem]">Days</div>
               </div>
@@ -134,11 +120,8 @@ const PubkeyDetailPage = () => {
         </div>
       </PageTitleContainer>
 
-      <div className="w-smallContentW xl:w-contentW 2xl:w-largeContentW mx-auto">
-        <PubkeyDetailAsset
-          pubkeyAddress={pubkeyAddress}
-          pubkeyInfo={pubkeyInfo}
-        />
+      <div className="w-full max-w-[1280px] mx-auto">
+        <PubkeyDetailAsset pubkeyAddress={pubkeyAddress} pubkeyInfo={pubkeyInfo} />
 
         <PubkeyDetailSlashHistory />
       </div>

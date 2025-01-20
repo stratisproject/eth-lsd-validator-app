@@ -27,7 +27,7 @@ export const DepositGuide = () => {
 
         <Icomoon
           icon="right"
-          color={darkMode ? "#ffffff80" : "#6C86AD"}
+          color={darkMode ? "#ffffff80" : "white"}
           size=".11rem"
         />
       </a>

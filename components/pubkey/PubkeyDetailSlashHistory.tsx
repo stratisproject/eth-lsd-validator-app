@@ -25,51 +25,55 @@ export const PubkeyDetailSlashHistory = () => {
         </div>
       </div>
 
-      <div className="mt-[.24rem] bg-color-bg2 border-[0.01rem] border-color-border1 rounded-[.3rem]">
-        <div
-          className="h-[.7rem] grid items-center font-[500] border-solid border-b-[.01rem] border-white dark:border-[#222C3C]"
-          style={{
-            gridTemplateColumns: "25% 22% 22% 31%",
-          }}
-        >
-          <div className="flex items-center justify-center text-[.16rem] text-color-text2">
-            Block
-          </div>
+      <div className="g-border-pink mt-[.24rem] rounded-[.3rem]">
+        <div className="g-bg-box rounded-[.3rem]">
+          <div
+            className="h-[.7rem] grid items-center font-[500] border-solid border-b-[.01rem] border-white/10"
+            style={{
+              gridTemplateColumns: "25% 22% 22% 31%"
+            }}
+          >
+            <div className="flex items-center justify-center text-[.16rem] text-color-text2">
+              Block
+            </div>
 
-          <div className="flex items-center justify-center text-[.16rem] text-color-text2">
-            Time (UTC)
-          </div>
+            <div className="flex items-center justify-center text-[.16rem] text-color-text2">
+              Time (UTC)
+            </div>
 
-          <div className="flex items-center justify-center text-[.16rem] text-color-text2">
-            Slashed {getTokenName()}
-          </div>
+            <div className="flex items-center justify-center text-[.16rem] text-color-text2">
+              Slashed {getTokenName()}
+            </div>
 
-          <div className="flex items-center text-[.16rem] text-color-text2">
-            <div className="flex-1 ml-[.56rem] mr-[.9rem] flex items-center justify-between">
-              <div>Detials</div>
+            <div className="flex items-center text-[.16rem] text-color-text2">
+              <div className="flex-1 ml-[.56rem] mr-[.9rem] flex items-center justify-between">
+                <div>Details</div>
 
-              {/* <Icomoon
+                {/* <Icomoon
                 icon="right"
                 color={darkMode ? "#ffffff80" : "#6C86AD"}
                 size=".13rem"
               /> */}
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="h-[2rem] flex items-center justify-center">
-          <EmptyContent />
-        </div>
+          {/* <div className="h-[2rem] flex items-center justify-center">
+            <EmptyContent />
+          </div> */}
 
-        {/* <SlashHistoryItem index={0} /> */}
+          <SlashHistoryItem index={0} />
+          <SlashHistoryItem index={1} />
+          <SlashHistoryItem index={2} />
 
-        {/* <div className="my-[.32rem] flex items-center justify-center">
+          {/* <div className="my-[.32rem] flex items-center justify-center">
           <CustomPagination
             page={page}
             onChange={setPage}
             totalCount={totalCount || 0}
           />
         </div> */}
+        </div>
       </div>
     </div>
   );
@@ -90,7 +94,7 @@ const SlashHistoryItem = (props: SlashHistoryItemProps) => {
         index % 2 === 0 ? "bg-bgPage/50 dark:bg-bgPageDark/50" : ""
       )}
       style={{
-        gridTemplateColumns: "25% 22% 22% 31%",
+        gridTemplateColumns: "25% 22% 22% 31%"
       }}
     >
       <div className="flex items-center justify-center text-[.16rem] text-color-text2 cursor-pointer">
@@ -129,7 +133,7 @@ const SlashHistoryItem = (props: SlashHistoryItemProps) => {
               WebkitLineClamp: 1,
               lineClamp: 1,
               display: "-webkit-box",
-              WebkitBoxOrient: "vertical",
+              WebkitBoxOrient: "vertical"
             }}
           >
             Didn't set configure fee recipien Didn't set configure fee
@@ -140,7 +144,7 @@ const SlashHistoryItem = (props: SlashHistoryItemProps) => {
             <Icomoon
               icon="right1"
               size=".1rem"
-              color={darkMode ? "#ffffff80" : "#6C86AD"}
+              color={darkMode ? "#ffffff80" : "white"}
             />
           </div>
         </div>

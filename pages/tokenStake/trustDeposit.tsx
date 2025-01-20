@@ -1,6 +1,4 @@
-import LinearProgress, {
-  linearProgressClasses,
-} from "@mui/material/LinearProgress";
+import LinearProgress, { linearProgressClasses } from "@mui/material/LinearProgress";
 import { styled } from "@mui/styles";
 import classNames from "classnames";
 import { BackNavigation } from "components/common/BackNavigation";
@@ -14,11 +12,7 @@ import { DepositGuide } from "components/tokenStake/DepositGuide";
 import { ValidatorKeyUpload } from "components/tokenStake/ValidatorKeyUpload";
 import { getNodeDepositContract } from "config/contract";
 import { getNodeDepositContractAbi } from "config/contractAbi";
-import {
-  getEthereumChainId,
-  getNetworkName,
-  getTrustValidatorDepositAmount,
-} from "config/env";
+import { getEthereumChainId, getNetworkName, getTrustValidatorDepositAmount } from "config/env";
 import { robotoBold } from "config/font";
 import { FILE_NETWORK_NAME_KEY } from "constants/common";
 import { useAppDispatch, useAppSelector } from "hooks/common";
@@ -62,11 +56,8 @@ const TrustDepositPage = () => {
   const { darkMode } = useAppSlice();
   const [validatorKeys, setValidatorKeys] = useState<any[]>([]);
   const [fileName, setFileName] = useState<string>("");
-  const [uploadingStatus, setUploadingStatus] = useState<
-    "normal" | "loading" | "error"
-  >("normal");
-  const [deleteConfirmModalVisible, setDeleteConfirmModalVisible] =
-    useState(false);
+  const [uploadingStatus, setUploadingStatus] = useState<"normal" | "loading" | "error">("normal");
+  const [deleteConfirmModalVisible, setDeleteConfirmModalVisible] = useState(false);
 
   const { unmatchedEth } = useUnmatchedToken();
 
@@ -74,8 +65,10 @@ const TrustDepositPage = () => {
   const { switchNetworkAsync } = useSwitchNetwork();
   const { connectAsync, connectors } = useConnect();
 
-  const validatorWithdrawalCredentials = useAppSelector((state: RootState) => state.validator.validatorWithdrawalCredentials)
-  const ethTxLoading = useAppSelector((state: RootState) => state.eth.txLoading)
+  const validatorWithdrawalCredentials = useAppSelector(
+    (state: RootState) => state.validator.validatorWithdrawalCredentials
+  );
+  const ethTxLoading = useAppSelector((state: RootState) => state.eth.txLoading);
 
   const { isTrust } = useIsTrustedValidator();
 
@@ -84,24 +77,13 @@ const TrustDepositPage = () => {
   }, [metaMaskChainId]);
 
   const checkFileKeyFormat = (validatorKey: any) => {
-    if (
-      !validatorKey.deposit_data_root ||
-      !validatorKey.signature ||
-      !validatorKey.pubkey
-    ) {
+    if (!validatorKey.deposit_data_root || !validatorKey.signature || !validatorKey.pubkey) {
       throw new Error("Miss deposit_data_root or signature or pubkey");
     }
-    if (
-      BigInt(validatorKey.amount) !==
-      parseEther((getTrustValidatorDepositAmount() + "") as `${number}`, "gwei")
-    ) {
-      throw new Error(
-        "Please use deposit_data file of trusted validator to deposit"
-      );
+    if (BigInt(validatorKey.amount) !== parseEther((getTrustValidatorDepositAmount() + "") as `${number}`, "gwei")) {
+      throw new Error("Please use deposit_data file of trusted validator to deposit");
     }
-    if (
-      validatorKey.withdrawal_credentials !== validatorWithdrawalCredentials
-    ) {
+    if (validatorKey.withdrawal_credentials !== validatorWithdrawalCredentials) {
       throw new Error(`Incorrect withdrawal_credentials value`);
     }
     const networkName = getNetworkName();
@@ -121,17 +103,11 @@ const TrustDepositPage = () => {
       });
 
       const web3 = getEthWeb3();
-      let nodeDepositContract = new web3.eth.Contract(
-        getNodeDepositContractAbi(),
-        getNodeDepositContract(),
-        {}
-      );
+      let nodeDepositContract = new web3.eth.Contract(getNodeDepositContractAbi(), getNodeDepositContract(), {});
 
       const statusRequests = pubkeys.map((pubkey) => {
         return (async () => {
-          const pubkeyInfoOf = await nodeDepositContract.methods
-            .pubkeyInfoOf(pubkey)
-            .call();
+          const pubkeyInfoOf = await nodeDepositContract.methods.pubkeyInfoOf(pubkey).call();
           const status = pubkeyInfoOf._status;
           return status;
         })();
@@ -160,7 +136,7 @@ const TrustDepositPage = () => {
   };
 
   return (
-    <div className="w-smallContentW xl:w-contentW 2xl:w-largeContentW mx-auto">
+    <div className="w-full max-w-[1280px] mx-auto">
       <BackNavigation
         onClick={() => {
           router.replace("/tokenStake/chooseType");
@@ -171,12 +147,7 @@ const TrustDepositPage = () => {
         <CardContainer width="6.2rem" title="Trusted Validator Deposit">
           <div className="flex flex-col items-center pb-[.24rem]">
             <div className="mt-[.32rem] flex items-center text-[.14rem]">
-              <div
-                className={classNames(
-                  robotoBold.className,
-                  "text-color-text1 flex items-center"
-                )}
-              >
+              <div className={classNames(robotoBold.className, "text-color-text1 flex items-center")}>
                 <div className="mr-[.04rem]">
                   {unmatchedEth === undefined ? (
                     <DataLoading height=".14rem" />
@@ -188,9 +159,7 @@ const TrustDepositPage = () => {
                 {getTokenName()}
               </div>
 
-              <div className="ml-[.06rem] text-color-text2">
-                is waiting to be staked
-              </div>
+              <div className="ml-[.06rem] text-color-text2">is waiting to be staked</div>
 
               <div
                 className="ml-[.12rem] flex items-center text-[.14rem] text-color-text2 cursor-pointer"
@@ -199,11 +168,7 @@ const TrustDepositPage = () => {
                 }}
               >
                 <div className="mr-[.06rem]">Pool Status</div>
-                <Icomoon
-                  icon="arrow-right"
-                  size=".13rem"
-                  color={darkMode ? "#ffffff80" : "#6C86AD"}
-                />
+                <Icomoon icon="arrow-right" size=".13rem" color={darkMode ? "#ffffff80" : "#6C86AD"} />
               </div>
             </div>
 
@@ -222,9 +187,7 @@ const TrustDepositPage = () => {
                         <Image src={uploadIcon} alt="upload" layout="fill" />
                       </div>
 
-                      <div className="text-color-text2 text-[.14rem] mt-[.15rem]">
-                        Drag and drop file
-                      </div>
+                      <div className="text-color-text2 text-[.14rem] mt-[.15rem]">Drag and drop file</div>
                     </div>
                   </div>
                 </ValidatorKeyUpload>
@@ -265,15 +228,7 @@ const TrustDepositPage = () => {
                           WebkitBoxOrient: "vertical",
                         }}
                       >
-                        File{" "}
-                        <span
-                          className={classNames(
-                            "text-color-text1",
-                            robotoBold.className
-                          )}
-                        >
-                          {fileName}
-                        </span>{" "}
+                        File <span className={classNames("text-color-text1", robotoBold.className)}>{fileName}</span>{" "}
                         {uploadingStatus === "normal"
                           ? " uploaded successfully!"
                           : uploadingStatus === "loading"
@@ -311,11 +266,7 @@ const TrustDepositPage = () => {
                           setDeleteConfirmModalVisible(true);
                         }}
                       >
-                        <Icomoon
-                          icon="close1"
-                          size=".11rem"
-                          color={darkMode ? "#ffffff80" : "#6C86AD"}
-                        />
+                        <Icomoon icon="close1" size=".11rem" color={darkMode ? "#ffffff80" : "#6C86AD"} />
                       </div>
                     )}
                   </div>
@@ -360,20 +311,13 @@ const TrustDepositPage = () => {
                     isNaN(Number(unmatchedEth)) ||
                     Number(unmatchedEth) < validatorKeys.length)
                 }
-                type={
-                  !metaMaskAccount || isWrongMetaMaskNetwork || !isTrust
-                    ? "secondary"
-                    : "primary"
-                }
+                type={!metaMaskAccount || isWrongMetaMaskNetwork || !isTrust ? "secondary" : "primary"}
                 onClick={async () => {
                   if (isWrongMetaMaskNetwork) {
-                    await (switchNetworkAsync &&
-                      switchNetworkAsync(getEthereumChainId()));
+                    await (switchNetworkAsync && switchNetworkAsync(getEthereumChainId()));
                     return;
                   } else if (!metaMaskAccount) {
-                    const metamaskConnector = connectors.find(
-                      (c) => c.name === "MetaMask"
-                    );
+                    const metamaskConnector = connectors.find((c) => c.name === "MetaMask");
                     if (!metamaskConnector) {
                       return;
                     }
@@ -397,35 +341,31 @@ const TrustDepositPage = () => {
                     return;
                   }
                   dispatch(
-                    handleEthValidatorDeposit(
-                      "trusted",
-                      validatorKeys,
-                      (success, result) => {
-                        dispatch(updateEthBalance());
-                        if (success) {
-                          const pubkeys: string[] = [];
+                    handleEthValidatorDeposit("trusted", validatorKeys, (success, result) => {
+                      dispatch(updateEthBalance());
+                      if (success) {
+                        const pubkeys: string[] = [];
 
-                          validatorKeys.forEach((validatorKey) => {
-                            pubkeys.push("0x" + validatorKey.pubkey);
-                          });
+                        validatorKeys.forEach((validatorKey) => {
+                          pubkeys.push("0x" + validatorKey.pubkey);
+                        });
 
-                          setValidatorKeys([]);
-                          setFileName("");
+                        setValidatorKeys([]);
+                        setFileName("");
 
-                          // router.push(
-                          //   {
-                          //     pathname: "/eth/validator/check-deposit-file",
-                          //     query: {
-                          //       pubkeys,
-                          //       type: "trusted",
-                          //       txHash: result?.transactionHash,
-                          //     },
-                          //   },
-                          //   "/eth/validator/check-deposit-file"
-                          // );
-                        }
+                        // router.push(
+                        //   {
+                        //     pathname: "/eth/validator/check-deposit-file",
+                        //     query: {
+                        //       pubkeys,
+                        //       type: "trusted",
+                        //       txHash: result?.transactionHash,
+                        //     },
+                        //   },
+                        //   "/eth/validator/check-deposit-file"
+                        // );
                       }
-                    )
+                    })
                   );
                 }}
               >
@@ -439,8 +379,7 @@ const TrustDepositPage = () => {
                   ? "Please Upload 1 json file"
                   : ethTxLoading
                   ? "Depositing, please wait for a moment..."
-                  : !isNaN(Number(unmatchedEth)) &&
-                    Number(unmatchedEth) < validatorKeys.length
+                  : !isNaN(Number(unmatchedEth)) && Number(unmatchedEth) < validatorKeys.length
                   ? `Insufficient ${getTokenName()} in pool`
                   : "Deposit"}
               </CustomButton>
@@ -448,10 +387,8 @@ const TrustDepositPage = () => {
 
             {validatorKeys.length > 0 && (
               <div className="mt-[.24rem] text-color-text2 text-[.14rem]">
-                <span className={classNames("text-color-text1")}>
-                  {validatorKeys.length} Node Number
-                </span>{" "}
-                according to the file uploaded
+                <span className={classNames("text-color-text1")}>{validatorKeys.length} Node Number</span> according to
+                the file uploaded
               </div>
             )}
           </div>

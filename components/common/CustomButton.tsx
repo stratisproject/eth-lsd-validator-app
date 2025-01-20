@@ -34,8 +34,8 @@ export const CustomButton = (props: ButtonProps) => {
       ? "#E8EFFD"
       : "#222C3C"
     : props.disabled
-    ? "#6C86AD80"
-    : "#222C3C";
+    ? "#6c6f77"
+    : "#fff";
 
   return (
     <div
@@ -81,9 +81,9 @@ export const CustomButton = (props: ButtonProps) => {
           ? {
               border: props.hasBorder
                 ? props.border || "0.01rem solid rgba(108, 134, 173, 0.5)"
-                : "none",
+                : "none"
             }
-          : {}),
+          : {})
       }}
       onClick={() => {
         if (!props.disabled && !props.loading) {
@@ -94,7 +94,7 @@ export const CustomButton = (props: ButtonProps) => {
       {props.loading && (
         <div
           style={{
-            color: textColor,
+            color: textColor
           }}
         >
           <CircularLoading color="inherit" size={props.fontSize || "0.16rem"} />

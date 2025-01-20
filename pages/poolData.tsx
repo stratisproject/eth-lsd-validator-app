@@ -24,44 +24,33 @@ const PoolDataPage = () => {
   return (
     <div>
       <PageTitleContainer>
-        <div className="h-full flex items-center w-smallContentW xl:w-contentW 2xl:w-largeContentW">
+        <div className="h-full flex items-center w-full max-w-[1280px] max-[800px]:justify-center max-[500px]:flex-col gap-[.12rem]">
           <div className="w-[.68rem] h-[.68rem] relative">
             <Image src={getLsdTokenIcon()} layout="fill" alt="icon" />
           </div>
 
           <div>
-            <div className="ml-[.12rem] flex items-center">
-              <div
-                className={classNames(
-                  robotoBold.className,
-                  "text-[.34rem] text-color-text1"
-                )}
-              >
+            <div className="flex items-center  max-[500px]:flex-col">
+              <div className={classNames(robotoBold.className, "text-[.34rem] text-color-text1")}>
                 {getLsdTokenName()} Pool
               </div>
 
               <CustomTag type="apr" ml=".12rem">
-                {apr === undefined ? (
-                  <DataLoading height=".12rem" />
-                ) : (
-                  `${formatNumber(apr, { decimals: 2 })}%`
-                )}
-                <span className="ml-[.06rem]">staking APR</span>
+                {apr === undefined ? <DataLoading height=".12rem" /> : `${formatNumber(apr, { decimals: 2 })}%`}
+                <span className="ml-[.06rem]"> APR</span>
               </CustomTag>
             </div>
 
-            <div className="ml-[.12rem] mt-[.12rem] text-[.12rem] text-color-text2 cursor-pointer">
+            <div className="mt-[.12rem] text-[.12rem] text-color-text2 cursor-pointer">
               <div className="flex items-center">
-                <div className="mr-[.06rem]">
-                  Take part in rPool programs, earn tokens easily.
-                </div>
+                <div className="mr-[.06rem]">Take part in rPool programs, earn tokens easily.</div>
               </div>
             </div>
           </div>
         </div>
       </PageTitleContainer>
 
-      <div className="w-smallContentW xl:w-contentW 2xl:w-largeContentW mx-auto mb-[.56rem]">
+      <div className="w-full max-w-[1280px] mx-auto px-[.1rem]">
         <PoolAssets />
 
         <UnstakingPoolStatus />

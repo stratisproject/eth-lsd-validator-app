@@ -19,13 +19,13 @@ export const NoticeDrawer = (props: Props) => {
       onClose={() => onChangeOpen(false)}
       sx={{
         "& .MuiPaper-root": {
-          background: darkMode ? "#222C3C" : "#E8EFFD",
-          width: "4.85rem",
-          paddingTop: "1rem",
+          background: "#101112",
+          maxWidth: "4.85rem",
+          width: "100%",
         },
       }}
     >
-      <div className="pb-[1rem] flex-1 flex flex-col justify-between items-stretch">
+      <div className="pb-[1rem] flex-1 flex flex-col justify-between items-stretch bg-[#101112]">
         <div className="px-[.16rem]">
           <DrawerNoticeList open={open} />
         </div>

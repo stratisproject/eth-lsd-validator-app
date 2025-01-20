@@ -11,11 +11,11 @@ export const CustomTag = (props: CustomTagProps) => {
   return (
     <div
       className={classNames(
-        "rounded-[.06rem] px-[.06rem] py-[.04rem] text-[.12rem] flex items-center justify-center",
+        "rounded-[.03rem] px-[.04rem] py-[.04rem] text-[.12rem] flex items-center justify-center",
         type === "error" ? "text-error" : "text-text1",
         {
           "border-[0.01rem] border-text1/10 dark:border-text1Dark/10":
-            type === "stroke",
+            type === "stroke"
         }
       )}
       style={{
@@ -25,11 +25,12 @@ export const CustomTag = (props: CustomTagProps) => {
             : type === "pending"
             ? "#FFCD294D"
             : type === "apr"
-            ? "linear-gradient(275.73deg, #FFCD29 35.79%, #FEA4FF 97.61%)"
+            ? "linear-gradient(279.55deg, #7168C0  -1.42%, #412F8C 96.22%)"
             : type === "error"
             ? "#FEA4FF4D"
             : "none",
         marginLeft: ml || "0",
+        padding: "5px 10px"
       }}
     >
       {props.children}
