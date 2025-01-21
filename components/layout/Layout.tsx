@@ -41,8 +41,24 @@ export const Layout = (props: React.PropsWithChildren) => {
       <div className={classNames(darkMode ? "dark" : "bg-[#101112]", roboto.className)}>
         <Head>
           <title>{getAppTitle()}</title>
-          <meta name="description" content="" />
-          <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <meta name="robots" content="index,follow" />
+          <meta name="description" content="Strax Staking Validator App" />
+          <meta name="twitter:image" content="/splash.png" />
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content="STRAX Validator APP" />
+          <meta name="twitter:description" content="Strax Staking Validator App" />
+
+          <meta property="og:title" content="STRAX Validator APP" />
+          <meta property="og:description" content="Strax Staking Validator App" />
+
+          <meta property="og:type" content="website" />
+          <meta property="og:image" content="/splash.png" />
+          <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="600" />
+          <meta property="og:locale" content="en" />
+
+          <meta name="description" content="Strax Staking Validator App" />
         </Head>
 
         <HideOnScroll>
