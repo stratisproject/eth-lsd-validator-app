@@ -14,6 +14,7 @@ import {
   getLsdEthTokenContractAbi,
   getNetworkBalanceContractAbi,
 } from "config/contractAbi";
+import { getBlockSeconds } from "config/env";
 
 export interface LsdEthState {
   balance: string | undefined; // balance of lsdETH
@@ -112,10 +113,23 @@ export const updateApr = (): AppThunk => async (dispatch, getState) => {
       getNetworkBalanceContractAbi(),
       getNetworkBalanceContract()
     );
+
+    const updateBalancesEpochs = await contract.methods
+      .updateBalancesEpochs()
+      .call()
+      .catch((err: any) => {
+        console.log({ err });
+      });
+
+    const eraSeconds = Number(updateBalancesEpochs) * (getBlockSeconds() * 32);
+
+    const eventLength = Math.round((7 * 24 * 3600) / eraSeconds);
+
     const topics = web3.utils.sha3(
       "BalancesUpdated(uint256,uint256,uint256,uint256)"
     );
-    let fromBlock = currentBlock - Math.floor((1 / 15) * 60 * 60 * 24 * 8)
+    let fromBlock =
+      currentBlock - Math.floor((1 / getBlockSeconds()) * 60 * 60 * 24 * 8);
     if (fromBlock < 0) {
       fromBlock = 0
     }
@@ -127,8 +141,8 @@ export const updateApr = (): AppThunk => async (dispatch, getState) => {
     const balancesUpdatedEvents = events
       .filter((e) => e.raw.topics.length === 1 && e.raw.topics[0] === topics)
       .sort((a, b) => a.blockNumber - b.blockNumber);
-    if (balancesUpdatedEvents.length > 17) {
-      const beginEvent = balancesUpdatedEvents[balancesUpdatedEvents.length - 18];
+    if (balancesUpdatedEvents.length > eventLength) {
+      const beginEvent = balancesUpdatedEvents[balancesUpdatedEvents.length - eventLength - 1];
       const endEvent = balancesUpdatedEvents[balancesUpdatedEvents.length - 1];
       const beginValues: any = decodeBalancesUpdatedLog(
         beginEvent.raw.data,
