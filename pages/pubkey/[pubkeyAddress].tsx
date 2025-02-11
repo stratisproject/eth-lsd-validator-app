@@ -123,7 +123,7 @@ const PubkeyDetailPage = () => {
       <div className="w-full max-w-[1280px] mx-auto">
         <PubkeyDetailAsset pubkeyAddress={pubkeyAddress} pubkeyInfo={pubkeyInfo} />
 
-        <PubkeyDetailSlashHistory />
+        {/* <PubkeyDetailSlashHistory /> */}
       </div>
     </div>
   );
