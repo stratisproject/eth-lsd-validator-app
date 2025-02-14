@@ -3,6 +3,7 @@ import networkWithdrawContractAbi from "./abi/networkWithdraw.json";
 import lsdTokenContractAbi from "./abi/lsdToken.json";
 import nodeDepositContractAbi from "./abi/nodeDeposit.json";
 import userDepositContractAbi from "./abi/userDeposit.json";
+import multicall3ContractAbi from './abi/multicall3.json'
 import { AbiItem } from "web3-utils";
 
 /**
@@ -38,4 +39,8 @@ export function getNodeDepositContractAbi() {
  */
 export function getNetworkWithdrawContractAbi() {
   return networkWithdrawContractAbi as AbiItem[];
+}
+
+export function getMulticall3ContractAbi() {
+  return multicall3ContractAbi as AbiItem[]
 }

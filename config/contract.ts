@@ -51,3 +51,7 @@ export function getNetworkWithdrawContract() {
   }
   return appProdConfig.contracts.networkWithdrawContract.address;
 }
+
+export function getMulticall3Contract() {
+  return '0xcA11bde05977b3631167028862bE2a173976CA11'
+}

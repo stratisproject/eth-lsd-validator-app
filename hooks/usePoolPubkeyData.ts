@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import chunk from 'lodash/chunk'
 
-import { getNodeDepositContract } from "config/contract";
-import { getNodeDepositContractAbi } from "config/contractAbi";
+import { getNodeDepositContract, getMulticall3Contract } from "config/contract";
+import { getNodeDepositContractAbi, getMulticall3ContractAbi } from "config/contractAbi";
 import { ChainPubkeyStatus, NodePubkeyInfo } from "interfaces/common";
 import { fetchPubkeyStatus } from "utils/apiUtils";
 import { getEthWeb3 } from "utils/web3Utils";
@@ -14,6 +14,11 @@ export function usePoolPubkeyData() {
     try {
       const web3 = getEthWeb3();
 
+      const multicall3Contract = new web3.eth.Contract(
+        getMulticall3ContractAbi(),
+        getMulticall3Contract(),
+      )
+      
       const nodeDepositContract = new web3.eth.Contract(
         getNodeDepositContractAbi(),
         getNodeDepositContract(),
@@ -34,30 +39,16 @@ export function usePoolPubkeyData() {
           console.log({ err });
         });
 
-      const pubkeyAddressList: string[] = [];
+      // Fetch all nodes pubkeys
+      const getPubkeysOfNodeInf = nodeDepositContract.options.jsonInterface.find(({ name }) => name === 'getPubkeysOfNode')
+      const getPubkeysOfNodeCalls = nodes?.map((address: string) => ({
+        target: getNodeDepositContract(),
+        callData: web3.eth.abi.encodeFunctionCall(getPubkeysOfNodeInf!, [address])
+      }))
 
-      // Query node pubkey addresses
-      const requests = nodes?.map((nodeAddress: string) => {
-        return (async () => {
-          const pubkeys: string[] = await nodeDepositContract.methods
-            .getPubkeysOfNode(nodeAddress)
-            .call()
-            .catch((err: any) => {
-              console.log({ err });
-            });
-          pubkeyAddressList.push(...pubkeys);
-        })();
-      });
-      await Promise.all(requests);
+      const pubkeysResult = await multicall3Contract.methods.aggregate(getPubkeysOfNodeCalls).call()
+      const pubkeyAddressList: string[] = pubkeysResult.returnData.map((r: string) => web3.eth.abi.decodeParameter('bytes[]', r)).flat()
 
-      // Query beacon pubkey status list
-      // const beaconStatusResponse = await fetch(
-      //   `/api/pubkeyStatus?id=${pubkeyAddressList.join(",")}`,
-      //   {
-      //     method: "GET",
-      //   }
-      // );
-      // const beaconStatusResJson = await beaconStatusResponse.json();
       const beaconStatusResJson = await Promise.all(chunk(pubkeyAddressList, 50).map(pubkeys => fetchPubkeyStatus(pubkeys.join(','))))
             .then(results => 
               results.reduce((r, cur) => ({
@@ -67,22 +58,22 @@ export function usePoolPubkeyData() {
               }), {})
             )
 
-      // Query on-chain pubkey detail info list
-      const pubkeyInfoRequests = pubkeyAddressList?.map(
-        (pubkeyAddress: string) => {
-          return (async () => {
-            const pubkeyInfo = await nodeDepositContract.methods
-              .pubkeyInfoOf(pubkeyAddress)
-              .call()
-              .catch((err: any) => {
-                console.log({ err });
-              });
+      const pubkeyInfoOfInf = nodeDepositContract.options.jsonInterface.find(({ name }) => name === 'pubkeyInfoOf')
 
-            return pubkeyInfo;
-          })();
+      const pubkeyInfoOfCalls = pubkeyAddressList?.map((address: string) => ({
+        target: getNodeDepositContract(),
+        callData: web3.eth.abi.encodeFunctionCall(pubkeyInfoOfInf!, [address])
+      }))
+
+      const pubkeyInfoOfResult = await multicall3Contract.methods.aggregate(pubkeyInfoOfCalls).call()
+      const pubkeyInfos: any[] = pubkeyInfoOfResult.returnData.map((r: string) => web3.eth.abi.decodeParameter({
+        PubkeyInfo: {
+          _status: 'uint8',
+          _owner: 'address',
+          _nodeDepositAmount: 'uint256',
+          _depositBlock: 'uint256',
         }
-      );
-      const pubkeyInfos = await Promise.all(pubkeyInfoRequests);
+      }, r))
 
       const nodePubkeyInfos: NodePubkeyInfo[] = pubkeyInfos.map(
         (item, index) => {
@@ -99,8 +90,7 @@ export function usePoolPubkeyData() {
       );
 
       let matchedValidators = 0;
-
-      nodePubkeyInfos.forEach((item) => {
+      nodePubkeyInfos.filter(({ beaconApiStatus }) => beaconApiStatus !== 'WITHDRAWAL_DONE').forEach((item) => {
         if (
           item._status === ChainPubkeyStatus.Staked &&
           item.beaconApiStatus !== "EXITED_UNSLASHED" &&
