@@ -3,10 +3,12 @@ import chunk from 'lodash/chunk'
 import {
   getNetworkWithdrawContract,
   getNodeDepositContract,
+  getMulticall3Contract,
 } from "config/contract";
 import {
   getNetworkWithdrawContractAbi,
   getNodeDepositContractAbi,
+  getMulticall3ContractAbi,
 } from "config/contractAbi";
 import {
   getTrustValidatorDepositAmount,
@@ -129,7 +131,11 @@ export const updateNodePubkeys = (): AppThunk => async (dispatch, getState) => {
     }
 
     const web3 = getEthWeb3();
-
+    const multicall3Contract = new web3.eth.Contract(
+      getMulticall3ContractAbi(),
+      getMulticall3Contract(),
+    )
+    
     const nodeDepositContract = new web3.eth.Contract(
       getNodeDepositContractAbi(),
       getNodeDepositContract(),
@@ -150,20 +156,21 @@ export const updateNodePubkeys = (): AppThunk => async (dispatch, getState) => {
       return;
     }
 
-    const requests = pubkeysOfNode?.map((pubkeyAddress: string) => {
-      return (async () => {
-        const pubkeyInfo = await nodeDepositContract.methods
-          .pubkeyInfoOf(pubkeyAddress)
-          .call()
-          .catch((err: any) => {
-            console.log({ err });
-          });
+    const pubkeyInfoOfInf = getNodeDepositContractAbi().find(({ name }) => name === 'pubkeyInfoOf')!
+    const pubkeyInfoOfCalls = pubkeysOfNode.map((address: string) => ({
+      target: getNodeDepositContract(),
+      callData: web3.eth.abi.encodeFunctionCall(pubkeyInfoOfInf, [address])
+    }))
 
-        return pubkeyInfo;
-      })();
-    });
-
-    const pubkeyInfos = await Promise.all(requests);
+    const pubkeyInfosResult = await multicall3Contract.methods.aggregate(pubkeyInfoOfCalls).call()
+    const pubkeyInfos: any[] = pubkeyInfosResult.returnData.map((r: string) => web3.eth.abi.decodeParameter({
+      PubkeyInfo: {
+        _status: 'uint8',
+        _owner: 'address',
+        _nodeDepositAmount: 'uint256',
+        _depositBlock: 'uint256',
+      }
+    }, r))
 
     const beaconStatusResJson = await Promise.all(chunk(pubkeysOfNode, 50).map(pubkeys => fetchPubkeyStatus(pubkeys.join(','))))
       .then(results => 

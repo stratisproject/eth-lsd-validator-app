@@ -2,12 +2,14 @@ import {
   getEthDepositContract,
   getLsdEthTokenContract,
   getNetworkWithdrawContract,
+  getMulticall3Contract,
 } from "config/contract";
 import {
   getLsdEthTokenContractAbi,
   getNetworkWithdrawContractAbi,
+  getMulticall3ContractAbi,
 } from "config/contractAbi";
-import { IpfsRewardItem, RewardJsonResponse } from "interfaces/common";
+import { IpfsRewardItem } from "interfaces/common";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getEthWeb3 } from "utils/web3Utils";
 import Web3 from "web3";
@@ -16,6 +18,7 @@ import { usePoolPubkeyData } from "./usePoolPubkeyData";
 import { usePrice } from "./usePrice";
 import { getEthereumChainId, getValidatorTotalDepositAmount } from "config/env";
 import { formatScientificNumber, removeDecimals } from "utils/numberUtils";
+import JsonBigint from 'json-bigint'
 
 export function usePoolData() {
   const { updateFlag } = useAppSlice();
@@ -70,7 +73,7 @@ export function usePoolData() {
     return Number(stakedToken) * Number(tokenPrice);
   }, [stakedToken, tokenPrice]);
 
-  const udpatePoolData = useCallback(async () => {
+  const updatePoolData = useCallback(async () => {
     try {
       const web3 = getEthWeb3();
 
@@ -84,70 +87,71 @@ export function usePoolData() {
   }, [updateFlag]);
 
   useEffect(() => {
-    udpatePoolData();
-  }, [udpatePoolData]);
+    updatePoolData();
+  }, [updatePoolData]);
 
   const updatePoolTokenData = useCallback(async () => {
     try {
       const web3 = getEthWeb3();
-      const networkWithdrawContract = new web3.eth.Contract(
-        getNetworkWithdrawContractAbi(),
-        getNetworkWithdrawContract(),
-        {}
-      );
-      const lsdTokenContract = new web3.eth.Contract(
-        getLsdEthTokenContractAbi(),
-        getLsdEthTokenContract(),
-        {}
-      );
+      const multicall3Contract = new web3.eth.Contract(
+        getMulticall3ContractAbi(),
+        getMulticall3Contract(),
+      )
 
-      const lsdTotalSupply = await lsdTokenContract.methods
-        .totalSupply()
-        .call()
-        .catch((err: any) => {
-          console.log({ err });
-        });
+      const lsdTokenContractAddress = getLsdEthTokenContract()
+      const lsdTokenContractAbi = getLsdEthTokenContractAbi()
+      const networkWithdrawContractAddress = getNetworkWithdrawContract()
+      const networkWithdrawContractAbi = getNetworkWithdrawContractAbi()
 
-      const lsdRate = await lsdTokenContract.methods
-        .getRate()
-        .call()
-        .catch((err: any) => {
-          console.log({ err });
-        });
+      let calls = [{
+        target: lsdTokenContractAddress,
+        callData: web3.eth.abi.encodeFunctionCall(lsdTokenContractAbi.find(({ name }) => name === 'totalSupply')!, [])
+      }, {
+        target: lsdTokenContractAddress,
+        callData: web3.eth.abi.encodeFunctionCall(lsdTokenContractAbi.find(({ name }) => name === 'getRate')!, [])
+      }, {
+        target: networkWithdrawContractAddress,
+        callData: web3.eth.abi.encodeFunctionCall(networkWithdrawContractAbi.find(({ name }) => name === 'nodeRewardsFileCid')!, [])
+      }, {
+        target: networkWithdrawContractAddress,
+        callData: web3.eth.abi.encodeFunctionCall(networkWithdrawContractAbi.find(({ name }) => name === 'latestMerkleRootEpoch')!, [])
+      }]
+
+      const {
+        returnData: [
+          lsdTotalSupplyResult,
+          lsdRateResult,
+          nodeRewardsFileCidResult,
+          latestMerkleRootEpochResult,
+        ],
+      } = await multicall3Contract.methods.aggregate(calls).call()
+      const lsdTotalSupply: any = web3.eth.abi.decodeParameter('uint256', lsdTotalSupplyResult)
+      const lsdRate: any = web3.eth.abi.decodeParameter('uint256', lsdRateResult)
+      const nodeRewardsFileCid = web3.eth.abi.decodeParameter('string', nodeRewardsFileCidResult)
+      const latestMerkleRootEpoch = web3.eth.abi.decodeParameter('uint256', latestMerkleRootEpochResult)
 
       setLsdTotalSupply(Web3.utils.fromWei(lsdTotalSupply));
       setLsdRate(Web3.utils.fromWei(lsdRate));
       setMintedLsdToken(Web3.utils.fromWei(lsdTotalSupply));
 
-      const nodeRewardsFileCid = await networkWithdrawContract.methods
-        .nodeRewardsFileCid()
-        .call()
-        .catch((err: any) => {
-          console.log({ err });
-        });
-      const latestMerkleRootEpoch = await networkWithdrawContract.methods
-        .latestMerkleRootEpoch()
-        .call()
-        .catch((err: any) => {
-          console.log({ err });
-        });
+      let poolEth = Number(lsdTotalSupply) * Number(Web3.utils.fromWei(lsdRate));
 
-      let poolEth =
-        Number(lsdTotalSupply) * Number(Web3.utils.fromWei(lsdRate));
+      let resTextJson = {
+        List: [],
+      }
 
-      const response = await fetch(
-        `https://ipfs.stratisplatform.com/ipfs/${nodeRewardsFileCid}/${getLsdEthTokenContract().toLowerCase()}-rewards-${getEthereumChainId()}-${latestMerkleRootEpoch}.json`,
-        {
-          method: "GET",
-          headers: {},
-        }
-      );
+      if (nodeRewardsFileCid) {
+        const response = await fetch(
+          `https://ipfs.stratisplatform.com/ipfs/${nodeRewardsFileCid}/${getLsdEthTokenContract().toLowerCase()}-rewards-${getEthereumChainId()}-${latestMerkleRootEpoch}.json`,
+          {
+            method: "GET",
+            headers: {},
+          }
+        );
 
-      // const resJson: RewardJsonResponse = await response.json();
-      // const resJson = { List: [] };
-      const resText = await response.text();
-      var JSONbig = require("json-bigint");
-      const resTextJson = JSONbig.parse(resText);
+        const resText = await response.text();
+        resTextJson = JsonBigint.parse(resText);
+      }
 
       const list: IpfsRewardItem[] = resTextJson.List?.map((item: any) => {
         return {
@@ -157,40 +161,37 @@ export function usePoolData() {
         };
       });
 
-      const requests = list?.map((data) => {
-        return (async () => {
-          const totalClaimedRewardOfNode = await networkWithdrawContract.methods
-            .totalClaimedRewardOfNode(data.address)
-            .call()
-            .catch((err: any) => {
-              console.log({ err });
-            });
+      const totalClaimedRewardOfNodeInf = networkWithdrawContractAbi.find(({ name }) => name === 'totalClaimedRewardOfNode')!
+      const totalClaimedDepositOfNodeInf = networkWithdrawContractAbi.find(({ name }) => name === 'totalClaimedDepositOfNode')!
 
-          const totalClaimedDepositOfNode =
-            await networkWithdrawContract.methods
-              .totalClaimedDepositOfNode(data.address)
-              .call()
-              .catch((err: any) => {
-                console.log({ err });
-              });
+      calls = list?.map((data) => ([{
+        target: networkWithdrawContractAddress,
+        callData: web3.eth.abi.encodeFunctionCall(totalClaimedRewardOfNodeInf, [data.address])
+      }, {
+        target: networkWithdrawContractAddress,
+        callData: web3.eth.abi.encodeFunctionCall(totalClaimedDepositOfNodeInf, [data.address])
+      }])).flat()
 
-          if (data.totalRewardAmount) {
-            poolEth = poolEth + Number(data.totalRewardAmount);
-          }
-          if (data.totalDepositAmount) {
-            poolEth = poolEth + Number(data.totalDepositAmount);
-          }
+      const multicallResult = await multicall3Contract.methods.aggregate(calls).call()
+      list?.forEach((data, idx) => {
+        if (data.totalRewardAmount) {
+          poolEth = poolEth + Number(data.totalRewardAmount);
+        }
+        if (data.totalDepositAmount) {
+          poolEth = poolEth + Number(data.totalDepositAmount);
+        }
 
-          if (totalClaimedRewardOfNode) {
-            poolEth = poolEth - Number(totalClaimedRewardOfNode);
-          }
-          if (totalClaimedDepositOfNode) {
-            poolEth = poolEth - Number(totalClaimedDepositOfNode);
-          }
-        })();
-      });
+        const [totalClaimedRewardOfNodeResult, totalClaimedDepositOfNodeResult] = multicallResult.returnData.slice(idx, idx+2)
+        const totalClaimedRewardOfNode = web3.eth.abi.decodeParameter('uint256', totalClaimedRewardOfNodeResult)
+        const totalClaimedDepositOfNode = web3.eth.abi.decodeParameter('uint256', totalClaimedDepositOfNodeResult)
 
-      await Promise.all(requests);
+        if (totalClaimedRewardOfNode) {
+          poolEth = poolEth - Number(totalClaimedRewardOfNode);
+        }
+        if (totalClaimedDepositOfNode) {
+          poolEth = poolEth - Number(totalClaimedDepositOfNode);
+        }
+      })
 
       // console.log({ poolEth });
 

@@ -1,11 +1,11 @@
 import {
   getEthDepositContract,
-  getLsdEthTokenContract,
   getNetworkWithdrawContract,
+  getMulticall3Contract,
 } from "config/contract";
 import {
-  getLsdEthTokenContractAbi,
   getNetworkWithdrawContractAbi,
+  getMulticall3ContractAbi,
 } from "config/contractAbi";
 import { useCallback, useEffect, useState } from "react";
 import { formatScientificNumber } from "utils/numberUtils";
@@ -20,45 +20,43 @@ export function useUnstakingPoolData() {
 
   const udpatePoolData = useCallback(async () => {
     try {
+      const multicall3ContractAddress = getMulticall3Contract()
+      const multicall3ContractAbi = getMulticall3ContractAbi()
+      const networkWithdrawContractAddress = getNetworkWithdrawContract()
+      const networkBalanceContractAbi = getNetworkWithdrawContractAbi()
+
       const web3 = getEthWeb3();
+      const multicall3Contract = new web3.eth.Contract(
+        multicall3ContractAbi,
+        multicall3ContractAddress,
+      )
 
-      const networkWithdrawContract = new web3.eth.Contract(
-        getNetworkWithdrawContractAbi(),
-        getNetworkWithdrawContract(),
-        {}
-      );
+      const calls = [{
+        target: getMulticall3Contract(),
+        callData: web3.eth.abi.encodeFunctionCall(multicall3ContractAbi.find(({ name }) => name === 'getEthBalance')!, [getEthDepositContract()])
+      }, {
+        target: networkWithdrawContractAddress,
+        callData: web3.eth.abi.encodeFunctionCall(networkBalanceContractAbi.find(({ name }) => name === 'totalMissingAmountForWithdraw')!, [])
+      }, {
+        target: networkWithdrawContractAddress,
+        callData: web3.eth.abi.encodeFunctionCall(networkBalanceContractAbi.find(({ name }) => name === 'nextWithdrawIndex')!, [])
+      }, {
+        target: networkWithdrawContractAddress,
+        callData: web3.eth.abi.encodeFunctionCall(networkBalanceContractAbi.find(({ name }) => name === 'maxClaimableWithdrawIndex')!, [])
+      }]
 
-      const lsdTokenContract = new web3.eth.Contract(
-        getLsdEthTokenContractAbi(),
-        getLsdEthTokenContract(),
-        {}
-      );
-
-      const lsdTotalSupply = await lsdTokenContract.methods
-        .totalSupply()
-        .call()
-        .catch((err: any) => {
-          console.log({ err });
-        });
-
-      const lsdRate = await lsdTokenContract.methods
-        .getRate()
-        .call()
-        .catch((err: any) => {
-          console.log({ err });
-        });
-
-      const userDepositBalance = await web3.eth.getBalance(
-        getEthDepositContract()
-      );
-
-      const totalMissingAmountForWithdraw =
-        await networkWithdrawContract.methods
-          .totalMissingAmountForWithdraw()
-          .call()
-          .catch((err: any) => {
-            console.log({ err });
-          });
+      const {
+        returnData: [
+          userDepositBalanceResult,
+          totalMissingAmountForWithdrawResult,
+          nextWithdrawIndexResult,
+          maxClaimableWithdrawIndexResult,
+        ],
+      } = await multicall3Contract.methods.aggregate(calls).call()
+      const userDepositBalance: any = web3.eth.abi.decodeParameter('uint256', userDepositBalanceResult)
+      const totalMissingAmountForWithdraw: any = web3.eth.abi.decodeParameter('uint256', totalMissingAmountForWithdrawResult)
+      const nextWithdrawIndex: any = web3.eth.abi.decodeParameter('uint256', nextWithdrawIndexResult)
+      const maxClaimableWithdrawIndex: any = web3.eth.abi.decodeParameter('uint256', maxClaimableWithdrawIndexResult)
 
       const poolEth = Web3.utils.fromWei(
         formatScientificNumber(
@@ -68,20 +66,6 @@ export function useUnstakingPoolData() {
       setPoolEth(poolEth);
 
       setUnstakeawableEth("0");
-
-      const nextWithdrawIndex = await networkWithdrawContract.methods
-        .nextWithdrawIndex()
-        .call()
-        .catch((err: any) => {
-          console.log({ err });
-        });
-
-      const maxClaimableWithdrawIndex = await networkWithdrawContract.methods
-        .maxClaimableWithdrawIndex()
-        .call()
-        .catch((err: any) => {
-          console.log({ err });
-        });
 
       setWaitingStakers(
         Number(nextWithdrawIndex) - Number(maxClaimableWithdrawIndex) + ""

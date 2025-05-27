@@ -13,7 +13,6 @@ export function useGasPrice() {
 
       const gasPrice = await web3.eth.getGasPrice();
 
-      console.log({ gasPrice });
       setGasPrice(gasPrice);
     } catch (err: any) {}
   }, []);

@@ -1,39 +1,42 @@
 import {
   getLsdEthTokenContract,
+  getMulticall3Contract,
   getNetworkWithdrawContract,
   getNodeDepositContract,
 } from "config/contract";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import chunk from 'lodash/chunk'
 import { getEthWeb3 } from "utils/web3Utils";
 import { useWalletAccount } from "./useWalletAccount";
 import Web3 from "web3";
 import {
   ChainPubkeyStatus,
   IpfsRewardItem,
-  RewardJsonResponse,
 } from "interfaces/common";
 import { useAppSlice } from "./selector";
 import {
+  getMulticall3ContractAbi,
   getNetworkWithdrawContractAbi,
   getNodeDepositContractAbi,
 } from "config/contractAbi";
 import { useUserPubkeys } from "./useUserPubkeys";
 import { getEthereumChainId, getValidatorTotalDepositAmount } from "config/env";
 import { formatScientificNumber, removeDecimals } from "utils/numberUtils";
-import { fetchPubkeyStatus } from "utils/apiUtils";
 import { isPubkeyStillValid } from "utils/commonUtils";
+import JsonBigint from 'json-bigint'
 
 export function useMyData() {
   const { updateFlag } = useAppSlice();
   const { metaMaskAccount } = useWalletAccount();
 
+  const networkWithdrawContractAddress = getNetworkWithdrawContract()
+  const networkWithdrawContractAbi = getNetworkWithdrawContractAbi()
+  const nodeDepositContractAddress = getNodeDepositContract()
+  const nodeDepositContractAbi = getNodeDepositContractAbi()
+
   const [selfDepositedToken, setSelfDepositedToken] = useState<string>();
-  // const [totalManagedToken, setTotalManagedToken] = useState<string>();
   const [myRewardTokenAmount, setMyRewardTokenAmount] = useState<string>();
   const [ipfsMyRewardInfo, setIpfsMyRewardInfo] = useState<IpfsRewardItem>();
   const [availableExitDeposit, setAvailableExitDeposit] = useState<string>();
-  const [pubkeysOfNode, setPubkeysOfNode] = useState<string[]>([]);
   const [myShareAmount, setMyShareAmount] = useState<string>();
   const [mySharePercentage, setMySharePercentage] = useState<string>();
 
@@ -64,53 +67,55 @@ export function useMyData() {
       return;
     }
 
-    const userAddress = metaMaskAccount;
-
     try {
       const web3 = getEthWeb3();
-      const networkWithdrawContract = new web3.eth.Contract(
-        getNetworkWithdrawContractAbi(),
-        getNetworkWithdrawContract(),
-        {
-          from: userAddress,
-        }
-      );
+      const multicall3Contract = new web3.eth.Contract(
+        getMulticall3ContractAbi(),
+        getMulticall3Contract(),
+      )
 
-      const nodeRewardsFileCid = await networkWithdrawContract.methods
-        .nodeRewardsFileCid()
-        .call()
-        .catch((err: any) => {
-          console.log({ err });
-        });
-      const latestMerkleRootEpoch = await networkWithdrawContract.methods
-        .latestMerkleRootEpoch()
-        .call()
-        .catch((err: any) => {
-          console.log({ err });
-        });
-      const totalClaimedRewardOfNode = await networkWithdrawContract.methods
-        .totalClaimedRewardOfNode(userAddress)
-        .call()
-        .catch((err: any) => {
-          console.log({ err });
-        });
-      const totalClaimedDepositOfNode = await networkWithdrawContract.methods
-        .totalClaimedDepositOfNode(userAddress)
-        .call()
-        .catch((err: any) => {
-          console.log({ err });
-        });
+      const calls = [{
+        target: networkWithdrawContractAddress,
+        callData: web3.eth.abi.encodeFunctionCall(networkWithdrawContractAbi.find(({ name }) => name === 'nodeRewardsFileCid')!, [])
+      }, {
+        target: networkWithdrawContractAddress,
+        callData: web3.eth.abi.encodeFunctionCall(networkWithdrawContractAbi.find(({ name }) => name === 'latestMerkleRootEpoch')!, [])
+      }, {
+        target: networkWithdrawContractAddress,
+        callData: web3.eth.abi.encodeFunctionCall(networkWithdrawContractAbi.find(({ name }) => name === 'totalClaimedRewardOfNode')!, [metaMaskAccount])
+      }, {
+        target: networkWithdrawContractAddress,
+        callData: web3.eth.abi.encodeFunctionCall(networkWithdrawContractAbi.find(({ name }) => name === 'totalClaimedDepositOfNode')!, [metaMaskAccount])
+      }]
 
-      const response = await fetch(
-        `https://ipfs.stratisplatform.com/ipfs/${nodeRewardsFileCid}/${getLsdEthTokenContract().toLowerCase()}-rewards-${getEthereumChainId()}-${latestMerkleRootEpoch}.json`,
-        {
-          method: "GET",
-          headers: {},
-        }
-      );
-      const resText = await response.text();
-      var JSONbig = require("json-bigint");
-      const resTextJson = JSONbig.parse(resText);
+      const {
+        returnData: [
+          nodeRewardsFileCidResult,
+          latestMerkleRootEpochResult,
+          totalClaimedRewardOfNodeResult,
+          totalClaimedDepositOfNodeResult,
+        ],
+      } = await multicall3Contract.methods.aggregate(calls).call()
+      const nodeRewardsFileCid = web3.eth.abi.decodeParameter('string', nodeRewardsFileCidResult)
+      const latestMerkleRootEpoch = web3.eth.abi.decodeParameter('uint256', latestMerkleRootEpochResult)
+      const totalClaimedRewardOfNode = web3.eth.abi.decodeParameter('uint256', totalClaimedRewardOfNodeResult)
+      const totalClaimedDepositOfNode = web3.eth.abi.decodeParameter('uint256', totalClaimedDepositOfNodeResult)
+
+      let resTextJson = {
+        List: [],
+      }
+
+      if (nodeRewardsFileCid) {
+        const response = await fetch(
+          `https://ipfs.stratisplatform.com/ipfs/${nodeRewardsFileCid}/${getLsdEthTokenContract().toLowerCase()}-rewards-${getEthereumChainId()}-${latestMerkleRootEpoch}.json`,
+          {
+            method: "GET",
+            headers: {},
+          }
+        );
+        const resText = await response.text();
+        resTextJson = JsonBigint.parse(resText);
+      }
 
       const list: IpfsRewardItem[] = resTextJson.List?.map((item: any) => {
         return {
@@ -123,7 +128,7 @@ export function useMyData() {
         };
       });
 
-      const myRewardInfo = list?.find((item) => item.address === userAddress);
+      const myRewardInfo = list?.find((item) => item.address === metaMaskAccount);
       setIpfsMyRewardInfo(myRewardInfo);
 
       const myTotalRewardAmount = myRewardInfo?.totalRewardAmount || "0";
@@ -140,22 +145,6 @@ export function useMyData() {
         Web3.utils.fromWei(formatScientificNumber(availableExitDeposit))
       );
 
-      const nodeDepositContract = new web3.eth.Contract(
-        getNodeDepositContractAbi(),
-        getNodeDepositContract(),
-        {
-          from: userAddress,
-        }
-      );
-
-      const pubkeysOfNode = await nodeDepositContract.methods
-        .getPubkeysOfNode(userAddress)
-        .call()
-        .catch((err: any) => {
-          console.log({ err });
-        });
-      setPubkeysOfNode(pubkeysOfNode);
-
       const myRewardEth = Web3.utils.fromWei(
         formatScientificNumber(
           Number(myTotalRewardAmount) - Number(totalClaimedRewardOfNode)
@@ -166,7 +155,13 @@ export function useMyData() {
     } catch (err: any) {
       console.log({ err });
     }
-  }, [metaMaskAccount]);
+  }, [
+    metaMaskAccount,
+    nodeDepositContractAddress,
+    nodeDepositContractAbi,
+    networkWithdrawContractAddress,
+    networkWithdrawContractAbi,
+  ]);
 
   useEffect(() => {
     updateData();
@@ -177,54 +172,14 @@ export function useMyData() {
       if (!metaMaskAccount) {
         return;
       }
-      const userAddress = metaMaskAccount;
 
-      const web3 = getEthWeb3();
-      const nodeDepositContract = new web3.eth.Contract(
-        getNodeDepositContractAbi(),
-        getNodeDepositContract(),
-        {}
-      );
-      const networkWithdrawContract = new web3.eth.Contract(
-        getNetworkWithdrawContractAbi(),
-        getNetworkWithdrawContract(),
-        {}
-      );
-
-      const requests = pubkeysOfNode.map((pubkeyAddress) => {
-        return (async () => {
-          const pubkeyInfo = await nodeDepositContract.methods
-            .pubkeyInfoOf(pubkeyAddress)
-            .call()
-            .catch((err: any) => {
-              console.log({ err });
-            });
-
-          return pubkeyInfo;
-        })();
-      });
-
-      const pubekyInfos = await Promise.all(requests);
       let myShareAmount = 0;
       let selfDepositAmount = 0;
 
       let totalNodeDepositAmount = 0;
 
-      const beaconStatusResJson = await Promise.all(chunk(pubkeysOfNode, 50).map(pubkeys => fetchPubkeyStatus(pubkeys.join(','))))
-        .then(results => 
-          results.reduce((r, cur) => ({
-            execution_optimistic: cur.execution_optimistic,
-            finalized: cur.finalized,
-            data: [...(r.data || []), ...cur.data],
-          }), {})
-        )
-
-      pubekyInfos.forEach((pubkeyInfo, index) => {
-        const matchedBeaconData = beaconStatusResJson.data?.find(
-          (item: any) => item.validator?.pubkey === pubkeysOfNode[index]
-        );
-
-        if (isPubkeyStillValid(matchedBeaconData.status)) {
+      nodePubkeys?.forEach((pubkeyInfo, index) => {
+        if (isPubkeyStillValid(pubkeyInfo.beaconApiStatus)) {
           totalNodeDepositAmount += Number(pubkeyInfo._nodeDepositAmount);
           myShareAmount += Number(pubkeyInfo._nodeDepositAmount);
         }
@@ -235,15 +190,6 @@ export function useMyData() {
         myShareAmount -
           (ipfsMyRewardInfo ? ipfsMyRewardInfo?.totalExitDepositAmount : 0)
       );
-
-      const totalClaimedDepositOfNode = await networkWithdrawContract.methods
-        .totalClaimedDepositOfNode(userAddress)
-        .call()
-        .catch((err: any) => {
-          console.log({ err });
-        });
-      // console.log({ totalNodeDepositAmount });
-      // console.log({ totalClaimedDepositOfNode });
 
       selfDepositAmount = Math.max(0, totalNodeDepositAmount);
       setMyShareAmount(
@@ -262,7 +208,12 @@ export function useMyData() {
     } catch (err: any) {
       console.log({ err });
     }
-  }, [pubkeysOfNode, ipfsMyRewardInfo, totalManagedToken, metaMaskAccount]);
+  }, [
+    metaMaskAccount,
+    JSON.stringify(nodePubkeys),
+    JSON.stringify(ipfsMyRewardInfo),
+    totalManagedToken,
+  ]);
 
   useEffect(() => {
     updateNodeData();

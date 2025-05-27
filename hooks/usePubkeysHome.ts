@@ -13,7 +13,6 @@ import { useEffect, useMemo, useState } from "react";
 import { getPubkeyDisplayStatus } from "utils/commonUtils";
 import { getEthWeb3 } from "utils/web3Utils";
 import { formatEther } from "viem";
-import { useAppSlice } from "./selector";
 import { useIsTrustedValidator } from "./useIsTrustedValidator";
 import { useUnmatchedToken } from "./useUnmatchedToken";
 import { useUserPubkeys } from "./useUserPubkeys";
@@ -23,7 +22,6 @@ export const usePubkeysHome = (
   page: number,
   selectedPubkeyStatus?: PubkeyStatus
 ) => {
-  const { updateFlag } = useAppSlice();
   const [totalCount, setTotalCount] = useState<number>();
   const [unmatchedCount, setUnmatchedCount] = useState<number>();
   const [stakedCount, setStakedCount] = useState<number>();
@@ -129,7 +127,7 @@ export const usePubkeysHome = (
       setOthersCount(othersCount);
     })();
   }, [
-    nodePubkeys,
+    JSON.stringify(nodePubkeys),
     selectedPubkeyStatus,
     unmatchedEth,
     // Number(minimalMatchAmount),
