@@ -4,10 +4,10 @@
     "name": "Auroria",
     "networkName": "auroria"
   },
-  "rpc": "https://auroria.rpc.stratisevm.com",
-  "beaconHost": "https://auroria.rpc.stratisevm.com/prysm",
-  "explorer": "https://auroria.explorer.stratisevm.com/",
-  "validatorExplorer": "https://auroria.beacon.stratisevm.com/",
+  "rpc": "https://auroria.rpc.xertra.com",
+  "beaconHost": "https://auroria.rpc.xertra.com/prysm",
+  "explorer": "https://auroria.explorer.xertra.com/",
+  "validatorExplorer": "https://auroria.beacon.xertra.com/",
   "blockSeconds": 15,
   "contracts": {
     "lsdTokenContract": {
@@ -26,5 +26,5 @@
       "address": "0xd0e8de7cdE99a670310f85c48B236f38bEdD4Ad8"
     }
   },
-  "lsdAppUrl": "https://auroria.stafi.stratisevm.com"
+  "lsdAppUrl": "https://auroria.stafi.xertra.com"
 }
