@@ -2,7 +2,7 @@
   "chain": {
     "id": 105105,
     "name": "Xertra",
-    "networkName": "xertra"
+    "networkName": "stratis"
   },
   "rpc": "https://rpc.xertra.com",
   "beaconHost": "https://rpc.xertra.com/prysm",
